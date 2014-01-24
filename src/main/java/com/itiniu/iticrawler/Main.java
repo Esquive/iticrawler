@@ -1,0 +1,46 @@
+package com.itiniu.iticrawler;
+
+
+
+import com.itiniu.iticrawler.config.ConfigSingleton;
+import com.itiniu.iticrawler.crawler.inte.AbstractCrawlController;
+import com.itiniu.iticrawler.crawler.impl.DefaultCrawlController;
+
+
+public class Main
+{
+
+	/**
+	 * Entry point of the program this part is not needed once compiled to lib
+	 * @param args
+	 */
+	public static void main(String[] args)
+	{
+		ConfigSingleton.INSTANCE.setNumberOfCrawlerThreads(10);
+//		ConfigSingleton.INSTANCE.setPolitnessDelay(10000);
+		
+		ConfigSingleton.INSTANCE.setCustomCrawlBehavior(DefaultCrawlBehavior.class);
+		
+		AbstractCrawlController mCrawlController = new DefaultCrawlController();
+		
+		
+		
+//		mCrawlController.setScheduleUrlBehavior(defaultSchedulBehavior.class);
+//		mCrawlController.setProcessPageBehavior(defaultProcessPageBehavior.class);
+		
+		
+		mCrawlController.initComponents();
+		//mCrawlController.addSeeds("http://deejing.ibaboon.net");
+		//mCrawlController.addSeeds("http://www.nba.com");
+		mCrawlController.addSeeds("http://www.lemonde.fr");
+		mCrawlController.addSeeds("http://www.coolthings.com");
+		mCrawlController.addSeeds("http://www.extremetech.com");
+		mCrawlController.addSeeds("http://www.thisiswhyimbroke.com");
+		
+		mCrawlController.startCrawling();
+
+		
+		
+	}
+
+}
