@@ -11,9 +11,9 @@ import com.itiniu.iticrawler.behaviors.impl.RobotTxtAwareBehavior;
 import com.itiniu.iticrawler.behaviors.impl.RobotTxtUnawareBehavior;
 import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.crawler.impl.DefaultCrawler;
-import com.itiniu.iticrawler.factories.impl.ProcessedUrlsDataFactory;
-import com.itiniu.iticrawler.factories.impl.RobotTxtDataFactory;
-import com.itiniu.iticrawler.factories.impl.ScheduledUrlsDataFactory;
+import com.itiniu.iticrawler.factories.impl.ProcessedUrlsStorageFactory;
+import com.itiniu.iticrawler.factories.impl.RobotTxtStorageFactory;
+import com.itiniu.iticrawler.factories.impl.ScheduledUrlsStorageFactory;
 import com.itiniu.iticrawler.httptools.impl.HttpPoolingConnectionManager;
 import com.itiniu.iticrawler.httptools.impl.NormalizedURLWrapper;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
@@ -122,9 +122,9 @@ public abstract class AbstractCrawlController implements Runnable
 
 	protected void initDataHolders()
 	{
-		this.scheduledUrls = new ScheduledUrlsDataFactory().getScheduledUrlData();
-		this.processedUrls = new ProcessedUrlsDataFactory().getProcessedUrlStorage();
-		this.robotTxtData = new RobotTxtDataFactory().getRobotTxtData();
+		this.scheduledUrls = new ScheduledUrlsStorageFactory().getScheduledUrlData();
+		this.processedUrls = new ProcessedUrlsStorageFactory().getProcessedUrlStorage();
+		this.robotTxtData = new RobotTxtStorageFactory().getRobotTxtData();
 		
 	}
 

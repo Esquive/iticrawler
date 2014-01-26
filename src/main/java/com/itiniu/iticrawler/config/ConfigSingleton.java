@@ -15,6 +15,8 @@ public enum ConfigSingleton
 	private int maxConnectionsPerHost = 100;
 	private int socketTimeout = 20000;
 	private int connectionTimeout = 30000;
+	
+	private ClusterConfig clusterConfig;
 		
 	public void setMaxConnections(int param) {
 		maxConnections = param;
@@ -72,6 +74,12 @@ public enum ConfigSingleton
 			LiveDataStoragePolicy scheduledUrlsStoragePolicy)
 	{
 		this.scheduledUrlsStoragePolicy = scheduledUrlsStoragePolicy;
+		
+		if(this.scheduledUrlsStoragePolicy == LiveDataStoragePolicy.cluster
+				   && this.clusterConfig == null)
+				{
+					this.clusterConfig = new ClusterConfig();
+				}
 	}
 
 	public LiveDataStoragePolicy getProcessedUrlsStoragePolicy()
@@ -83,6 +91,12 @@ public enum ConfigSingleton
 			LiveDataStoragePolicy processedUrlsStoragePolicy)
 	{
 		this.processedUrlsStoragePolicy = processedUrlsStoragePolicy;
+		
+		if(this.processedUrlsStoragePolicy == LiveDataStoragePolicy.cluster
+		   && this.clusterConfig == null)
+		{
+			this.clusterConfig = new ClusterConfig();
+		}
 	}
 
 	public LiveDataStoragePolicy getRobotTxtDataStoragePolicy()
@@ -94,6 +108,18 @@ public enum ConfigSingleton
 			LiveDataStoragePolicy robotTxtDataStoragePolicy)
 	{
 		this.robotTxtDataStoragePolicy = robotTxtDataStoragePolicy;
+		
+		if(this.robotTxtDataStoragePolicy == LiveDataStoragePolicy.cluster
+				   && this.clusterConfig == null)
+				{
+					this.clusterConfig = new ClusterConfig();
+				}
+		
+	}
+	
+	public ClusterConfig getClusterConfig()
+	{
+		return this.clusterConfig;
 	}
 	
 	

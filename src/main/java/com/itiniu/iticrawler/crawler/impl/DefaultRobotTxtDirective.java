@@ -3,10 +3,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import com.itiniu.iticrawler.crawler.inte.RobotTxtDirectiveInterf;
+import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 
 
-public class DefaultRobotTxtDirective implements RobotTxtDirectiveInterf
+public class DefaultRobotTxtDirective implements IRobotTxtDirective
 {
 	private Set<String> disallowed = null;
 	private Set<String> allowed = null;

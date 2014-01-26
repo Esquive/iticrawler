@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.StringTokenizer;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -16,10 +15,9 @@ import org.apache.http.util.EntityUtils;
 
 import com.itiniu.iticrawler.behaviors.inte.IRobotTxtBehavior;
 import com.itiniu.iticrawler.config.ConfigSingleton;
-import com.itiniu.iticrawler.crawler.impl.DefaultPage;
 import com.itiniu.iticrawler.crawler.impl.DefaultRobotTxtDirective;
 import com.itiniu.iticrawler.crawler.impl.RobotTxtNotFoundDirective;
-import com.itiniu.iticrawler.crawler.inte.RobotTxtDirectiveInterf;
+import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
 
@@ -97,7 +95,7 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 
 		StringTokenizer cTokenizer = new StringTokenizer(robotTxt, "\n");
 		String cString = null;
-		RobotTxtDirectiveInterf directive = new DefaultRobotTxtDirective();
+		IRobotTxtDirective directive = new DefaultRobotTxtDirective();
 		int commentIndex = -1;
 
 		boolean isRelevant = false;

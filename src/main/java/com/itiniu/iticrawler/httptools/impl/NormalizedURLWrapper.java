@@ -2,7 +2,7 @@ package com.itiniu.iticrawler.httptools.impl;
 
 import java.net.MalformedURLException;
 
-import ch.sentric.URL;
+import ch.sentric.*;
 
 public class NormalizedURLWrapper extends URLWrapper
 {

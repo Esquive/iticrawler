@@ -2,15 +2,14 @@ package com.itiniu.iticrawler.livedatastorage.impl;
 
 import java.util.HashMap;
 
-import com.itiniu.iticrawler.httptools.impl.NormalizedURLWrapper;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
-import com.itiniu.iticrawler.crawler.impl.DefaultRobotTxtDirective;
-import com.itiniu.iticrawler.crawler.inte.RobotTxtDirectiveInterf;
+import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 
+//TODO: Thread Safety!!!!
 public class RobotTxtAwareHashMap implements IRobotTxtStore
 {
-	private HashMap<String, RobotTxtDirectiveInterf> rules = null;
+	private HashMap<String, IRobotTxtDirective> rules = null;
 	
 	public RobotTxtAwareHashMap()
 	{
@@ -19,7 +18,7 @@ public class RobotTxtAwareHashMap implements IRobotTxtStore
 	
 	
 	@Override
-	public void insertRule(URLWrapper url, RobotTxtDirectiveInterf directive)
+	public void insertRule(URLWrapper url, IRobotTxtDirective directive)
 	{
 		
 		String hostUrl = url.getProtocol() + "://" + url.getSubDomain() + "." + url.getDomain();
@@ -30,7 +29,6 @@ public class RobotTxtAwareHashMap implements IRobotTxtStore
 	public boolean containsRule(URLWrapper url)
 	{
 		String hostUrl = url.getProtocol() + "://" + url.getSubDomain() + "." + url.getDomain();
-		
 		return this.rules.containsKey(hostUrl);
 	}
 

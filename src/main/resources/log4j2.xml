@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration>
+	<Appenders>
+		<RollingRandomAccessFile name="ErrorRollingFileAppender"
+			fileName="logs/iticrawler.log" filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+			<PatternLayout>
+				<Pattern>%d{HH:mm:ss,SSS} %p %m%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="250 MB" />
+			</Policies>
+		</RollingRandomAccessFile>
+
+
+		<!-- <RollingFile name="RollingFile" fileName="logs/app.log"
+			filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
+			<PatternLayout>
+				<Pattern>%d{HH:mm:ss,SSS} %p %m%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="250 MB" />
+			</Policies>
+		</RollingFile> -->
+
+
+		<Console name="STDOUT" target="SYSTEM_OUT"></Console>
+
+
+
+	</Appenders>
+
+
+	<Loggers>
+		<Root level="info">
+		<AppenderRef ref="STDOUT"></AppenderRef>
+			<AppenderRef ref="ErrorRollingFileAppender"></AppenderRef>
+			
+		</Root>
+	</Loggers>
+
+
+</Configuration>

@@ -1,8 +1,8 @@
 package com.itiniu.iticrawler.crawler.impl;
 
-import com.itiniu.iticrawler.crawler.inte.RobotTxtDirectiveInterf;
+import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 
-public class RobotTxtNotFoundDirective implements RobotTxtDirectiveInterf
+public class RobotTxtNotFoundDirective implements IRobotTxtDirective
 {
 
 	@Override
