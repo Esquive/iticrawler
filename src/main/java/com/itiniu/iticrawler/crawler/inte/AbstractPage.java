@@ -103,7 +103,7 @@ public abstract class AbstractPage
 //					toAdd = ;
 //					toAdd.setParentURL(this.url);
 //					toAdd.setUrlDepth(this.url.getUrlDepth() + 1);
-					toReturn.add(new NormalizedURLWrapper(url));
+					toReturn.add(new URLWrapper(new NormalizedURLWrapper(url).toString()));
 				}
 				catch (MalformedURLException e)
 				{

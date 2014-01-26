@@ -1,9 +1,16 @@
 package com.itiniu.iticrawler.crawler.impl;
 
+import java.io.Serializable;
+
 import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 
-public class RobotTxtNotFoundDirective implements IRobotTxtDirective
+public class RobotTxtNotFoundDirective implements IRobotTxtDirective, Serializable
 {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4881505832193948021L;
 
 	@Override
 	public void addAllowEntry(String entry)

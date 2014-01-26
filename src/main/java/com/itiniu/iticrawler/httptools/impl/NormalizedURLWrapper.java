@@ -1,11 +1,19 @@
 package com.itiniu.iticrawler.httptools.impl;
 
+import java.io.Serializable;
 import java.net.MalformedURLException;
 
 import ch.sentric.*;
 
-public class NormalizedURLWrapper extends URLWrapper
+public class NormalizedURLWrapper extends URLWrapper implements Serializable
 {
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -250279166177801662L;
+	
 	
 	private URL url;
 

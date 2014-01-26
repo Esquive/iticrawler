@@ -5,6 +5,7 @@ package com.itiniu.iticrawler;
 import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.crawler.inte.AbstractCrawlController;
 import com.itiniu.iticrawler.crawler.impl.DefaultCrawlController;
+import com.itiniu.iticrawler.livedatastorage.LiveDataStoragePolicy;
 
 
 public class Main
@@ -17,6 +18,9 @@ public class Main
 	public static void main(String[] args)
 	{
 		ConfigSingleton.INSTANCE.setNumberOfCrawlerThreads(10);
+		ConfigSingleton.INSTANCE.setRobotTxtDataStoragePolicy(LiveDataStoragePolicy.cluster);
+		ConfigSingleton.INSTANCE.setProcessedUrlsStoragePolicy(LiveDataStoragePolicy.cluster);
+		ConfigSingleton.INSTANCE.setScheduledUrlsStoragePolicy(LiveDataStoragePolicy.cluster);
 //		ConfigSingleton.INSTANCE.setPolitnessDelay(10000);
 		
 		ConfigSingleton.INSTANCE.setCustomCrawlBehavior(DefaultCrawlBehavior.class);

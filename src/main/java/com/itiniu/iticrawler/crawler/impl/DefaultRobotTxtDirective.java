@@ -1,4 +1,5 @@
 package com.itiniu.iticrawler.crawler.impl;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -6,8 +7,14 @@ import java.util.StringTokenizer;
 import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 
 
-public class DefaultRobotTxtDirective implements IRobotTxtDirective
+public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6746911164640866605L;
+	
+	
 	private Set<String> disallowed = null;
 	private Set<String> allowed = null;
 	

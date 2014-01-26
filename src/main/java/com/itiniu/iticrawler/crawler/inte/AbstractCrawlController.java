@@ -152,7 +152,7 @@ public abstract class AbstractCrawlController implements Runnable
 		{
 //			url = UrlNormalizer.normalize(url);
 			
-			toSchedule = new NormalizedURLWrapper(url);
+			toSchedule = new URLWrapper(new NormalizedURLWrapper(url).toString());
 			
 			this.scheduledUrls.scheduleURL(toSchedule);
 			

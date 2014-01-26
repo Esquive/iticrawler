@@ -18,7 +18,7 @@ public class DistributedProcessedUrlsMap implements IProcessedURLStore {
 	//Lets see how the swap works on null values, I might come back and write a dist Set implementation.
 	//Therefore the TODO: Write a Distributed Set implementation to allow disk swapping.
 	Map<String,Long> processedURLs;
-	Map<String,Object> currentlyProcessedURLs;
+	Map<String,Byte> currentlyProcessedURLs;
 	
 	
 	public DistributedProcessedUrlsMap(Config cfg)
@@ -34,7 +34,7 @@ public class DistributedProcessedUrlsMap implements IProcessedURLStore {
 	@Override
 	public void addProcessedURL(URLWrapper inURL) {
 	
-		this.processedURLs.put(inURL.toString(), null);
+		this.processedURLs.put(inURL.toString(), System.currentTimeMillis());
 
 	}
 
@@ -69,7 +69,7 @@ public class DistributedProcessedUrlsMap implements IProcessedURLStore {
 
 	@Override
 	public void addCurrentlyProcessedUrl(URLWrapper inUrl) {
-		this.currentlyProcessedURLs.put(inUrl.toString(), null);
+		this.currentlyProcessedURLs.put(inUrl.toString(), (byte)0);
 
 	}
 

@@ -1,12 +1,19 @@
 package com.itiniu.iticrawler.httptools.impl;
 
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.itiniu.iticrawler.httptools.inte.URLExtensionInterface;
 
-public class URLWrapper implements URLExtensionInterface
+public class URLWrapper implements URLExtensionInterface, Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1960291945681398107L;
+	
+	
 	private URL url = null;
 	protected long lastCrawlTime;
 	protected int urlDepth;
