@@ -5,25 +5,27 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.tika.sax.Link;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import com.itiniu.iticrawler.httptools.impl.NormalizedURLWrapper;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
-import com.itiniu.iticrawler.httptools.impl.UrlNormalizer;
-import com.itiniu.iticrawler.httptools.inte.URLExtensionInterface;
+
 
 
 public abstract class AbstractPage
 {
+	protected Logger logger = LogManager.getLogger(this.getClass());
+	
 	protected URLWrapper url = null;
 	protected String html = null;
-	protected List<URLWrapper> outgoingURLs = null;
+	protected List<URLWrapper> outgoingURLs;
 	
 	protected int statusCode = -1;
-	
-	
 	
 	public URLWrapper getUrl()
 	{
@@ -47,14 +49,50 @@ public abstract class AbstractPage
 		
 	public List<URLWrapper> getOutgoingURLs()
 	{
-		if(this.outgoingURLs != null)
+		if(this.outgoingURLs == null)
 		{
-			return this.outgoingURLs;
+			return new ArrayList<>();
 		}
-		else
+		return this.outgoingURLs;
+	}
+	
+	public void setOutgoingURLs(List<Link> urls)
+	{
+		if(urls !=null && urls.size() > 0)
 		{
-			this.outgoingURLs = extractUrls();
-			return this.outgoingURLs;
+			this.outgoingURLs = new ArrayList<>(urls.size());
+			String uri = "";
+		for(Link link : urls)
+		{
+			try {
+				
+				uri = link.getUri().toString();
+				
+				//Only consider http protocols
+				//TODO: Maybe allow more protocols here just to know where the site is pointing to.
+				//Therefore I would need to extend the URLWrapper, to differentiate between just links, and URLs to crawl. 
+				if(uri.startsWith("http"))
+				{
+						this.outgoingURLs.add(
+						
+						new URLWrapper.Builder()
+						.url( new URL(new NormalizedURLWrapper(link.getUri()).toString()) )
+						.isImage(link.isImage())
+						.isAnchor(link.isAnchor())
+						.rel(link.getRel())
+						.text(link.getText())
+						.title(link.getTitle())
+						.fullLink(link.toString())
+						.build()
+						
+						);
+				}
+				
+			} catch (MalformedURLException e) {
+				logger.error("url error: " + uri,e);
+				e.printStackTrace();
+			}
+		}
 		}
 	}
 	
@@ -66,55 +104,5 @@ public abstract class AbstractPage
 	public void setStatusCode(int statusCode)
 	{
 		this.statusCode = statusCode;
-	}
-	
-	
-	protected List<URLWrapper> extractUrls()
-	{
-		List<URLWrapper> toReturn = new ArrayList<>();
-
-		Document doc = Jsoup.parse(this.html, this.url.toString());
-
-		Iterator<Element> cElemIt = doc.select("a, link, area").iterator();
-
-		Element cElem = null;
-		String url = null;
-		URLWrapper toAdd = null;
-
-		while (cElemIt.hasNext())
-		{
-			cElem = cElemIt.next();
-			url = cElem.attr("abs:href");
-
-			if (url.length() > 0)
-			{
-//				try
-//				{
-//					url = UrlNormalizer.normalize(url);
-//				}
-//				catch (MalformedURLException e)
-//				{
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-
-				try
-				{
-//					toAdd = ;
-//					toAdd.setParentURL(this.url);
-//					toAdd.setUrlDepth(this.url.getUrlDepth() + 1);
-					toReturn.add(new URLWrapper(new NormalizedURLWrapper(url).toString()));
-				}
-				catch (MalformedURLException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-		}
-
-		return toReturn;
-	}
-	
+	}	
 }

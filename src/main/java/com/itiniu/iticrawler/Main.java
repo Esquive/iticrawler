@@ -17,10 +17,10 @@ public class Main
 	 */
 	public static void main(String[] args)
 	{
-		ConfigSingleton.INSTANCE.setNumberOfCrawlerThreads(10);
-		ConfigSingleton.INSTANCE.setRobotTxtDataStoragePolicy(LiveDataStoragePolicy.cluster);
-		ConfigSingleton.INSTANCE.setProcessedUrlsStoragePolicy(LiveDataStoragePolicy.cluster);
-		ConfigSingleton.INSTANCE.setScheduledUrlsStoragePolicy(LiveDataStoragePolicy.cluster);
+		ConfigSingleton.INSTANCE.setNumberOfCrawlerThreads(1);
+//		ConfigSingleton.INSTANCE.setRobotTxtDataStoragePolicy(LiveDataStoragePolicy.cluster);
+//		ConfigSingleton.INSTANCE.setProcessedUrlsStoragePolicy(LiveDataStoragePolicy.cluster);
+//		ConfigSingleton.INSTANCE.setScheduledUrlsStoragePolicy(LiveDataStoragePolicy.cluster);
 //		ConfigSingleton.INSTANCE.setPolitnessDelay(10000);
 		
 		ConfigSingleton.INSTANCE.setCustomCrawlBehavior(DefaultCrawlBehavior.class);

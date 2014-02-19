@@ -1,6 +1,7 @@
 package com.itiniu.iticrawler.crawler.inte;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
 
 import org.apache.http.Header;
@@ -9,15 +10,24 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
+import org.apache.tika.parser.html.HtmlParser;
+import org.apache.tika.sax.LinkContentHandler;
+import org.apache.tika.sax.TeeContentHandler;
+import org.apache.tika.sax.ToHTMLContentHandler;
+import org.xml.sax.SAXException;
 
 import com.itiniu.iticrawler.behaviors.inte.ICrawlBehavior;
 import com.itiniu.iticrawler.behaviors.inte.IRobotTxtBehavior;
-
 import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.crawler.impl.DefaultPage;
 import com.itiniu.iticrawler.crawler.inte.AbstractPage;
@@ -58,6 +68,7 @@ public abstract class AbstractCrawler implements Runnable
 	// Crawler relevant variables
 	private boolean busy = false;
 
+	
 	@Override
 	public void run()
 	{
@@ -93,14 +104,14 @@ public abstract class AbstractCrawler implements Runnable
 					}
 					if (this.robotTxtData.allows(cUrl))
 					{
-						// check for the politness (I don't need to check if
+						// check for the politeness (I don't need to check if
 						// the
 						// page was processed before since in the scheduler
 						// usually I only have
 						// single values)
 						// Naaaaa change of mind:
 						// It might happen that URLs get scheduled twice
-						// becauee of locking it is more
+						// Because of locking it is more
 						// efficient to check twice if it was already
 						// processed
 
@@ -129,6 +140,7 @@ public abstract class AbstractCrawler implements Runnable
 								// Process the page
 								this.processPage(page);
 							}
+							
 							// Setting the politeness Timestamp for future
 							// access to the host
 							this.processedUrls.addProcessedHost(cUrl, System.currentTimeMillis());
@@ -141,8 +153,6 @@ public abstract class AbstractCrawler implements Runnable
 						{
 							this.scheduledUrls.scheduleURL(cUrl);
 							this.processedUrls.removeCurrentlyProcessedUrl(cUrl);
-							// TODO: remove the processed URL from the
-							// processedUrls data holder
 						}
 					}
 				}
@@ -174,7 +184,8 @@ public abstract class AbstractCrawler implements Runnable
 	{
 		AbstractPage toReturn = null;
 		HttpGet request = null;
-		HttpResponse response = null;
+		CloseableHttpResponse response = null;
+		InputStream htmlStream = null;
 
 		int pageStatus = -1;
 
@@ -182,7 +193,7 @@ public abstract class AbstractCrawler implements Runnable
 		{
 			// Making the request
 			request = new HttpGet(url.toString());
-			response = this.httpClient.execute(request);
+			response = (CloseableHttpResponse)this.httpClient.execute(request);
 
 			pageStatus = response.getStatusLine().getStatusCode();
 
@@ -193,23 +204,37 @@ public abstract class AbstractCrawler implements Runnable
 				// Getting the content
 				HttpEntity entity = response.getEntity();
 				
-			
-
-				// Get the charset of the page
-				Charset charset = ContentType.getOrDefault(entity).getCharset();
-
-				// Load the page Content into a String
-				String pageContent = EntityUtils.toString(entity, charset);
-
-				// Consume the entity
-				// EntityUtils.consume(entity);
-
-				// //Process the page content
-				toReturn = new DefaultPage();
-				toReturn.setUrl(url);
-				toReturn.setHtml(pageContent);
-
-				
+				if(entity != null)
+				{
+					htmlStream = entity.getContent();
+					
+					//Do all the document parsing here links and htmlContent
+					LinkContentHandler links = new LinkContentHandler();
+					ToHTMLContentHandler html = new ToHTMLContentHandler();
+					TeeContentHandler teeHandler = new TeeContentHandler(links, html);
+					
+					Metadata metadata = new Metadata();
+					metadata.add(Metadata.CONTENT_LOCATION, url.toString());
+					metadata.add(Metadata.RESOURCE_NAME_KEY, url.toString());
+					
+					HtmlParser parser = new HtmlParser();
+					parser.parse(htmlStream, 
+							     teeHandler,
+							     metadata,
+							     new ParseContext());
+					
+							  // //Process the page content
+									toReturn = new DefaultPage();
+									toReturn.setUrl(url);
+									toReturn.setHtml(html.toString());
+									toReturn.setOutgoingURLs(links.getLinks());
+					
+					
+				}
+				else
+				{
+					//TODO: throw an exception
+				}
 			}
 			else if (pageStatus == HttpStatus.SC_NOT_FOUND)
 			{
@@ -238,17 +263,28 @@ public abstract class AbstractCrawler implements Runnable
 			e2.printStackTrace();
 			// TODO: remove the processed URL from the processedUrls data holder
 			// NOT SURE THEY SHOULD STAY THERE
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TikaException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		finally
 		{
-			if(request != null)
-			{
-				request.abort();
-			}
+			
+				try {
+					if(htmlStream != null) htmlStream.close();
+					if(response != null) response.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		}
 
 		return toReturn;
 	}
+
 
 	/**
 	 * 
@@ -259,9 +295,7 @@ public abstract class AbstractCrawler implements Runnable
 		this.customCrawlBehavior.processPage(page);
 	}
 
-	/**
-	 * I already normalized the URLs therefore I will not do it again here at
-	 * this stage
+	/**Ò
 	 * 
 	 * @param page
 	 */
@@ -269,8 +303,6 @@ public abstract class AbstractCrawler implements Runnable
 	{
 		for (URLWrapper cUrl : page.getOutgoingURLs())
 		{
-			// Check if it was processed before and ask the user what he wants
-			// to do
 			if (!this.processedUrls.wasProcessed(cUrl)
 					&& !this.processedUrls.isCurrentlyProcessedUrl(cUrl))
 			{
@@ -283,8 +315,6 @@ public abstract class AbstractCrawler implements Runnable
 
 					if (this.customCrawlBehavior.shouldScheduleURL(cUrl.toString()))
 					{
-						// System.out.println("Scheduling: " +
-						// cUrl.getUrl().toString());
 						this.scheduledUrls.scheduleURL(cUrl);
 					}
 				}
