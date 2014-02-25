@@ -1,9 +1,17 @@
 package com.itiniu.iticrawler.crawler.inte;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.nio.charset.Charset;
 
+import org.apache.commons.io.input.TeeInputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -16,6 +24,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.hdf.extractor.NewOleFile;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.ParseContext;
@@ -24,6 +33,7 @@ import org.apache.tika.parser.html.HtmlParser;
 import org.apache.tika.sax.LinkContentHandler;
 import org.apache.tika.sax.TeeContentHandler;
 import org.apache.tika.sax.ToHTMLContentHandler;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 import com.itiniu.iticrawler.behaviors.inte.ICrawlBehavior;
@@ -67,6 +77,8 @@ public abstract class AbstractCrawler implements Runnable
 
 	// Crawler relevant variables
 	private boolean busy = false;
+	
+	private boolean processStream = false;
 
 	
 	@Override
@@ -111,12 +123,11 @@ public abstract class AbstractCrawler implements Runnable
 						// single values)
 						// Naaaaa change of mind:
 						// It might happen that URLs get scheduled twice
-						// Because of locking it is more
+						// Because of locking is more
 						// efficient to check twice if it was already
 						// processed
 
 						// Getting a timeStamp to determine if I can request
-						// on
 						// the host again
 						long timeStamp = this.processedUrls.lastHostProcessing(cUrl)
 								+ ConfigSingleton.INSTANCE.getPolitnessDelay();
@@ -127,19 +138,14 @@ public abstract class AbstractCrawler implements Runnable
 							// the lower method level:
 							// This is relevant for the URL scheduling.
 
-							// Fetch the page content
-							AbstractPage page = this.extractData(cUrl);
+							// Crawl the page
+							if(this.crawlPage(cUrl))
+							{
+								//TODO: the exception will be included to the crawl method
+								//Do nothing 
+							}
 
 							// TODO: Add statusCode to the page.
-
-							if (page != null)
-							{
-								// Schedule the links (+User Implementation)
-								this.scheduleURLs(page);
-
-								// Process the page
-								this.processPage(page);
-							}
 							
 							// Setting the politeness Timestamp for future
 							// access to the host
@@ -180,6 +186,7 @@ public abstract class AbstractCrawler implements Runnable
 	 * @param url
 	 * @return
 	 */
+	@Deprecated
 	private AbstractPage extractData(URLWrapper url)
 	{
 		AbstractPage toReturn = null;
@@ -284,6 +291,179 @@ public abstract class AbstractCrawler implements Runnable
 
 		return toReturn;
 	}
+	
+	
+	public boolean crawlPage(URLWrapper url)
+	{
+		boolean toReturn = true;
+		AbstractPage page = null;
+		HttpGet request = null;
+		CloseableHttpResponse response = null;
+		//InputStream htmlStream = null;
+		InputStream pageStream = null;
+		
+		LinkContentHandler links= null;
+		ToHTMLContentHandler html = null;
+		//ContentHandler handler = null;
+
+		int pageStatus = -1;
+
+		try
+		{
+			// Making the request
+			request = new HttpGet(url.toString());
+			response = (CloseableHttpResponse)this.httpClient.execute(request);
+
+			pageStatus = response.getStatusLine().getStatusCode();
+
+			this.customCrawlBehavior.handleStatuScode(pageStatus, url);
+
+			if (pageStatus == HttpStatus.SC_OK)
+			{
+				// Getting the content
+				HttpEntity entity = response.getEntity();
+				
+				if(entity != null)
+				{
+					
+					
+//					if(this.processStream)
+//					{
+						pageStream = new PipedInputStream();
+						final InputStream htmlStream = new BufferedInputStream(new TeeInputStream(entity.getContent(), new PipedOutputStream((PipedInputStream)pageStream),true));
+						
+						links = new LinkContentHandler();
+						final ContentHandler handler = links;
+//					}
+//					else
+//					{
+//						
+//						final InputStream htmlStream = entity.getContent();
+//						links = new LinkContentHandler();
+//						html = new ToHTMLContentHandler();
+//						final ContentHandler handler = new TeeContentHandler(links, html);
+//					}
+					
+					//Do all the document parsing here links and htmlContent
+					final Metadata metadata = new Metadata();
+					metadata.add(Metadata.CONTENT_LOCATION, url.toString());
+					metadata.add(Metadata.RESOURCE_NAME_KEY, url.toString());
+					
+					
+					
+					final HtmlParser parser = new HtmlParser();
+					Thread t = new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							try {
+								parser.parse(htmlStream, 
+									     handler,
+									     metadata,
+									     new ParseContext());
+								htmlStream.close();
+								
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (SAXException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (TikaException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					});
+					t.start();
+					
+					page = new DefaultPage();
+					page.setUrl(url);
+					//page.setOutgoingURLs(links.getLinks());
+					
+//					if(this.processStream) 
+//					{ 
+							page.setStream(pageStream);
+					//}
+					//else page.setHtml(html.toString());
+					
+					this.scheduleURLs(page);
+					this.processPage(page);
+					
+					t.join();
+					
+					
+					
+							  // //Process the page content
+							//page = new DefaultPage();
+							//page.setUrl(url);
+							page.setOutgoingURLs(links.getLinks());
+							
+//							if(this.processStream) 
+//							{ 
+//									page.setStream(pageStream);
+//							}
+//							else page.setHtml(html.toString());
+//							
+							this.scheduleURLs(page);
+//							this.processPage(page);
+							
+							//htmlStream.close();
+							
+				}
+				else
+				{
+					//TODO: throw an exception
+					toReturn = false;
+				}
+			}
+			else if (pageStatus == HttpStatus.SC_NOT_FOUND)
+			{
+				logger.info("URL not found: " + url.toString());
+
+			}
+			else if ((pageStatus == HttpStatus.SC_MOVED_TEMPORARILY)
+					|| (pageStatus == HttpStatus.SC_MOVED_PERMANENTLY))
+			{
+				Header header = response.getFirstHeader("Location");
+				if (header != null)
+				{
+					// TODO: Implement the redirect
+				}
+			}
+
+		}
+		catch (ClientProtocolException e1)
+		{
+			e1.printStackTrace();
+			// TODO: remove the processed URL from the processedUrls data holder
+			// NOT SURE THEY SHOULD STAY THERE
+		}
+		catch (IOException e2)
+		{
+			e2.printStackTrace();
+			// TODO: remove the processed URL from the processedUrls data holder
+			// NOT SURE THEY SHOULD STAY THERE
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally
+		{
+			
+				try {
+					//if(htmlStream != null) htmlStream.close();
+					if(response != null) response.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		}
+
+		return toReturn;
+
+	}
 
 
 	/**
@@ -295,7 +475,7 @@ public abstract class AbstractCrawler implements Runnable
 		this.customCrawlBehavior.processPage(page);
 	}
 
-	/**Ò
+	/**
 	 * 
 	 * @param page
 	 */
@@ -367,5 +547,17 @@ public abstract class AbstractCrawler implements Runnable
 	{
 		return this.busy;
 	}
+
+	
+	public boolean isProcessStream() {
+		return processStream;
+	}
+	
+
+	public void setProcessStream(boolean processStream) {
+		this.processStream = processStream;
+	}
+
+	
 
 }

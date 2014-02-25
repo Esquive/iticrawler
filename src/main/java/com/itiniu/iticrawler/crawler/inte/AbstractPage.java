@@ -1,4 +1,5 @@
 package com.itiniu.iticrawler.crawler.inte;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public abstract class AbstractPage
 	protected URLWrapper url = null;
 	protected String html = null;
 	protected List<URLWrapper> outgoingURLs;
+	protected InputStream stream;
 	
 	protected int statusCode = -1;
 	
@@ -104,5 +106,15 @@ public abstract class AbstractPage
 	public void setStatusCode(int statusCode)
 	{
 		this.statusCode = statusCode;
+	}
+
+	public InputStream getStream() {
+		return stream;
+	}
+
+	public void setStream(InputStream stream) {
+		this.stream = stream;
 	}	
+	
+	
 }

@@ -132,6 +132,7 @@ public enum ConfigSingleton
 	private int maxCrawlDepth = -1;
 	private String userAgent = "itiCrawler";
 	private boolean stopOnInactivity = false;
+	private boolean processAsStream = true;
 	
 	private Class<? extends ICrawlBehavior> customCrawlBehavior = null;
 	private ReadWriteLock behaviorLock = new ReentrantReadWriteLock();
@@ -213,5 +214,17 @@ public enum ConfigSingleton
 	public void setStopOnInactivity(boolean stopOnInactivity) {
 		this.stopOnInactivity = stopOnInactivity;
 	}
+
+	
+	public boolean isProcessAsStream() {
+		return processAsStream;
+	}
+	
+
+	public void setProcessAsStream(boolean processAsStream) {
+		this.processAsStream = processAsStream;
+	}
 		
+	
+
 }
