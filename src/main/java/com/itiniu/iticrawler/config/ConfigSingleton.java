@@ -4,6 +4,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.itiniu.iticrawler.behaviors.inte.ICrawlBehavior;
+import com.itiniu.iticrawler.crawler.PageExtractionType;
 import com.itiniu.iticrawler.livedatastorage.LiveDataStoragePolicy;;
 
 public enum ConfigSingleton
@@ -132,7 +133,7 @@ public enum ConfigSingleton
 	private int maxCrawlDepth = -1;
 	private String userAgent = "itiCrawler";
 	private boolean stopOnInactivity = false;
-	private boolean processAsStream = true;
+    private PageExtractionType extractionType = PageExtractionType.BY_INPUTSTREAM;
 	
 	private Class<? extends ICrawlBehavior> customCrawlBehavior = null;
 	private ReadWriteLock behaviorLock = new ReentrantReadWriteLock();
@@ -215,16 +216,11 @@ public enum ConfigSingleton
 		this.stopOnInactivity = stopOnInactivity;
 	}
 
-	
-	public boolean isProcessAsStream() {
-		return processAsStream;
-	}
-	
+    public PageExtractionType getExtractionType() {
+        return extractionType;
+    }
 
-	public void setProcessAsStream(boolean processAsStream) {
-		this.processAsStream = processAsStream;
-	}
-		
-	
-
+    public void setExtractionType(PageExtractionType extractionType) {
+        this.extractionType = extractionType;
+    }
 }

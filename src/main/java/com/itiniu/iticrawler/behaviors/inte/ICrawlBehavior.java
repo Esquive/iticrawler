@@ -5,9 +5,9 @@ import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 
 public interface ICrawlBehavior
 {
-	public boolean shouldScheduleURL(String inUrl);
+	public boolean shouldScheduleURL(AbstractPage page, URLWrapper url);
 
 	public void processPage(AbstractPage page);
 		
-	public void handleStatuScode(int pageStatus, URLWrapper url);	
+	public void handleStatuScode(AbstractPage page);
 }

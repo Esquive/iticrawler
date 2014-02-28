@@ -187,7 +187,7 @@ public abstract class AbstractCrawlController implements Runnable
 			toReturn.setProcessedUrlsData(this.processedUrls);
 			toReturn.setRobotTxtData(this.robotTxtData);
 			toReturn.setHttpConnectionManager(this.httpConnectionManager);
-			toReturn.setProcessStream(ConfigSingleton.INSTANCE.isProcessAsStream());
+			toReturn.setExtractionType(ConfigSingleton.INSTANCE.getExtractionType());
 			
 			//TODO: Check for null
 			toReturn.setCustomCrawlBehavior(ConfigSingleton.INSTANCE.getCustomCrawlBehavior().newInstance());

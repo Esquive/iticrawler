@@ -28,40 +28,42 @@ public class ScheduledUrlsQueue implements IScheduledURLStore
 	public boolean isEmpty()
 	{
 		this.readLock.lock();
-//		System.out.println(Thread.currentThread().getName() + " : aquired readlock of Queue");
-		
-		boolean toReturn = this.scheduledLinks.isEmpty();
-		
-		this.readLock.unlock();
-//		System.out.println(Thread.currentThread().getName() + " : released readlock of Queue");
-		
-		return toReturn;
+
+        try{
+            return this.scheduledLinks.isEmpty();
+        }
+        finally
+        {
+            this.readLock.unlock();
+        }
 	}
 
 	@Override
 	public void scheduleURL(URLWrapper inURL)
 	{
 		this.writeLock.lock();
-//		System.out.println(Thread.currentThread().getName() + " : aquired writelock of Queue");
-		
-		this.scheduledLinks.add(inURL);
-		this.writeLock.unlock();
-//		System.out.println(Thread.currentThread().getName() + " : released writelock of Queue");
-		
+		try{
+            this.scheduledLinks.add(inURL);
+        }
+        finally
+        {
+            this.writeLock.unlock();
+        }
+
 	}
 
 	@Override
 	public URLWrapper getNextURL()
 	{
 		this.readLock.lock();
-//		System.out.println(Thread.currentThread().getName() + " : aquired readlock of Queue");
-		
-		URLWrapper toReturn = this.scheduledLinks.poll();
-		
-		this.readLock.unlock();
-//		System.out.println(Thread.currentThread().getName() + " : released readlock of Queue");
-		
-		return toReturn;
+
+        try {
+            return this.scheduledLinks.poll();
+        }
+        finally {
+            this.readLock.unlock();
+        }
+
 	}
 
 	@Override
@@ -76,24 +78,20 @@ public class ScheduledUrlsQueue implements IScheduledURLStore
 	public void scheduleUniqueUrl(URLWrapper inUrl)
 	{
 		this.readLock.lock();
-		
-		if(!this.scheduledLinks.contains(inUrl))
-		{
-			this.readLock.unlock();
+        this.writeLock.lock();
+        try
+        {
+		    if(!this.scheduledLinks.contains(inUrl))
+		    {
+			    this.readLock.unlock();
 			
-			this.writeLock.lock();
-//			System.out.println(Thread.currentThread().getName() + " : aquired writelock of Queue");
-			
-			this.scheduledLinks.add(inUrl);
-			
-			this.writeLock.unlock();
-//			System.out.println(Thread.currentThread().getName() + " : released writelock of Queue");
-			
-		}
-		else
-		{
-			this.readLock.unlock();
-		}		
-	}
+			    this.scheduledLinks.add(inUrl);
+		    }
+        }
+        finally {
+            this.writeLock.unlock();
+            this.readLock.unlock();
+        }
+    }
 	
 }

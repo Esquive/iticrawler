@@ -26,6 +26,7 @@ public abstract class AbstractPage
 	protected String html = null;
 	protected List<URLWrapper> outgoingURLs;
 	protected InputStream stream;
+    protected boolean continueProcessing = true;
 	
 	protected int statusCode = -1;
 	
@@ -114,7 +115,13 @@ public abstract class AbstractPage
 
 	public void setStream(InputStream stream) {
 		this.stream = stream;
-	}	
-	
-	
+	}
+
+    public boolean isContinueProcessing() {
+        return continueProcessing;
+    }
+
+    public void setContinueProcessing(boolean continueProcessing) {
+        this.continueProcessing = continueProcessing;
+    }
 }

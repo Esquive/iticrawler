@@ -23,14 +23,14 @@ public class DefaultCrawlBehavior implements ICrawlBehavior
 	protected static final Logger logger = LogManager.getLogger(DefaultCrawlBehavior.class.getName());
 	
 
-	@Override
-	public boolean shouldScheduleURL(String inUrl)
-	{
-		// TODO Auto-generated method stub
-		return true;
-	}
 
-	@Override
+
+    @Override
+    public boolean shouldScheduleURL(AbstractPage page, URLWrapper url) {
+        return true;
+    }
+
+    @Override
 	public void processPage(AbstractPage page)
 	{
 		logger.info("Crawling: " + page.getUrl().toString());
@@ -66,11 +66,11 @@ public class DefaultCrawlBehavior implements ICrawlBehavior
 		
 	}
 
-	@Override
-	public void handleStatuScode(int pageStatus, URLWrapper url)
-	{
-		// TODO Auto-generated method stub
+    @Override
+    public void handleStatuScode(AbstractPage page) {
 
-	}
+    }
+
+
 
 }

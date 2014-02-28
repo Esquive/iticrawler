@@ -32,11 +32,15 @@ public class ProcessedUrlsHashMap implements IProcessedURLStore
 	public void addProcessedURL(URLWrapper inURL)
 	{
 		this.readWriteLock.writeLock().lock();
-			
+		try
+        {
 		this.visitedUrls.put(inURL.toString(), null);
-		
+        }
+        finally
+        {
 		this.readWriteLock.writeLock().unlock();
-	}
+        }
+    }
 
 	
 	@Override
@@ -44,30 +48,36 @@ public class ProcessedUrlsHashMap implements IProcessedURLStore
 	{
 		this.readWriteLock.writeLock().lock();
 
+        try
+        {
 		this.visitedUrls.put(inURL.getDomain(), lastProcessed);
-		
+        }
+        finally
+        {
 		this.readWriteLock.writeLock().unlock();
-
+        }
 	}
 
 	@Override
 	public boolean wasProcessed(URLWrapper inURL)
 	{
-		boolean toReturn = false;
-		
 		this.readWriteLock.readLock().lock();
-		
-		toReturn = this.visitedUrls.containsKey(inURL.toString());
-		
-		this.readWriteLock.readLock().unlock();
-	
-		return toReturn;
+        try
+        {
+		    return this.visitedUrls.containsKey(inURL.toString());
+        }
+        finally
+        {
+		    this.readWriteLock.readLock().unlock();
+        }
 	}
 
 	@Override
 	public Long lastHostProcessing(URLWrapper inURL)
 	{
 		this.readWriteLock.readLock().lock();
+        try
+        {
 
 		Long toReturn = this.visitedUrls.get(inURL.getDomain());
 		
@@ -75,10 +85,13 @@ public class ProcessedUrlsHashMap implements IProcessedURLStore
 		{
 			toReturn = new Long(-1);
 		}
-		
+            return toReturn;
+        }
+		finally
+        {
 		this.readWriteLock.readLock().unlock();
-		
-		return toReturn;
+        }
+
 	}
 
 
@@ -86,15 +99,14 @@ public class ProcessedUrlsHashMap implements IProcessedURLStore
 	@Override
 	public boolean isCurrentlyProcessedUrl(URLWrapper inUrl)
 	{
-		boolean toReturn = false;
-		
 		this.currentReadWriteLock.readLock().lock();
-		
-		toReturn = this.currentlyVisitedUrls.contains(inUrl.toString());
-		
-		this.currentReadWriteLock.readLock().unlock();
-		
-		return toReturn;
+	    try
+        {
+		    return this.currentlyVisitedUrls.contains(inUrl.toString());
+        }
+		finally {
+            this.currentReadWriteLock.readLock().unlock();
+        }
 	}
 
 
@@ -102,10 +114,13 @@ public class ProcessedUrlsHashMap implements IProcessedURLStore
 	public void addCurrentlyProcessedUrl(URLWrapper inUrl)
 	{
 		this.currentReadWriteLock.writeLock().lock();
-		
+		try
+        {
 		this.currentlyVisitedUrls.add(inUrl.toString());
-		
-		this.currentReadWriteLock.writeLock().unlock();
+        }
+        finally {
+            this.currentReadWriteLock.writeLock().unlock();
+        }
 	}
 
 
@@ -113,10 +128,12 @@ public class ProcessedUrlsHashMap implements IProcessedURLStore
 	public void removeCurrentlyProcessedUrl(URLWrapper inUrl)
 	{
 		this.currentReadWriteLock.writeLock().lock();
+        try{
 		
 		this.currentlyVisitedUrls.remove(inUrl.toString());
-		
-		this.currentReadWriteLock.writeLock().unlock();
-		
+        }
+        finally {
+            this.currentReadWriteLock.writeLock().unlock();
+        }
 	}	
 }
