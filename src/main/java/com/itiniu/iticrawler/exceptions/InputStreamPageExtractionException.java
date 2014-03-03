@@ -5,6 +5,11 @@ package com.itiniu.iticrawler.exceptions;
  */
 public class InputStreamPageExtractionException extends Exception
 {
+    public InputStreamPageExtractionException(String message, Exception innerException)
+    {
+        super(message, innerException);
+    }
+
     public InputStreamPageExtractionException(String message)
     {
         super(message);

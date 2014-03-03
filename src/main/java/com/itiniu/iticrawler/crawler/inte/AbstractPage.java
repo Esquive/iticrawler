@@ -1,5 +1,6 @@
 package com.itiniu.iticrawler.crawler.inte;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,7 +26,8 @@ public abstract class AbstractPage
 	protected URLWrapper url = null;
 	protected String html = null;
 	protected List<URLWrapper> outgoingURLs;
-	protected InputStream stream;
+	protected InputStream inStream;
+    protected OutputStream outStream;
     protected boolean continueProcessing = true;
 	
 	protected int statusCode = -1;
@@ -109,12 +111,12 @@ public abstract class AbstractPage
 		this.statusCode = statusCode;
 	}
 
-	public InputStream getStream() {
-		return stream;
+	public InputStream getInStream() {
+		return this.inStream;
 	}
 
-	public void setStream(InputStream stream) {
-		this.stream = stream;
+	public void setInStream(InputStream stream) {
+		this.inStream = stream;
 	}
 
     public boolean isContinueProcessing() {
@@ -124,4 +126,15 @@ public abstract class AbstractPage
     public void setContinueProcessing(boolean continueProcessing) {
         this.continueProcessing = continueProcessing;
     }
+
+    public void setOutStream(OutputStream out)
+    {
+        this.outStream = out;
+    }
+
+    public OutputStream getOutStream()
+    {
+        return this.outStream;
+    }
+
 }
