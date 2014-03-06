@@ -5,6 +5,5 @@ package com.itiniu.iticrawler.crawler;
  */
 public enum PageExtractionType {
     BY_STRING,
-    BY_INPUTSTREAM,
-    BY_OUTPUTSTREAM
+    BY_STREAM
 }

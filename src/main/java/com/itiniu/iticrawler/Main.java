@@ -24,7 +24,7 @@ public class Main
 //		ConfigSingleton.INSTANCE.setScheduledUrlsStoragePolicy(LiveDataStoragePolicy.cluster);
 //		ConfigSingleton.INSTANCE.setPolitnessDelay(10000);
 
-        ConfigSingleton.INSTANCE.setExtractionType(PageExtractionType.BY_OUTPUTSTREAM);
+        ConfigSingleton.INSTANCE.setExtractionType(PageExtractionType.BY_STREAM);
 		ConfigSingleton.INSTANCE.setCustomCrawlBehavior(DefaultCrawlBehavior.class);
 		
 		AbstractCrawlController mCrawlController = new DefaultCrawlController();

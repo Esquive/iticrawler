@@ -4,8 +4,6 @@ import java.io.*;
 
 import com.itiniu.iticrawler.crawler.PageExtractionType;
 import com.itiniu.iticrawler.exceptions.InputStreamPageExtractionException;
-import com.itiniu.iticrawler.exceptions.OutputStreamPageExtractionException;
-import com.itiniu.iticrawler.tools.CloseableByteArrayOutputStream;
 import org.apache.commons.io.input.TeeInputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -35,7 +33,6 @@ import com.itiniu.iticrawler.livedatastorage.inte.IProcessedURLStore;
 import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
 import com.itiniu.iticrawler.livedatastorage.inte.IScheduledURLStore;
 
-import static com.itiniu.iticrawler.crawler.PageExtractionType.*;
 
 
 /**
@@ -278,13 +275,9 @@ public abstract class AbstractCrawler implements Runnable {
                     if (entity != null) {
 
                         //According to what Extraction the user wants we process the page accordingly
-                        if(this.extractionType == PageExtractionType.BY_INPUTSTREAM)
+                        if(this.extractionType == PageExtractionType.BY_STREAM)
                         {
                             this.crawlPageToInputStream(page, entity);
-                        }
-                        else if(this.extractionType == PageExtractionType.BY_OUTPUTSTREAM)
-                        {
-                            this.crawlPageToOutputStream(page, entity);
                         }
                         else if(this.extractionType == PageExtractionType.BY_STRING)
                         {
@@ -312,8 +305,7 @@ public abstract class AbstractCrawler implements Runnable {
             logger.error("ClientProtocolException during the crawl process", e1);
         } catch (IOException e2) {
             logger.error("IOException during the crawl process",e2);
-        } catch (OutputStreamPageExtractionException e) {
-            e.printStackTrace();
+        
         } finally {
             try{
             if(response != null) response.close();
@@ -399,84 +391,7 @@ public abstract class AbstractCrawler implements Runnable {
         }
     }
 
-    protected void crawlPageToOutputStream(AbstractPage page, HttpEntity entity) throws OutputStreamPageExtractionException {
-        OutputStream pageStream = null;
-        InputStream htmlStream = null;
-        URLWrapper url = page.getUrl();
-
-
-        try
-        {
-            pageStream = new CloseableByteArrayOutputStream();
-            final InputStream tHtmlStream = new BufferedInputStream(new TeeInputStream(entity.getContent(), pageStream, true));
-
-            final LinkContentHandler tHandler = new LinkContentHandler();
-
-            //Do all the document parsing here links and htmlContent
-            final Metadata metadata = new Metadata();
-            metadata.add(Metadata.CONTENT_LOCATION, url.toString());
-            metadata.add(Metadata.RESOURCE_NAME_KEY, url.toString());
-
-            final HtmlParser parser = new HtmlParser();
-
-            //Parsing the html for the urls in a separate thread
-            Thread t = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        parser.parse(tHtmlStream,
-                                tHandler,
-                                metadata,
-                                new ParseContext());
-
-
-                    } catch (IOException e) {
-                        logger.error("IOException in parsing thread: crawlToInputStream", e);
-                    } catch (SAXException e) {
-                        logger.error("SAXException in parsing thread: crawlToInputStream", e);
-                    } catch (TikaException e) {
-                        logger.error("TikaException in parsing thread: crawlToInputStream", e);
-                    }
-                    finally {
-                        try {
-                            tHtmlStream.close();
-                        } catch (IOException e) {
-                            logger.error("IOException in while closing the stream in parsing thread: crawlToInputStream", e);
-                        }
-                    }
-                }
-            });
-            t.start();
-
-            //Set the stream of the page and process it by user code
-            page.setOutStream(pageStream);
-            this.processPage(page);
-
-            //Waiting for the processing thread to finish
-            t.join();
-            htmlStream = tHtmlStream;
-
-            if(page.isContinueProcessing()){
-                //Set the urls extracted from the page, and schedule them by user code.
-                page.setOutgoingURLs(tHandler.getLinks());
-                this.scheduleURLs(page);
-            }
-        } catch (IOException e){
-            logger.error("IOException during the crawlToInputStream method", e);
-        } catch (InterruptedException e) {
-            throw new OutputStreamPageExtractionException("Error in the processing thread at crawlToOutpuStream.", e);
-        } finally {
-            try{
-                if(pageStream != null) pageStream.close();
-                if(htmlStream != null) htmlStream.close();
-            }catch (IOException e){
-                logger.error("IOException in while closing the streams: crawlToInputStream", e);
-            }
-
-        }
-    }
-
+    
     protected void crawlPageToString(AbstractPage page, HttpEntity entity)
     {
         URLWrapper url = page.getUrl();

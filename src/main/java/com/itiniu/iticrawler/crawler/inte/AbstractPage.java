@@ -1,4 +1,5 @@
 package com.itiniu.iticrawler.crawler.inte;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tika.sax.Link;
@@ -132,9 +134,17 @@ public abstract class AbstractPage
         this.outStream = out;
     }
 
-    public OutputStream getOutStream()
+    public void writeToOutputStream(OutputStream outputStream) throws IOException
     {
-        return this.outStream;
+        try {
+			IOUtils.copy(this.inStream, outputStream);
+		} catch (IOException e) {
+			throw e;
+		}
+        finally
+        {
+        	this.inStream.close();
+        }
     }
 
 }

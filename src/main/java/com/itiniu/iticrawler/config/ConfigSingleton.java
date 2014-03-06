@@ -133,7 +133,7 @@ public enum ConfigSingleton
 	private int maxCrawlDepth = -1;
 	private String userAgent = "itiCrawler";
 	private boolean stopOnInactivity = false;
-    private PageExtractionType extractionType = PageExtractionType.BY_INPUTSTREAM;
+    private PageExtractionType extractionType = PageExtractionType.BY_STREAM;
 	
 	private Class<? extends ICrawlBehavior> customCrawlBehavior = null;
 	private ReadWriteLock behaviorLock = new ReentrantReadWriteLock();
