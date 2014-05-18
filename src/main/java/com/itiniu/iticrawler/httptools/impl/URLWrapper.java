@@ -17,6 +17,7 @@ public class URLWrapper implements URLExtensionInterface, Serializable {
 	private String title;
 	private String text;
 	private String rel;
+	private String redirectedFrom;
 	protected long lastCrawlTime;
 	protected int urlDepth;
 	protected URLWrapper parentURL;
@@ -175,6 +176,18 @@ public class URLWrapper implements URLExtensionInterface, Serializable {
 	public String getFullLink()
 	{
 		return this.fullLink;
+	}
+	
+	
+
+	public String getRedirectedFrom()
+	{
+		return redirectedFrom;
+	}
+
+	public void setRedirectedFrom(String redirectedFrom)
+	{
+		this.redirectedFrom = redirectedFrom;
 	}
 
 	private URLWrapper(Builder builder) {

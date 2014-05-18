@@ -5,8 +5,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.apache.poi.hssf.model.InternalSheet;
-
 import com.itiniu.iticrawler.behaviors.impl.RobotTxtAwareBehavior;
 import com.itiniu.iticrawler.behaviors.impl.RobotTxtUnawareBehavior;
 import com.itiniu.iticrawler.config.ConfigSingleton;
@@ -17,7 +15,6 @@ import com.itiniu.iticrawler.factories.impl.ScheduledUrlsStorageFactory;
 import com.itiniu.iticrawler.httptools.impl.HttpPoolingConnectionManager;
 import com.itiniu.iticrawler.httptools.impl.NormalizedURLWrapper;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
-import com.itiniu.iticrawler.httptools.impl.UrlNormalizer;
 import com.itiniu.iticrawler.httptools.inte.HttpConnectionManagerInterf;
 import com.itiniu.iticrawler.livedatastorage.inte.IProcessedURLStore;
 import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
@@ -61,7 +58,10 @@ public abstract class AbstractCrawlController implements Runnable
 	private boolean wasInitiated = false;
 	private boolean hasSeeds = false;
 	
-	//TODO: Add booleans for the Custom DataStorage mode	
+	public AbstractCrawlController()
+	{
+		this.initComponents();
+	}
 
 	/**
 	 * Method to start the crawling
@@ -225,6 +225,7 @@ public abstract class AbstractCrawlController implements Runnable
 		boolean shouldRun = true;
 		int activeThreadCount = -1;
 
+		//TODO: Error in the logic of stoping the pool
 		while (shouldRun)
 		{
 			try
@@ -269,7 +270,7 @@ public abstract class AbstractCrawlController implements Runnable
 		}
 		
 		//TODO: Only stop if the flag is set in the config
-		this.crawlerThreadPool.shutdownNow();		
+		//this.crawlerThreadPool.shutdownNow();		
 	}
 
 	

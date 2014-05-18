@@ -5,7 +5,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.itiniu.iticrawler.behaviors.inte.ICrawlBehavior;
 import com.itiniu.iticrawler.crawler.PageExtractionType;
-import com.itiniu.iticrawler.livedatastorage.LiveDataStoragePolicy;;
+import com.itiniu.iticrawler.livedatastorage.LiveDataStoragePolicy;
 
 public enum ConfigSingleton
 {
@@ -134,6 +134,7 @@ public enum ConfigSingleton
 	private String userAgent = "itiCrawler";
 	private boolean stopOnInactivity = false;
     private PageExtractionType extractionType = PageExtractionType.BY_STREAM;
+    private boolean followRedirect = true;
 	
 	private Class<? extends ICrawlBehavior> customCrawlBehavior = null;
 	private ReadWriteLock behaviorLock = new ReentrantReadWriteLock();
@@ -223,4 +224,17 @@ public enum ConfigSingleton
     public void setExtractionType(PageExtractionType extractionType) {
         this.extractionType = extractionType;
     }
+
+	
+    public boolean isFollowRedirect()
+	{
+		return followRedirect;
+	}
+
+	public void setFollowRedirect(boolean followRedirect)
+	{
+		this.followRedirect = followRedirect;
+	}
+
+    
 }
