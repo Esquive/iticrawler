@@ -16,13 +16,13 @@ public class ScheduledUrlsStorageFactory implements IScheduledURLStorageFactory
 		
 		switch(ConfigSingleton.INSTANCE.getScheduledUrlsStoragePolicy())
 		{
-			case inMemory:
+			case MEMORY:
 				
 				toReturn = new ScheduledUrlsQueue();
 				
 				break;
 				
-			case cluster:
+			case MEMORYCLUSTER:
 				
 				toReturn = new DistributedScheduledUrlsQueue(ConfigSingleton.INSTANCE.getClusterConfig().getConfig());
 				

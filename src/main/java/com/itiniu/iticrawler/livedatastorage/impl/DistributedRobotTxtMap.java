@@ -39,7 +39,7 @@ public class DistributedRobotTxtMap implements IRobotTxtStore {
 	
 	private String getHostURL(URLWrapper url)
 	{
-		return url.getProtocol() + "://" + url.getSubDomain() + "." + url.getDomain();
+		return url.getProtocol() + "://" + url.getDomain();
 	}
 
 }

@@ -7,11 +7,12 @@ public class DistMapConfig {
 
 	public DistMapConfig setup(Config cfg, String name)
 	{
+		//TODO Create a handling for having multiple event listeners
+		
 		MapConfig mapConfig = new MapConfig();
+		
 		mapConfig.setName(name);
 		mapConfig.setBackupCount(1);
-		
-		//TODO: Add a presistance implemantation in case memory reaches its limits. 
 		
 		cfg.addMapConfig(mapConfig);
 		

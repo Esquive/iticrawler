@@ -1,6 +1,5 @@
 package com.itiniu.iticrawler.livedatastorage.impl;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.locks.Lock;
@@ -64,13 +63,6 @@ public class ScheduledUrlsQueue implements IScheduledURLStore
             this.readLock.unlock();
         }
 
-	}
-
-	@Override
-	public Collection<URLWrapper> getNextURLRange(int number)
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 

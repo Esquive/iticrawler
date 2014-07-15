@@ -1,7 +1,7 @@
 package com.itiniu.iticrawler.behaviors.impl;
 
 import com.itiniu.iticrawler.behaviors.inte.ICrawlBehavior;
-import com.itiniu.iticrawler.crawler.inte.AbstractPage;
+import com.itiniu.iticrawler.crawler.impl.Page;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 
 /**
@@ -10,17 +10,17 @@ import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 public class DefaultCrawlBehavior implements ICrawlBehavior {
 
     @Override
-    public boolean shouldScheduleURL(AbstractPage page, URLWrapper url) {
+    public boolean shouldScheduleURL(Page page, URLWrapper url) {
         return true;
     }
 
     @Override
-    public void processPage(AbstractPage page) {
+    public void processPage(Page page) {
         //Do Nothing
     }
 
     @Override
-    public void handleStatuScode(AbstractPage page) {
+    public void handleStatuScode(Page page) {
         //Do Nothing
     }
 }

@@ -5,13 +5,15 @@ import java.nio.charset.Charset;
 import java.util.StringTokenizer;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
+import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.ContentType;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.itiniu.iticrawler.behaviors.inte.IRobotTxtBehavior;
 import com.itiniu.iticrawler.config.ConfigSingleton;
@@ -23,6 +25,7 @@ import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
 
 public class RobotTxtAwareBehavior implements IRobotTxtBehavior 
 {
+	private static final Logger LOG = LogManager.getLogger(RobotTxtAwareBehavior.class);
 	
 	private String USER_AGENT_PATTERN = "[Uu]ser-[Aa]gent.*";
 	private String DISALLOW_PATTERN = "[dD]isallow.*";
@@ -33,17 +36,15 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 	public void fetchRobotTxt(URLWrapper url, HttpClient httpClient,
 			IRobotTxtStore robotTxtData)
 	{
-//		String hostUrl = url.getUrl().getProtocol() + url.getUrl().getHost()
-//				+ url.getUrl().getPort();
-		
-		String hostUrl = url.toString();
-
-		HttpGet request = new HttpGet(hostUrl + "/robots.txt");
+		HttpGet request = null;
+		CloseableHttpResponse response = null;
 
 		try
 		{
-			HttpResponse response = httpClient.execute(request);
-
+			request = new HttpGet(url.toString() + "/robots.txt");
+			request.setProtocolVersion(HttpVersion.HTTP_1_1);
+			
+		    response = (CloseableHttpResponse)httpClient.execute(request);
 			int pageStatus = response.getStatusLine().getStatusCode();
 
 			if (pageStatus == HttpStatus.SC_OK)
@@ -58,34 +59,29 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 				String pageContent = EntityUtils.toString(entity, charset);
 
 				this.parse(url, pageContent, robotTxtData);
-				
-				
 			}
 			else
 			{
 				robotTxtData.insertRule(url, new RobotTxtNotFoundDirective());
-				// TODO: Log
-
+				LOG.info("No robots.txt found for page: " + url.toString());
 			}
-			
-			request.abort();
-
-		}
-		catch (ClientProtocolException e)
-		{
-			robotTxtData.insertRule(url, new RobotTxtNotFoundDirective());
-			
-			//TODO: Log
-			
-			e.printStackTrace();
 		}
 		catch (IOException e)
 		{
 			robotTxtData.insertRule(url, new RobotTxtNotFoundDirective());
-			
-			//TODO: Log
-			
-			e.printStackTrace();
+			LOG.error("Error occured while fetching the robots.txt for page: " + url.toString());
+		}
+		
+		finally
+		{
+			try
+			{
+				response.close();
+			}
+			catch (IOException e)
+			{
+				//Close Silently
+			}
 		}
 
 	}

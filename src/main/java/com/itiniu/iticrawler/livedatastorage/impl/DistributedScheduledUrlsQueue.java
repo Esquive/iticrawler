@@ -1,6 +1,5 @@
 package com.itiniu.iticrawler.livedatastorage.impl;
 
-import java.util.Collection;
 import java.util.Queue;
 
 import com.hazelcast.config.Config;
@@ -39,12 +38,6 @@ public class DistributedScheduledUrlsQueue implements
 	@Override
 	public URLWrapper getNextURL() {
 		return  this.scheduledLinks.poll();
-	}
-
-	@Override
-	public Collection<URLWrapper> getNextURLRange(int number) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

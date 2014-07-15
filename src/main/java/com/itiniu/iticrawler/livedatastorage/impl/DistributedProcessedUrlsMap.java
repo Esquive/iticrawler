@@ -8,74 +8,81 @@ import com.itiniu.iticrawler.config.DistMapConfig;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 import com.itiniu.iticrawler.livedatastorage.inte.IProcessedURLStore;
 
-//TODO: Do some experiments on thread safety of the distributed datasctructures.
-//Maybe I can have an overall performance gain if I sychronize each localy
-public class DistributedProcessedUrlsMap implements IProcessedURLStore {
+public class DistributedProcessedUrlsMap implements IProcessedURLStore
+{
 
-	//Since the Distributed Set implementation of hazelcast does not provide
-	//A disk swap feature I use a map instead of the Set. 
-	//As current practice in Cassandra I only use the "Colunmname" to store the value of interest.
-	//Lets see how the swap works on null values, I might come back and write a dist Set implementation.
-	//Therefore the TODO: Write a Distributed Set implementation to allow disk swapping.
-	Map<String,Long> processedURLs;
-	Map<String,Byte> currentlyProcessedURLs;
-	
-	
+	Map<Integer, Character> processedURLs;
+	Map<Integer, Character> currentlyProcessedURLs;
+	Map<String, Long> processedHosts;
+
 	public DistributedProcessedUrlsMap(Config cfg)
 	{
-		//Setup the maps
-		new DistMapConfig().setup(cfg, "WP_URL").setup(cfg, "IP_URL");
-		
-		this.processedURLs = Hazelcast.getHazelcastInstanceByName("itiCrawlerCluster").getMap("WP_URL");
-		this.currentlyProcessedURLs = Hazelcast.getHazelcastInstanceByName("itiCrawlerCluster").getMap("IP_URL");
-	}
-	
-	
-	@Override
-	public void addProcessedURL(URLWrapper inURL) {
-	
-		this.processedURLs.put(inURL.toString(), System.currentTimeMillis());
+		// Setup the maps
+		new DistMapConfig().setup(cfg, "PH_URL").setup(cfg, "P_URL").setup(cfg, "CP_URL");
 
+		this.processedURLs = Hazelcast.getHazelcastInstanceByName("itiCrawlerCluster").getMap("P_URL");
+		this.currentlyProcessedURLs = Hazelcast.getHazelcastInstanceByName("itiCrawlerCluster").getMap("CP_URL");
+		this.processedHosts = Hazelcast.getHazelcastInstanceByName("itiCrawlerCluster").getMap("PH_URL");
 	}
 
 	@Override
-	public void addProcessedHost(URLWrapper inURL, Long lastProcessed) {
-		
-		this.processedURLs.put(inURL.getDomain(), lastProcessed);
-
+	public void addProcessedURL(URLWrapper inURL)
+	{
+		 this.processedURLs.put(new Integer(inURL.hashCode()), new Character('0'));
 	}
 
 	@Override
-	public boolean wasProcessed(URLWrapper inURL) {
-		return this.processedURLs.containsKey(inURL.toString());
+	public void addProcessedHost(URLWrapper inURL, Long lastProcessed)
+	{
+		this.processedHosts.put(inURL.getDomain(), new Long(System.currentTimeMillis()));
 	}
 
 	@Override
-	public Long lastHostProcessing(URLWrapper inURL) {
-		Long toReturn = this.processedURLs.get(inURL.getDomain());
-		
-		if(toReturn == null)
+	public boolean wasProcessed(URLWrapper inURL)
+	{
+		return this.processedURLs.containsKey(new Integer(inURL.hashCode()));
+	}
+
+	@Override
+	public Long lastHostProcessing(URLWrapper inURL)
+	{
+		return this.processedHosts.get(inURL.getDomain());
+	}
+
+	@Override
+	public boolean isCurrentlyProcessedUrl(URLWrapper inUrl)
+	{
+		return this.currentlyProcessedURLs.containsKey(new Integer(inUrl.hashCode()));
+	}
+
+	@Override
+	public void addCurrentlyProcessedUrl(URLWrapper inUrl)
+	{
+		this.currentlyProcessedURLs.put(new Integer(inUrl.hashCode()), new Character('0'));
+	}
+
+	@Override
+	public void removeCurrentlyProcessedUrl(URLWrapper inUrl)
+	{
+		this.currentlyProcessedURLs.remove(new Integer(inUrl.hashCode()));
+	}
+
+	@Override
+	public boolean canCrawlHost(URLWrapper inUrl, int maxHostCount)
+	{
+		if (maxHostCount == 0 || this.processedHosts.containsKey(inUrl.getDomain()))
 		{
-			toReturn = new Long(-1);
+			return true;
 		}
-		
-		return toReturn;
-	}
+		else
+		{
+			if (this.processedHosts.size() < maxHostCount)
+			{
+				return true;
+			}
 
-	@Override
-	public boolean isCurrentlyProcessedUrl(URLWrapper inUrl) {
-		return this.currentlyProcessedURLs.containsKey(inUrl.toString());
-	}
-
-	@Override
-	public void addCurrentlyProcessedUrl(URLWrapper inUrl) {
-		this.currentlyProcessedURLs.put(inUrl.toString(), (byte)0);
-
-	}
-
-	@Override
-	public void removeCurrentlyProcessedUrl(URLWrapper inUrl) {
-		this.currentlyProcessedURLs.remove(inUrl.toString());
+			return false;
+		}
 	}
 
 }

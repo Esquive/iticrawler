@@ -23,13 +23,13 @@ public class RobotTxtStorageFactory implements IRobotTxtStorageFactory
 		{
 			switch(ConfigSingleton.INSTANCE.getRobotTxtDataStoragePolicy())
 			{
-				case inMemory:
+				case MEMORY:
 				
 				toReturn = new RobotTxtAwareHashMap();
 				
 				break;
 				
-				case cluster:
+				case MEMORYCLUSTER:
 					toReturn = new DistributedRobotTxtMap(ConfigSingleton.INSTANCE.getClusterConfig().getConfig());
 					break;
 			default:

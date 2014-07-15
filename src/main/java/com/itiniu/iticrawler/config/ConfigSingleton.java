@@ -61,9 +61,9 @@ public enum ConfigSingleton
 //---------------------------------------------------------------------------------------------------------------
 
 	//Real-time Data-Storage relevant
-	private LiveDataStoragePolicy scheduledUrlsStoragePolicy = LiveDataStoragePolicy.inMemory;
-	private LiveDataStoragePolicy processedUrlsStoragePolicy = LiveDataStoragePolicy.inMemory;
-	private LiveDataStoragePolicy robotTxtDataStoragePolicy  = LiveDataStoragePolicy.inMemory;
+	private LiveDataStoragePolicy scheduledUrlsStoragePolicy = LiveDataStoragePolicy.MEMORY;
+	private LiveDataStoragePolicy processedUrlsStoragePolicy = LiveDataStoragePolicy.MEMORY;
+	private LiveDataStoragePolicy robotTxtDataStoragePolicy  = LiveDataStoragePolicy.MEMORY;
 
 	
 	public LiveDataStoragePolicy getScheduledUrlsStoragePolicy()
@@ -76,7 +76,7 @@ public enum ConfigSingleton
 	{
 		this.scheduledUrlsStoragePolicy = scheduledUrlsStoragePolicy;
 		
-		if(this.scheduledUrlsStoragePolicy == LiveDataStoragePolicy.cluster
+		if(this.scheduledUrlsStoragePolicy == LiveDataStoragePolicy.MEMORY
 				   && this.clusterConfig == null)
 				{
 					this.clusterConfig = new ClusterConfig();
@@ -93,7 +93,7 @@ public enum ConfigSingleton
 	{
 		this.processedUrlsStoragePolicy = processedUrlsStoragePolicy;
 		
-		if(this.processedUrlsStoragePolicy == LiveDataStoragePolicy.cluster
+		if(this.processedUrlsStoragePolicy == LiveDataStoragePolicy.MEMORY
 		   && this.clusterConfig == null)
 		{
 			this.clusterConfig = new ClusterConfig();
@@ -110,7 +110,7 @@ public enum ConfigSingleton
 	{
 		this.robotTxtDataStoragePolicy = robotTxtDataStoragePolicy;
 		
-		if(this.robotTxtDataStoragePolicy == LiveDataStoragePolicy.cluster
+		if(this.robotTxtDataStoragePolicy == LiveDataStoragePolicy.MEMORY
 				   && this.clusterConfig == null)
 				{
 					this.clusterConfig = new ClusterConfig();
@@ -135,6 +135,7 @@ public enum ConfigSingleton
 	private boolean stopOnInactivity = false;
     private PageExtractionType extractionType = PageExtractionType.BY_STREAM;
     private boolean followRedirect = true;
+    private int maxHostsToCrawl = 0;
 	
 	private Class<? extends ICrawlBehavior> customCrawlBehavior = null;
 	private ReadWriteLock behaviorLock = new ReentrantReadWriteLock();
@@ -234,6 +235,16 @@ public enum ConfigSingleton
 	public void setFollowRedirect(boolean followRedirect)
 	{
 		this.followRedirect = followRedirect;
+	}
+
+	public int getMaxHostsToCrawl()
+	{
+		return maxHostsToCrawl;
+	}
+
+	public void setMaxHostsToCrawl(int maxHostsToCrawl)
+	{
+		this.maxHostsToCrawl = maxHostsToCrawl;
 	}
 
     

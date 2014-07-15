@@ -1,13 +1,17 @@
 package com.itiniu.iticrawler.crawler.impl;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import com.hazelcast.nio.ObjectDataInput;
+import com.hazelcast.nio.ObjectDataOutput;
+import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 
 
-public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializable
+public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializable, IdentifiedDataSerializable
 {
 	/**
 	 * 
@@ -131,6 +135,35 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 	private boolean isAllowed(String path)
 	{
 		return this.allowed.contains(path);
+	}
+
+	
+	@Override
+	public void writeData(ObjectDataOutput out) throws IOException
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void readData(ObjectDataInput in) throws IOException
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getFactoryId()
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getId()
+	{
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 	

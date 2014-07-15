@@ -18,5 +18,6 @@ public interface IProcessedURLStore {
 	
 	public void removeCurrentlyProcessedUrl(URLWrapper inUrl);
 	
+	public boolean canCrawlHost(URLWrapper inUrl, int maxHostCount);
 	
 }

@@ -3,9 +3,9 @@ package com.itiniu.iticrawler.livedatastorage.impl;
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
-import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 
 //TODO: Thread Safety!!!!
 public class RobotTxtAwareHashMap implements IRobotTxtStore
@@ -18,7 +18,6 @@ public class RobotTxtAwareHashMap implements IRobotTxtStore
 		this.rules = new HashMap<>();
         this.rwLock = new ReentrantReadWriteLock();
 	}
-	
 	
 	@Override
 	public void insertRule(URLWrapper url, IRobotTxtDirective directive)
@@ -62,7 +61,7 @@ public class RobotTxtAwareHashMap implements IRobotTxtStore
 
     private String formatURL(URLWrapper url)
     {
-        return url.getProtocol() + "://" + url.getSubDomain() + "." + url.getDomain();
+        return url.getProtocol() + "://" + url.getDomain();
     }
 
 }

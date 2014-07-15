@@ -12,19 +12,25 @@ import com.itiniu.iticrawler.livedatastorage.inte.IProcessedURLStore;
 
 public class ProcessedUrlsHashMap implements IProcessedURLStore
 {
-	private Map<String,Long> visitedUrls = null;
-	private Set<String> currentlyVisitedUrls = null;
+	protected Map<String,Long> visitedUrls = null;
+	protected Set<String> currentlyVisitedUrls = null;
+	protected Map<String, Long> crawledHost = null;
 	
-    private ReadWriteLock readWriteLock = null;
-    private ReadWriteLock currentReadWriteLock = null;
+    protected ReadWriteLock readWriteLock = null;
+    protected ReadWriteLock currentReadWriteLock = null;
+    protected ReadWriteLock crawledHostWriteLock = null;
 	
+    private int numberOfHosts = 0;
+    
 	public ProcessedUrlsHashMap()
 	{
 		this.visitedUrls = new HashMap<>();
 		this.currentlyVisitedUrls = new HashSet<>();
+		this.crawledHost = new HashMap<>();
 		
 		this.readWriteLock = new ReentrantReadWriteLock(true);
 		this.currentReadWriteLock = new ReentrantReadWriteLock(true);
+		this.crawledHostWriteLock = new ReentrantReadWriteLock(true);
 	}
 	
 	
@@ -46,15 +52,16 @@ public class ProcessedUrlsHashMap implements IProcessedURLStore
 	@Override
 	public void addProcessedHost(URLWrapper inURL, Long lastProcessed)
 	{
-		this.readWriteLock.writeLock().lock();
+		this.crawledHostWriteLock.writeLock().lock();
 
         try
         {
-		this.visitedUrls.put(inURL.getDomain(), lastProcessed);
+        	this.crawledHost.put(inURL.getDomain(), lastProcessed);
+        	this.numberOfHosts++;
         }
         finally
         {
-		this.readWriteLock.writeLock().unlock();
+		this.crawledHostWriteLock.writeLock().unlock();
         }
 	}
 
@@ -75,7 +82,7 @@ public class ProcessedUrlsHashMap implements IProcessedURLStore
 	@Override
 	public Long lastHostProcessing(URLWrapper inURL)
 	{
-		this.readWriteLock.readLock().lock();
+		this.crawledHostWriteLock.readLock().lock();
         try
         {
 
@@ -89,7 +96,7 @@ public class ProcessedUrlsHashMap implements IProcessedURLStore
         }
 		finally
         {
-		this.readWriteLock.readLock().unlock();
+		this.crawledHostWriteLock.readLock().unlock();
         }
 
 	}
@@ -135,5 +142,33 @@ public class ProcessedUrlsHashMap implements IProcessedURLStore
         finally {
             this.currentReadWriteLock.writeLock().unlock();
         }
+	}
+
+
+	@Override
+	public boolean canCrawlHost(URLWrapper inUrl, int maxHostCount)
+	{
+		this.crawledHostWriteLock.readLock().lock();
+		try
+		{
+			if(maxHostCount == 0)
+			{
+				return true;
+			}
+			
+			if(maxHostCount < this.numberOfHosts)
+			{
+				return true;
+			}
+			else if(maxHostCount == this.numberOfHosts)
+			{
+				return this.crawledHost.containsKey(inUrl.getDomain());
+			}
+			return false;
+		}
+		finally
+		{
+			this.crawledHostWriteLock.readLock().unlock();
+		}
 	}	
 }

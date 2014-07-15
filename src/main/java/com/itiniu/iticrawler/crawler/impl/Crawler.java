@@ -1,16 +1,16 @@
-package com.itiniu.iticrawler.crawler.inte;
+package com.itiniu.iticrawler.crawler.impl;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.net.URL;
 
 import org.apache.commons.io.input.TeeInputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
+import org.apache.http.HttpVersion;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -24,17 +24,17 @@ import org.apache.tika.parser.html.HtmlParser;
 import org.apache.tika.sax.LinkContentHandler;
 import org.apache.tika.sax.TeeContentHandler;
 import org.apache.tika.sax.ToHTMLContentHandler;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 import com.itiniu.iticrawler.behaviors.inte.ICrawlBehavior;
 import com.itiniu.iticrawler.behaviors.inte.IRobotTxtBehavior;
 import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.crawler.PageExtractionType;
-import com.itiniu.iticrawler.crawler.impl.DefaultPage;
 import com.itiniu.iticrawler.exceptions.InputStreamPageExtractionException;
-import com.itiniu.iticrawler.httptools.impl.NormalizedURLWrapper;
+import com.itiniu.iticrawler.httptools.impl.URLCanonicalizer;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
-import com.itiniu.iticrawler.httptools.inte.HttpConnectionManagerInterf;
+import com.itiniu.iticrawler.httptools.inte.IHttpConnectionManager;
 import com.itiniu.iticrawler.livedatastorage.inte.IProcessedURLStore;
 import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
 import com.itiniu.iticrawler.livedatastorage.inte.IScheduledURLStore;
@@ -45,10 +45,10 @@ import com.itiniu.iticrawler.livedatastorage.inte.IScheduledURLStore;
  * 
  * @author esquive
  */
-public abstract class AbstractCrawler implements Runnable
+public class Crawler implements Runnable
 {
 	// Getting the logger
-	protected static final Logger logger = LogManager.getLogger(AbstractCrawler.class);
+	private static final Logger LOG = LogManager.getLogger(Crawler.class);
 
 	// The Data holders
 	private IScheduledURLStore scheduledUrls = null;
@@ -61,21 +61,23 @@ public abstract class AbstractCrawler implements Runnable
 
 	// The HttpTools
 	private HttpClient httpClient = null;
-	private HttpConnectionManagerInterf httpConnectionManager = null;
+	private IHttpConnectionManager httpConnectionManager = null;
 
 	// Crawler relevant variables
 	private boolean busy = false;
 	private PageExtractionType extractionType;
 
+	public Crawler()
+	{
+		
+	}
+	
 	@Override
 	public void run()
 	{
 		this.execute();
 	}
 
-	/**
-     *
-     */
 	private void execute()
 	{
 		URLWrapper cUrl = null;
@@ -96,12 +98,12 @@ public abstract class AbstractCrawler implements Runnable
 
 					if (!this.robotTxtData.containsRule(cUrl))
 					{
-						this.robotTxtBehavior.fetchRobotTxt(cUrl, this.httpConnectionManager.getNewHttpClient(),
+						this.robotTxtBehavior.fetchRobotTxt(cUrl, this.httpConnectionManager.getHttpClient(),
 								this.robotTxtData);
 					}
 					if (this.robotTxtData.allows(cUrl))
 					{
-						
+
 						// Getting a timeStamp to determine if I can request
 						// the host again
 						long timeStamp = this.processedUrls.lastHostProcessing(cUrl)
@@ -115,7 +117,7 @@ public abstract class AbstractCrawler implements Runnable
 							}
 							catch (InputStreamPageExtractionException e)
 							{
-								logger.error("Error in the extraction process", e);
+								LOG.error("Error in the extraction process", e);
 							}
 
 							// Setting the politeness Timestamp for future
@@ -151,51 +153,49 @@ public abstract class AbstractCrawler implements Runnable
 
 	}
 
-
 	public void crawlPage(URLWrapper url) throws InputStreamPageExtractionException
 	{
 
-		boolean toReturn = true;
-		AbstractPage page = null;
+		Page page = null;
 		HttpGet request = null;
 		CloseableHttpResponse response = null;
-
 		int pageStatus = -1;
 
 		try
 		{
 			// Initializing a page object
-			page = new DefaultPage();
+			page = new Page();
 			page.setUrl(url);
 
 			// Making the request
 			request = new HttpGet(url.toString());
+			request.setProtocolVersion(HttpVersion.HTTP_1_1);
 			response = (CloseableHttpResponse) this.httpClient.execute(request);
 
+			
+			
 			// Handling the returned statuscode
 			pageStatus = response.getStatusLine().getStatusCode();
 			page.setStatusCode(pageStatus);
-			
+
 			if (pageStatus == HttpStatus.SC_NOT_FOUND)
 			{
-				logger.info("URL not found: " + url.toString());
-
+				LOG.info("URL not found: " + url.toString());
 			}
-			else if ((pageStatus == HttpStatus.SC_MOVED_TEMPORARILY)
-					|| (pageStatus == HttpStatus.SC_MOVED_PERMANENTLY))
+			else if ((pageStatus == HttpStatus.SC_MOVED_TEMPORARILY) || (pageStatus == HttpStatus.SC_MOVED_PERMANENTLY))
 			{
 				Header header = response.getFirstHeader("Location");
 				if (header != null)
 				{
-					url.setRedirectedFrom(url.getUrl().toString());
-					url.setUrl(new URL(new NormalizedURLWrapper(header.getValue()).toString()));
+					url.setRedirectedFrom(url.toString());
+					url.setUrl(URLCanonicalizer.getCanonicalURL(header.getValue()));
 					if (ConfigSingleton.INSTANCE.isFollowRedirect())
 					{
 						this.scheduledUrls.scheduleURL(url);
 					}
 				}
 			}
-			
+
 			this.customCrawlBehavior.handleStatuScode(page);
 
 			if (pageStatus == HttpStatus.SC_OK)
@@ -231,11 +231,11 @@ public abstract class AbstractCrawler implements Runnable
 		}
 		catch (ClientProtocolException e1)
 		{
-			logger.error("ClientProtocolException during the crawl process", e1);
+			LOG.error("ClientProtocolException during the crawl process", e1);
 		}
 		catch (IOException e2)
 		{
-			logger.error("IOException during the crawl process", e2);
+			LOG.error("IOException during the crawl process", e2);
 
 		}
 		finally
@@ -246,12 +246,12 @@ public abstract class AbstractCrawler implements Runnable
 			}
 			catch (IOException e)
 			{
-				logger.error("IOException in the crawlPage method.", e);
+				LOG.error("IOException in the crawlPage method.", e);
 			}
 		}
 	}
 
-	protected void crawlPageToInputStream(AbstractPage page, HttpEntity entity)
+	protected void crawlPageToInputStream(Page page, HttpEntity entity)
 			throws InputStreamPageExtractionException
 	{
 		InputStream pageStream = null;
@@ -285,15 +285,15 @@ public abstract class AbstractCrawler implements Runnable
 					}
 					catch (IOException e)
 					{
-						logger.error("IOException in parsing thread: crawlToInputStream", e);
+						LOG.error("IOException in parsing thread: crawlToInputStream", e);
 					}
 					catch (SAXException e)
 					{
-						logger.error("SAXException in parsing thread: crawlToInputStream", e);
+						LOG.error("SAXException in parsing thread: crawlToInputStream", e);
 					}
 					catch (TikaException e)
 					{
-						logger.error("TikaException in parsing thread: crawlToInputStream", e);
+						LOG.error("TikaException in parsing thread: crawlToInputStream", e);
 					}
 					finally
 					{
@@ -303,7 +303,7 @@ public abstract class AbstractCrawler implements Runnable
 						}
 						catch (IOException e)
 						{
-							logger.error(
+							LOG.error(
 									"IOException in while closing the stream in parsing thread: crawlToInputStream", e);
 						}
 					}
@@ -329,7 +329,7 @@ public abstract class AbstractCrawler implements Runnable
 		}
 		catch (IOException e)
 		{
-			logger.error("IOException during the crawlToInputStream method", e);
+			LOG.error("IOException during the crawlToInputStream method", e);
 		}
 		catch (InterruptedException e)
 		{
@@ -345,17 +345,17 @@ public abstract class AbstractCrawler implements Runnable
 			}
 			catch (IOException e)
 			{
-				logger.error("IOException in while closing the streams: crawlToInputStream", e);
+				LOG.error("IOException in while closing the streams: crawlToInputStream", e);
 			}
 
 		}
 	}
 
-	protected void crawlPageToString(AbstractPage page, HttpEntity entity)
+	protected void crawlPageToString(Page page, HttpEntity entity)
 	{
 		URLWrapper url = page.getUrl();
 		LinkContentHandler links = null;
-		ToHTMLContentHandler html = null;
+		ContentHandler html = null;
 		TeeContentHandler teeHandler = null;
 		HtmlParser parser = null;
 
@@ -388,15 +388,15 @@ public abstract class AbstractCrawler implements Runnable
 		}
 		catch (IOException e)
 		{
-			logger.error("IOException in the crawlToString method", e);
+			LOG.error("IOException in the crawlToString method", e);
 		}
 		catch (SAXException e)
 		{
-			logger.error("SAXException in the crawlToString method", e);
+			LOG.error("SAXException in the crawlToString method", e);
 		}
 		catch (TikaException e)
 		{
-			logger.error("TikaException in the crawlToString method", e);
+			LOG.error("TikaException in the crawlToString method", e);
 		}
 		finally
 		{
@@ -407,7 +407,7 @@ public abstract class AbstractCrawler implements Runnable
 	/**
 	 * @param page
 	 */
-	private void processPage(AbstractPage page)
+	private void processPage(Page page)
 	{
 		this.customCrawlBehavior.processPage(page);
 	}
@@ -415,11 +415,12 @@ public abstract class AbstractCrawler implements Runnable
 	/**
 	 * @param page
 	 */
-	private void scheduleURLs(AbstractPage page)
+	private void scheduleURLs(Page page)
 	{
 		for (URLWrapper cUrl : page.getOutgoingURLs())
 		{
-			if (!this.processedUrls.wasProcessed(cUrl) && !this.processedUrls.isCurrentlyProcessedUrl(cUrl))
+			if (!this.processedUrls.wasProcessed(cUrl) && !this.processedUrls.isCurrentlyProcessedUrl(cUrl)
+					&& this.processedUrls.canCrawlHost(cUrl, ConfigSingleton.INSTANCE.getMaxHostsToCrawl()))
 			{
 
 				if (((page.getUrl().getUrlDepth() + 1) * -1) <= ConfigSingleton.INSTANCE.getMaxCrawlDepth())
@@ -443,7 +444,7 @@ public abstract class AbstractCrawler implements Runnable
 		this.customCrawlBehavior = customCrawlBehavior;
 	}
 
-	public void setHttpConnectionManager(HttpConnectionManagerInterf httpConnectionManager)
+	public void setHttpConnectionManager(IHttpConnectionManager httpConnectionManager)
 	{
 		this.httpConnectionManager = httpConnectionManager;
 	}

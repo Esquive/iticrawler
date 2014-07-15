@@ -16,13 +16,13 @@ public class ProcessedUrlsStorageFactory implements IProcessedURLStorageFactory
 		
 		switch(ConfigSingleton.INSTANCE.getProcessedUrlsStoragePolicy())
 		{
-			case inMemory:
+			case MEMORY:
 				
 				toReturn = new ProcessedUrlsHashMap();
 				
 				break;
 				
-			case cluster:
+			case MEMORYCLUSTER:
 				
 				toReturn = new DistributedProcessedUrlsMap(ConfigSingleton.INSTANCE.getClusterConfig().getConfig());
 				
