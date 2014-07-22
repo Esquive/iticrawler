@@ -2,10 +2,11 @@ package com.itiniu.iticrawler.factories.impl;
 
 import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.factories.inte.IRobotTxtStorageFactory;
-import com.itiniu.iticrawler.livedatastorage.impl.DistributedRobotTxtMap;
-import com.itiniu.iticrawler.livedatastorage.impl.RobotTxtAwareHashMap;
-import com.itiniu.iticrawler.livedatastorage.impl.RobotTxtUnawareData;
-import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
+import com.itiniu.iticrawler.rotottxtdata.impl.DistributedRobotTxtMap;
+import com.itiniu.iticrawler.rotottxtdata.impl.RobotTxtAwareHashMap;
+import com.itiniu.iticrawler.rotottxtdata.impl.RobotTxtFileStore;
+import com.itiniu.iticrawler.rotottxtdata.impl.RobotTxtUnawareData;
+import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
 public class RobotTxtStorageFactory implements IRobotTxtStorageFactory
 {
@@ -31,6 +32,10 @@ public class RobotTxtStorageFactory implements IRobotTxtStorageFactory
 				
 				case MEMORYCLUSTER:
 					toReturn = new DistributedRobotTxtMap(ConfigSingleton.INSTANCE.getClusterConfig().getConfig());
+					break;
+					
+				case FILE:
+					toReturn = new RobotTxtFileStore();
 					break;
 			default:
 				toReturn = new RobotTxtAwareHashMap();

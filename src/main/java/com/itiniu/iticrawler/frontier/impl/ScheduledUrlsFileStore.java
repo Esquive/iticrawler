@@ -1,13 +1,12 @@
-package com.itiniu.iticrawler.livedatastorage.impl;
+package com.itiniu.iticrawler.frontier.impl;
 
-import java.io.File;
 import java.util.Queue;
 
 import org.mapdb.DB;
-import org.mapdb.DBMaker;
 
+import com.itiniu.iticrawler.config.FileStorageConfig;
+import com.itiniu.iticrawler.frontier.inte.IScheduledURLStore;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
-import com.itiniu.iticrawler.livedatastorage.inte.IScheduledURLStore;
 
 public class ScheduledUrlsFileStore implements IScheduledURLStore
 {
@@ -16,7 +15,7 @@ public class ScheduledUrlsFileStore implements IScheduledURLStore
 	
 	public ScheduledUrlsFileStore()
 	{
-		this.db = DBMaker.newFileDB(new File("storage/frontier.db")).asyncWriteEnable().make();
+		this.db = FileStorageConfig.INSTANCE.getStorageProvider();
 		this.scheduled = db.getQueue("scheduled");
 	}
 	

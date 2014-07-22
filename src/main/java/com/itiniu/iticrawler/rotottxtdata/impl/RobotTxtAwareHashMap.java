@@ -1,13 +1,12 @@
-package com.itiniu.iticrawler.livedatastorage.impl;
+package com.itiniu.iticrawler.rotottxtdata.impl;
 
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
-import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
+import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
-//TODO: Thread Safety!!!!
 public class RobotTxtAwareHashMap implements IRobotTxtStore
 {
 	private HashMap<String, IRobotTxtDirective> rules = null;
@@ -24,7 +23,7 @@ public class RobotTxtAwareHashMap implements IRobotTxtStore
 	{
         this.rwLock.writeLock().lock();
         try{
-		    this.rules.put(this.formatURL(url), directive);
+		    this.rules.put(url.getDomain(), directive);
         }
         finally
         {
@@ -38,7 +37,7 @@ public class RobotTxtAwareHashMap implements IRobotTxtStore
         this.rwLock.readLock().lock();
         try
         {
-            return this.rules.containsKey(this.formatURL(url));
+            return this.rules.containsKey(url);
         }
         finally {
             this.rwLock.readLock().unlock();
@@ -51,7 +50,7 @@ public class RobotTxtAwareHashMap implements IRobotTxtStore
 	{
         this.rwLock.readLock().lock();
         try {
-		    return this.rules.get(this.formatURL(url)).allows(url.toString());
+		    return this.rules.get(url.getDomain()).allows(url.toString());
         }
         finally {
             this.rwLock.readLock().unlock();
@@ -59,9 +58,19 @@ public class RobotTxtAwareHashMap implements IRobotTxtStore
 
 	}
 
-    private String formatURL(URLWrapper url)
-    {
-        return url.getProtocol() + "://" + url.getDomain();
-    }
+	@Override
+	public IRobotTxtDirective getDirective(URLWrapper url)
+	{
+		this.rwLock.readLock().lock();
+		try
+		{
+			return this.rules.get(url.getDomain());
+		}
+		finally
+		{
+			this.rwLock.readLock().unlock();
+		}
+	}
+
 
 }

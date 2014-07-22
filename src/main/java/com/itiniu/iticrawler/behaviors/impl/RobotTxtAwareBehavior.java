@@ -21,7 +21,7 @@ import com.itiniu.iticrawler.crawler.impl.DefaultRobotTxtDirective;
 import com.itiniu.iticrawler.crawler.impl.RobotTxtNotFoundDirective;
 import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
-import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
+import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
 public class RobotTxtAwareBehavior implements IRobotTxtBehavior 
 {

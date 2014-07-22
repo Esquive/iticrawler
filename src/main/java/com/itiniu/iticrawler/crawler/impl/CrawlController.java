@@ -18,13 +18,13 @@ import com.itiniu.iticrawler.exceptions.NoCrawlBehaviorProvidedException;
 import com.itiniu.iticrawler.factories.impl.ProcessedUrlsStorageFactory;
 import com.itiniu.iticrawler.factories.impl.RobotTxtStorageFactory;
 import com.itiniu.iticrawler.factories.impl.ScheduledUrlsStorageFactory;
+import com.itiniu.iticrawler.frontier.inte.IProcessedURLStore;
+import com.itiniu.iticrawler.frontier.inte.IScheduledURLStore;
 import com.itiniu.iticrawler.httptools.impl.HttpPoolingConnectionManager;
 import com.itiniu.iticrawler.httptools.impl.URLCanonicalizer;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 import com.itiniu.iticrawler.httptools.inte.IHttpConnectionManager;
-import com.itiniu.iticrawler.livedatastorage.inte.IProcessedURLStore;
-import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
-import com.itiniu.iticrawler.livedatastorage.inte.IScheduledURLStore;
+import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
 /**
  * AbstractCrawlController

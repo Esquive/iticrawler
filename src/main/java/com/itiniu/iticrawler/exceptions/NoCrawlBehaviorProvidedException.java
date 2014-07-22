@@ -2,6 +2,8 @@ package com.itiniu.iticrawler.exceptions;
 
 public class NoCrawlBehaviorProvidedException extends Exception
 {
+	private static final long serialVersionUID = -4264851329439596928L;
+
 	public NoCrawlBehaviorProvidedException()
 	{
 		super();

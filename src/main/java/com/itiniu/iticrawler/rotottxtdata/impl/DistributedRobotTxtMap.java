@@ -1,4 +1,4 @@
-package com.itiniu.iticrawler.livedatastorage.impl;
+package com.itiniu.iticrawler.rotottxtdata.impl;
 
 import java.util.Map;
 
@@ -7,7 +7,7 @@ import com.hazelcast.core.Hazelcast;
 import com.itiniu.iticrawler.config.DistMapConfig;
 import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
-import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
+import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
 public class DistributedRobotTxtMap implements IRobotTxtStore {
 
@@ -21,25 +21,25 @@ public class DistributedRobotTxtMap implements IRobotTxtStore {
 	}
 	
 	@Override
-	public void insertRule(URLWrapper cUrl, IRobotTxtDirective directive) {
+	public void insertRule(URLWrapper url, IRobotTxtDirective directive) {
 	
-		this.rules.put(this.getHostURL(cUrl), directive);
+		this.rules.put(url.getDomain(), directive);
 	}
 
 	@Override
 	public boolean containsRule(URLWrapper url) {
-		return this.rules.containsKey(this.getHostURL(url));
+		return this.rules.containsKey(url.getDomain());
 	}
 
 	@Override
 	public boolean allows(URLWrapper url) {
-		return this.rules.get(this.getHostURL(url)).allows(url.toString());
+		return this.rules.get(url.getDomain()).allows(url.toString());
 	}
-	
-	
-	private String getHostURL(URLWrapper url)
+
+	@Override
+	public IRobotTxtDirective getDirective(URLWrapper url)
 	{
-		return url.getProtocol() + "://" + url.getDomain();
+		return this.rules.get(url.getDomain());
 	}
 
 }

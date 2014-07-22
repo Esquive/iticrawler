@@ -1,12 +1,12 @@
-package com.itiniu.iticrawler.livedatastorage.impl;
+package com.itiniu.iticrawler.frontier.impl;
 
 import java.util.Queue;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.itiniu.iticrawler.config.DistQueueConfig;
+import com.itiniu.iticrawler.frontier.inte.IScheduledURLStore;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
-import com.itiniu.iticrawler.livedatastorage.inte.IScheduledURLStore;
 
 public class DistributedScheduledUrlsQueue implements
 		IScheduledURLStore{

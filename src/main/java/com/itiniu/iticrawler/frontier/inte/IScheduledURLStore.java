@@ -1,4 +1,4 @@
-package com.itiniu.iticrawler.livedatastorage.inte;
+package com.itiniu.iticrawler.frontier.inte;
 
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 

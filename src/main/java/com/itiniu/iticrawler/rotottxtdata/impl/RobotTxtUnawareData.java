@@ -1,8 +1,8 @@
-package com.itiniu.iticrawler.livedatastorage.impl;
+package com.itiniu.iticrawler.rotottxtdata.impl;
 
 import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
-import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
+import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
 public class RobotTxtUnawareData implements IRobotTxtStore
 {
@@ -22,6 +22,12 @@ public class RobotTxtUnawareData implements IRobotTxtStore
 	public boolean allows(URLWrapper url)
 	{
 		return true;
+	}
+
+	@Override
+	public IRobotTxtDirective getDirective(URLWrapper url)
+	{
+		return null;
 	}
 	
 }

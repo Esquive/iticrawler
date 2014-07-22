@@ -1,12 +1,12 @@
-package com.itiniu.iticrawler.livedatastorage.impl;
+package com.itiniu.iticrawler.frontier.impl;
 
 import java.util.Map;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
 import com.itiniu.iticrawler.config.DistMapConfig;
+import com.itiniu.iticrawler.frontier.inte.IProcessedURLStore;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
-import com.itiniu.iticrawler.livedatastorage.inte.IProcessedURLStore;
 
 public class DistributedProcessedUrlsMap implements IProcessedURLStore
 {

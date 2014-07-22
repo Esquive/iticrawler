@@ -2,9 +2,10 @@ package com.itiniu.iticrawler.factories.impl;
 
 import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.factories.inte.IScheduledURLStorageFactory;
-import com.itiniu.iticrawler.livedatastorage.impl.DistributedScheduledUrlsQueue;
-import com.itiniu.iticrawler.livedatastorage.impl.ScheduledUrlsQueue;
-import com.itiniu.iticrawler.livedatastorage.inte.IScheduledURLStore;
+import com.itiniu.iticrawler.frontier.impl.DistributedScheduledUrlsQueue;
+import com.itiniu.iticrawler.frontier.impl.ScheduledUrlsFileStore;
+import com.itiniu.iticrawler.frontier.impl.ScheduledUrlsQueue;
+import com.itiniu.iticrawler.frontier.inte.IScheduledURLStore;
 
 public class ScheduledUrlsStorageFactory implements IScheduledURLStorageFactory
 {
@@ -25,6 +26,12 @@ public class ScheduledUrlsStorageFactory implements IScheduledURLStorageFactory
 			case MEMORYCLUSTER:
 				
 				toReturn = new DistributedScheduledUrlsQueue(ConfigSingleton.INSTANCE.getClusterConfig().getConfig());
+				
+				break;
+				
+			case FILE:
+				
+				toReturn = new ScheduledUrlsFileStore();
 				
 				break;
 				

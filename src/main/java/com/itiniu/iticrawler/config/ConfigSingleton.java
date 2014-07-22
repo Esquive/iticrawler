@@ -5,7 +5,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.itiniu.iticrawler.behaviors.inte.ICrawlBehavior;
 import com.itiniu.iticrawler.crawler.PageExtractionType;
-import com.itiniu.iticrawler.livedatastorage.LiveDataStoragePolicy;
+import com.itiniu.iticrawler.util.LiveDataStoragePolicy;
 
 public enum ConfigSingleton
 {
@@ -64,6 +64,8 @@ public enum ConfigSingleton
 	private LiveDataStoragePolicy scheduledUrlsStoragePolicy = LiveDataStoragePolicy.MEMORY;
 	private LiveDataStoragePolicy processedUrlsStoragePolicy = LiveDataStoragePolicy.MEMORY;
 	private LiveDataStoragePolicy robotTxtDataStoragePolicy  = LiveDataStoragePolicy.MEMORY;
+	
+	private String storageLocation = "storage";
 
 	
 	public LiveDataStoragePolicy getScheduledUrlsStoragePolicy()
@@ -123,6 +125,15 @@ public enum ConfigSingleton
 		return this.clusterConfig;
 	}
 	
+	public String getStorageLocation()
+	{
+		return this.storageLocation;
+	}
+	
+	public void setStorageLocation(String storageLocation)
+	{
+		this.storageLocation = storageLocation;
+	}
 	
 //---------------------------------------------------------------------------------------------------------------------
 	

@@ -32,12 +32,12 @@ import com.itiniu.iticrawler.behaviors.inte.IRobotTxtBehavior;
 import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.crawler.PageExtractionType;
 import com.itiniu.iticrawler.exceptions.InputStreamPageExtractionException;
+import com.itiniu.iticrawler.frontier.inte.IProcessedURLStore;
+import com.itiniu.iticrawler.frontier.inte.IScheduledURLStore;
 import com.itiniu.iticrawler.httptools.impl.URLCanonicalizer;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 import com.itiniu.iticrawler.httptools.inte.IHttpConnectionManager;
-import com.itiniu.iticrawler.livedatastorage.inte.IProcessedURLStore;
-import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
-import com.itiniu.iticrawler.livedatastorage.inte.IScheduledURLStore;
+import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
 /**
  * Crawler. Objects of this class are used to run inside crawling threads. They

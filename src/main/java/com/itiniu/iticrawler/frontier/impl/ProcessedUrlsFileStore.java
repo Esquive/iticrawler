@@ -1,25 +1,24 @@
-package com.itiniu.iticrawler.livedatastorage.impl;
+package com.itiniu.iticrawler.frontier.impl;
 
-import java.io.File;
 import java.util.Map;
 import java.util.Set;
 
 import org.mapdb.DB;
-import org.mapdb.DBMaker;
 
+import com.itiniu.iticrawler.config.FileStorageConfig;
+import com.itiniu.iticrawler.frontier.inte.IProcessedURLStore;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
-import com.itiniu.iticrawler.livedatastorage.inte.IProcessedURLStore;
 
 public class ProcessedUrlsFileStore implements IProcessedURLStore
 {
-	DB db = null;
-	Set<Integer> processedUrls = null;
-	Set<Integer> currentlyProcessedUrls = null;
-	Map<Integer, Long> processedHosts = null;
+	protected DB db = null;
+	protected Set<Integer> processedUrls = null;
+	protected Set<Integer> currentlyProcessedUrls = null;
+	protected Map<Integer, Long> processedHosts = null;
 
 	public ProcessedUrlsFileStore()
 	{
-		db = DBMaker.newFileDB(new File("storage/frontier.db")).asyncWriteEnable().make();
+		this.db = FileStorageConfig.INSTANCE.getStorageProvider();
 
 		this.processedUrls = db.getHashSet("processedUrls");
 		this.currentlyProcessedUrls = db.getHashSet("currentlyProcessed");
@@ -31,7 +30,6 @@ public class ProcessedUrlsFileStore implements IProcessedURLStore
 	{
 		this.processedUrls.add(inURL.hashCode());
 		db.commit();
-
 	}
 
 	@Override

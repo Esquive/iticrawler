@@ -1,6 +1,6 @@
 package com.itiniu.iticrawler.factories.inte;
 
-import com.itiniu.iticrawler.livedatastorage.inte.IScheduledURLStore;
+import com.itiniu.iticrawler.frontier.inte.IScheduledURLStore;
 
 
 public interface IScheduledURLStorageFactory

@@ -5,7 +5,9 @@ package com.itiniu.iticrawler.exceptions;
  */
 public class InputStreamPageExtractionException extends Exception
 {
-    public InputStreamPageExtractionException(String message, Exception innerException)
+	private static final long serialVersionUID = 3144195582958495224L;
+
+	public InputStreamPageExtractionException(String message, Exception innerException)
     {
         super(message, innerException);
     }

@@ -1,6 +1,6 @@
 package com.itiniu.iticrawler.factories.inte;
 
-import com.itiniu.iticrawler.livedatastorage.inte.IRobotTxtStore;
+import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
 public interface IRobotTxtStorageFactory
 {
