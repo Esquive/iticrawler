@@ -29,5 +29,11 @@ public class RobotTxtUnawareData implements IRobotTxtStore
 	{
 		return null;
 	}
+
+	@Override
+	public int getDelay(URLWrapper url)
+	{
+		return 0;
+	}
 	
 }

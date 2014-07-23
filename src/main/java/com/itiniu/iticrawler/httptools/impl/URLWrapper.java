@@ -6,7 +6,6 @@ import java.util.Set;
 
 public class URLWrapper
 {
-
 	private URL url = null;
 	private int hashCode;
 	private String urlString = null;

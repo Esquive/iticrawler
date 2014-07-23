@@ -93,7 +93,7 @@ public class Crawler implements Runnable
 				this.busy = true;
 
 				if (!this.processedUrls.isCurrentlyProcessedUrl(cUrl) && !this.processedUrls.wasProcessed(cUrl))
-				{
+				{	//TODO: Possible race condition
 					this.processedUrls.addCurrentlyProcessedUrl(cUrl);
 
 					if (!this.robotTxtData.containsRule(cUrl))
@@ -103,7 +103,6 @@ public class Crawler implements Runnable
 					}
 					if (this.robotTxtData.allows(cUrl))
 					{
-
 						// Getting a timeStamp to determine if I can request
 						// the host again
 						long timeStamp = this.processedUrls.lastHostProcessing(cUrl)
@@ -123,7 +122,6 @@ public class Crawler implements Runnable
 							// Setting the politeness Timestamp for future
 							// access to the host
 							this.processedUrls.addProcessedHost(cUrl, System.currentTimeMillis());
-
 							this.processedUrls.addProcessedURL(cUrl);
 							this.processedUrls.removeCurrentlyProcessedUrl(cUrl);
 						}
@@ -136,21 +134,16 @@ public class Crawler implements Runnable
 				}
 
 				this.busy = false;
-
 			}
 			else
 			{
 				schedulerReturnedNullCounter++;
-
 				if (schedulerReturnedNullCounter == 10)
 				{
 					shouldRun = false;
 				}
-
 			}
-
 		}// End of the while loop
-
 	}
 
 	public void crawlPage(URLWrapper url) throws InputStreamPageExtractionException
@@ -171,8 +164,6 @@ public class Crawler implements Runnable
 			request = new HttpGet(url.toString());
 			request.setProtocolVersion(HttpVersion.HTTP_1_1);
 			response = (CloseableHttpResponse) this.httpClient.execute(request);
-
-			
 			
 			// Handling the returned statuscode
 			pageStatus = response.getStatusLine().getStatusCode();
@@ -205,10 +196,10 @@ public class Crawler implements Runnable
 
 					// Getting the content
 					HttpEntity entity = response.getEntity();
-
+					//TODO: set The length of the content so the user can decide to use it or not. 
+					
 					if (entity != null)
 					{
-
 						// According to what Extraction the user wants we
 						// process the page accordingly
 						if (this.extractionType == PageExtractionType.BY_STREAM)

@@ -7,4 +7,5 @@ public interface IRobotTxtDirective
 	public void addDisallowEntry(String entry);
 	
 	public boolean allows(String path);
+	
 }

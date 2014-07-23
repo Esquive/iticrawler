@@ -2,6 +2,7 @@ package com.itiniu.iticrawler.behaviors.impl;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import org.apache.http.HttpEntity;
@@ -30,6 +31,7 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 	private String USER_AGENT_PATTERN = "[Uu]ser-[Aa]gent.*";
 	private String DISALLOW_PATTERN = "[dD]isallow.*";
 	private String ALLOW_PATTERN = "[Aa]llow.*";
+	private String CRAWL_DELAY_PATTERN = "[Cc]rawl-[Dd]elay.*";
 	
 
 	@Override
@@ -71,7 +73,6 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 			robotTxtData.insertRule(url, new RobotTxtNotFoundDirective());
 			LOG.error("Error occured while fetching the robots.txt for page: " + url.toString());
 		}
-		
 		finally
 		{
 			try
@@ -159,6 +160,15 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 
 					directive.addAllowEntry(cString);
 				}
+			}
+			else if(cString.matches(this.CRAWL_DELAY_PATTERN))
+			{
+				cString = cString.substring(cString.indexOf(":") + 1);
+				cString = cString.trim();
+				Scanner scanner = new Scanner(cString);
+				int delay = scanner.nextInt();
+				
+				scanner.close();
 			}
 			else
 			{

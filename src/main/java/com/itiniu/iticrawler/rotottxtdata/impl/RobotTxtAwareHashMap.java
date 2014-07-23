@@ -72,5 +72,12 @@ public class RobotTxtAwareHashMap implements IRobotTxtStore
 		}
 	}
 
+	@Override
+	public int getDelay(URLWrapper url)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 
 }

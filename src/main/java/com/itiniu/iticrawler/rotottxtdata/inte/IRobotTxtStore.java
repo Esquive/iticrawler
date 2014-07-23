@@ -13,4 +13,6 @@ public interface IRobotTxtStore {
 	
 	public IRobotTxtDirective getDirective(URLWrapper url);
 	
+	public int getDelay(URLWrapper url);
+	
 }

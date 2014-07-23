@@ -24,10 +24,11 @@ public class Page
 	protected List<URLWrapper> outgoingURLs;
 	protected InputStream inStream;
 	protected boolean continueProcessing = true;
-
 	protected int statusCode = -1;
+	protected Long estimatedLength = 0l;
 
-	public URLWrapper getUrl()
+	
+ 	public URLWrapper getUrl()
 	{
 		return url;
 	}
@@ -117,6 +118,16 @@ public class Page
 	public void setContinueProcessing(boolean continueProcessing)
 	{
 		this.continueProcessing = continueProcessing;
+	}
+
+	public Long getEstimatedLength()
+	{
+		return estimatedLength;
+	}
+
+	public void setEstimatedLength(Long estimatedLength)
+	{
+		this.estimatedLength = estimatedLength;
 	}
 
 	public void writeToOutputStream(OutputStream outputStream) throws IOException

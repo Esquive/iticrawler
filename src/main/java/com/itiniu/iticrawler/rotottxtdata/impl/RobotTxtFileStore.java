@@ -43,6 +43,13 @@ public class RobotTxtFileStore implements IRobotTxtStore
 	{
 		return this.rules.get(url.getDomain());
 	}
+
+	@Override
+	public int getDelay(URLWrapper url)
+	{
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 	
 
