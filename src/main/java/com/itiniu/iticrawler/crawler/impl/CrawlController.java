@@ -27,14 +27,21 @@ import com.itiniu.iticrawler.httptools.inte.IHttpConnectionManager;
 import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
 /**
- * AbstractCrawlController
+ * CrawlController is the class to steer the crawling.
+ * it instantiates the crawler threads and monitors them.
+ * The monitoring is performed by a dedicated thread.
  * 
- * This class is the entry point of the crawler this class builds and runs
- * crawling according to the configuration specified by the user inside the
- * config Singleton.
+ * To use the CrawlController:
+ *
+ * <pre>
+ * &#64;XmlRootElement
+ * CrawlController controller = new CrawlController();
+ * controller.addSeed(<some url String>);
+ * controller.startCrawling();
+ * </pre>
  * 
- * @author esquive
- * 
+ * @author Eric Falk <erfalk at gmail dot com>
+ *
  */
 public class CrawlController implements Runnable
 {
@@ -56,6 +63,9 @@ public class CrawlController implements Runnable
 
 	private boolean hasSeeds = false;
 
+	/**
+	 * Default Constructor the the CrawlController. All required types are instantiated.
+	 */
 	public CrawlController()
 	{
 		try
@@ -64,14 +74,17 @@ public class CrawlController implements Runnable
 		}
 		catch (KeyManagementException | KeyStoreException | NoSuchAlgorithmException e)
 		{
-			LOG.error("An error occured while creating the http connection pool");
+			LOG.error("An error occured while creating the http connection pool", e);
 		}
 		catch (NoCrawlBehaviorProvidedException e)
 		{
-			LOG.error("No CrawlBehavior was specified: Use ConfigSingleton.setCustomCallBehavior()");
+			LOG.error("No CrawlBehavior was specified: Use ConfigSingleton.setCustomCallBehavior()",e);
 		}
 	}
 
+	/**
+	 * Method starting the crawling thread pool. Call this method once seeds where provided using 
+	 */
 	public void startCrawling()
 	{
 		if (this.hasSeeds)
@@ -102,6 +115,14 @@ public class CrawlController implements Runnable
 		}
 	}
 
+	/**
+	 * Internal wrapper method calling all the particular initializer methods.
+	 * 
+	 * @throws KeyManagementException
+	 * @throws KeyStoreException
+	 * @throws NoSuchAlgorithmException
+	 * @throws NoCrawlBehaviorProvidedException
+	 */
 	protected void initComponents() throws KeyManagementException, KeyStoreException, NoSuchAlgorithmException,
 			NoCrawlBehaviorProvidedException
 	{
@@ -114,6 +135,9 @@ public class CrawlController implements Runnable
 		LOG.info("Components are initialized!");
 	}
 
+	/**
+	 * Internal Method to initialize the data holders: the frontier and the storage for the robots.txt
+	 */
 	protected void initDataHolders()
 	{
 		this.scheduledUrls = new ScheduledUrlsStorageFactory().getScheduledUrlData();
@@ -121,12 +145,25 @@ public class CrawlController implements Runnable
 		this.robotTxtData = new RobotTxtStorageFactory().getRobotTxtData();
 	}
 
+	/**
+	 * Internal Method to initialize the http connection pool.
+	 * 
+	 * @throws KeyManagementException
+	 * @throws KeyStoreException
+	 * @throws NoSuchAlgorithmException
+	 */
 	protected void initConnectionManager() throws KeyManagementException, KeyStoreException, NoSuchAlgorithmException
 	{
 		this.httpConnectionManager = new HttpPoolingConnectionManager();
 	}
 
-	public void addSeeds(String url)
+	/**
+	 * Use this method to add a seed from which crawling can start.
+	 * To start crawling at least one seed must be defined. 
+	 * 
+	 * @param url
+	 */
+	public void addSeed(String url)
 	{
 		try
 		{
@@ -135,10 +172,17 @@ public class CrawlController implements Runnable
 		}
 		catch (MalformedURLException e)
 		{
-			LOG.error("The seed you provided could not be parsed: " + url);
+			LOG.error("The seed you provided could not be parsed: " + url, e);
 		}
 	}
 
+	/**
+	 * Internal Factory method to build the crawler threads and add them to the crawler thread pool.
+	 * 
+	 * @return Crawler
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 */
 	protected Crawler buildCrawler() throws InstantiationException, IllegalAccessException
 	{
 		Crawler crawlerThread = null;
@@ -157,6 +201,10 @@ public class CrawlController implements Runnable
 		return crawlerThread;
 	}
 
+	/**
+	 * The code contained in the run method monitors the status of the crawler thread pool
+	 * in a dedicated thread.
+	 */
 	@Override
 	public void run()
 	{

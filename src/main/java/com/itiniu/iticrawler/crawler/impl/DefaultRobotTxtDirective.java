@@ -11,6 +11,12 @@ import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 
 
+/**
+ * Class implementing the IRobotTxtDirective
+ * 
+ * @author Eric Falk <erfalk at gmail dot com>
+ *
+ */
 public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializable, IdentifiedDataSerializable
 {
 	private static final long serialVersionUID = -6746911164640866605L;
@@ -29,6 +35,9 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 		this.allowed = new HashSet<>();
 	}
 	
+	/**
+	 * Method 
+	 */
 	@Override
 	public void addAllowEntry(String entry)
 	{

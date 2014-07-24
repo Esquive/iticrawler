@@ -40,10 +40,11 @@ import com.itiniu.iticrawler.httptools.inte.IHttpConnectionManager;
 import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
 /**
- * Crawler. Objects of this class are used to run inside crawling threads. They
- * do the page processing and the scheduling.
+ * Type performing the actual crawling. Crawler implements Runnable and thus qualifies to run in a thread pool.
+ * This object calls the methods defined by the {@link ICrawlBehavior} Interface at the respective stages. 
  * 
- * @author esquive
+ * @author Eric Falk <erfalk at gmail dot com>
+ *
  */
 public class Crawler implements Runnable
 {
@@ -67,10 +68,6 @@ public class Crawler implements Runnable
 	private boolean busy = false;
 	private PageExtractionType extractionType;
 
-	public Crawler()
-	{
-		
-	}
 	
 	@Override
 	public void run()
@@ -78,7 +75,10 @@ public class Crawler implements Runnable
 		this.execute();
 	}
 
-	private void execute()
+	/**
+	 * Internal wrapper method called by the {@link Runnable.run()}. method.
+	 */
+	protected void execute()
 	{
 		URLWrapper url = null;
 		boolean shouldRun = true;
@@ -154,7 +154,17 @@ public class Crawler implements Runnable
 		}// End of the while loop
 	}
 
-	public void crawlPage(URLWrapper url) throws InputStreamPageExtractionException
+	/**
+	 * Internal Method extracting the content from the provided URL.
+	 * 
+	 * Depending on the configuration the page gets extracted by stream or by returning a String:</br>
+	 * -{@link PageExtractionType#BY_STREAM}</br>
+	 * -{@link PageExtractionType#BY_STRING}
+	 * 
+	 * @param {@link URLWrapper}
+	 * @throws {@link InputStreamPageExtractionException}
+	 */
+	protected void crawlPage(URLWrapper url) throws InputStreamPageExtractionException
 	{
 
 		Page page = null;
@@ -250,6 +260,14 @@ public class Crawler implements Runnable
 		}
 	}
 
+	/**
+	 * Internal Method extracting the content as an InputStream in case the configuration specifies:</br>
+	 * -{@link PageExtractionType#BY_STREAM}
+	 * 
+	 * @param {@link Page}
+	 * @param {@link HttpEntity}
+	 * @throws {@link InputStreamPageExtractionException}
+	 */
 	protected void crawlPageToInputStream(Page page, HttpEntity entity)
 			throws InputStreamPageExtractionException
 	{
@@ -350,6 +368,14 @@ public class Crawler implements Runnable
 		}
 	}
 
+	/**
+	 * Internal Method extracting the content as a String in case the configuration specifies:</br>
+	 * -{@link PageExtractionType#BY_STRING}
+	 * 
+	 * @param {@link Page}
+	 * @param {@link HttpEntity}
+	 * @throws {@link InputStreamPageExtractionException}
+	 */
 	protected void crawlPageToString(Page page, HttpEntity entity)
 	{
 		URLWrapper url = page.getUrl();
@@ -397,24 +423,24 @@ public class Crawler implements Runnable
 		{
 			LOG.error("TikaException in the crawlToString method", e);
 		}
-		finally
-		{
-
-		}
 	}
 
 	/**
-	 * @param page
+	 * Internal wrapper method to wrap the call of {@link ICrawlBehavior#processPage(Page page)}.
+	 * 
+	 * @param {@link Page}
 	 */
-	private void processPage(Page page)
+	protected void processPage(Page page)
 	{
 		this.customCrawlBehavior.processPage(page);
 	}
 
 	/**
-	 * @param page
+	 * Internal wrapper method to wrap the call of {@link ICrawlBehavior#processPage(Page page)}.
+	 * 
+	 * @param {@link Page}
 	 */
-	private void scheduleURLs(Page page)
+	protected void scheduleURLs(Page page)
 	{
 		for (URLWrapper cUrl : page.getOutgoingURLs())
 		{
@@ -436,6 +462,9 @@ public class Crawler implements Runnable
 		}
 	}
 
+	
+	//TODO: Remove all that setters and add a builder instead!!!
+	
 	// -----------Getters and Setters--------------------//
 
 	public void setCustomCrawlBehavior(ICrawlBehavior customCrawlBehavior)

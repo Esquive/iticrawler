@@ -12,9 +12,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tika.sax.Link;
 
+import com.itiniu.iticrawler.crawler.PageExtractionType;
 import com.itiniu.iticrawler.httptools.impl.URLCanonicalizer;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 
+/**
+ * Type containing the information gained throughout the crawling process.
+ * 
+ * Each method from the ICrawlBehavior Interface gets a Page type as input.
+ * Depending on the insides gained from the information of the page at a certain stage of the crawling process
+ * continuing processing the page is of no use: call Page.
+ * 
+ * @author Eric Falk <erfalk at gmail dot com>
+ *
+ */
 public class Page
 {
 	private static final Logger logger = LogManager.getLogger(Page.class);
@@ -48,11 +59,21 @@ public class Page
 		this.html = html;
 	}
 
+	/**
+	 * Returns the collection of outgoing URLs. 
+	 * 
+	 * @return List<URLWrapper> 
+	 */
 	public List<URLWrapper> getOutgoingURLs()
 	{
 		 return (this.outgoingURLs == null) ? new ArrayList<URLWrapper>() : this.outgoingURLs;
 	}
 
+	/**
+	 * Method to set the outgoing URLs.
+	 * 
+	 * @param urls
+	 */
 	public void setOutgoingURLs(List<Link> urls)
 	{
 		if (urls != null && urls.size() > 0)
@@ -100,6 +121,13 @@ public class Page
 		this.statusCode = statusCode;
 	}
 
+	/**
+	 * In case the configured content extraction mode is {@link PageExtractionType#BY_STREAM},
+	 * the content the content can be accessed via this {@link InputStream}.
+	 * 
+	 * @param outputStream
+	 * @throws IOException
+	 */
 	public InputStream getInStream()
 	{
 		return this.inStream;
@@ -115,11 +143,17 @@ public class Page
 		return continueProcessing;
 	}
 
+	/**
+	 * Calling this method prevents the page from the next crawling steps.
+	 * 
+	 * @param boolean continueProcessing
+	 */
 	public void setContinueProcessing(boolean continueProcessing)
 	{
 		this.continueProcessing = continueProcessing;
 	}
 
+	//TODO: new feature provide estimated length of a page to decide whether to crwl or not
 	public Long getEstimatedLength()
 	{
 		return estimatedLength;
@@ -130,6 +164,13 @@ public class Page
 		this.estimatedLength = estimatedLength;
 	}
 
+	/**
+	 * In case the configured content extraction mode is {@link PageExtractionType#BY_STREAM},
+	 * the content gets written to the provided {@link OutputStream}.
+	 * 
+	 * @param {@link OutputStream}
+	 * @throws {@link IOException}
+	 */
 	public void writeToOutputStream(OutputStream outputStream) throws IOException
 	{
 		try
