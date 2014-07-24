@@ -80,39 +80,47 @@ public class Crawler implements Runnable
 
 	private void execute()
 	{
-		URLWrapper cUrl = null;
+		URLWrapper url = null;
 		boolean shouldRun = true;
 		int schedulerReturnedNullCounter = 0;
 
 		while (shouldRun)
 		{
-			cUrl = this.scheduledUrls.getNextURL();
+			url = this.scheduledUrls.getNextURL();
 
-			if (cUrl != null)
+			if (url != null)
 			{
 				this.busy = true;
 
-				if (!this.processedUrls.isCurrentlyProcessedUrl(cUrl) && !this.processedUrls.wasProcessed(cUrl))
+				if (!this.processedUrls.isCurrentlyProcessedUrl(url) && !this.processedUrls.wasProcessed(url))
 				{	//TODO: Possible race condition
-					this.processedUrls.addCurrentlyProcessedUrl(cUrl);
+					this.processedUrls.addCurrentlyProcessedUrl(url);
 
-					if (!this.robotTxtData.containsRule(cUrl))
+					if (!this.robotTxtData.containsRule(url))
 					{
-						this.robotTxtBehavior.fetchRobotTxt(cUrl, this.httpConnectionManager.getHttpClient(),
+						this.robotTxtBehavior.fetchRobotTxt(url, this.httpConnectionManager.getHttpClient(),
 								this.robotTxtData);
 					}
-					if (this.robotTxtData.allows(cUrl))
+					if (this.robotTxtData.allows(url))
 					{
-						// Getting a timeStamp to determine if I can request
-						// the host again
-						long timeStamp = this.processedUrls.lastHostProcessing(cUrl)
-								+ ConfigSingleton.INSTANCE.getPolitnessDelay();
+						int siteDelay = this.robotTxtData.getDelay(url);
+						long timeStamp;
+						if(siteDelay != -1)
+						{
+							timeStamp = this.processedUrls.lastHostProcessing(url)
+									+ siteDelay;	
+						}
+						else
+						{
+							timeStamp = this.processedUrls.lastHostProcessing(url)
+									+ ConfigSingleton.INSTANCE.getPolitnessDelay();	
+						}
 
 						if (timeStamp <= System.currentTimeMillis())
 						{
 							try
 							{
-								this.crawlPage(cUrl);
+								this.crawlPage(url);
 							}
 							catch (InputStreamPageExtractionException e)
 							{
@@ -121,14 +129,14 @@ public class Crawler implements Runnable
 
 							// Setting the politeness Timestamp for future
 							// access to the host
-							this.processedUrls.addProcessedHost(cUrl, System.currentTimeMillis());
-							this.processedUrls.addProcessedURL(cUrl);
-							this.processedUrls.removeCurrentlyProcessedUrl(cUrl);
+							this.processedUrls.addProcessedHost(url, System.currentTimeMillis());
+							this.processedUrls.addProcessedURL(url);
+							this.processedUrls.removeCurrentlyProcessedUrl(url);
 						}
 						else
 						{
-							this.scheduledUrls.scheduleURL(cUrl);
-							this.processedUrls.removeCurrentlyProcessedUrl(cUrl);
+							this.scheduledUrls.scheduleURL(url);
+							this.processedUrls.removeCurrentlyProcessedUrl(url);
 						}
 					}
 				}

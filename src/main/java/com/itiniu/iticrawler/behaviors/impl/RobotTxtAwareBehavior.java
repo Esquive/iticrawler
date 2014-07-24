@@ -167,8 +167,9 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 				cString = cString.trim();
 				Scanner scanner = new Scanner(cString);
 				int delay = scanner.nextInt();
-				
 				scanner.close();
+				
+				directive.addDelay(delay);
 			}
 			else
 			{

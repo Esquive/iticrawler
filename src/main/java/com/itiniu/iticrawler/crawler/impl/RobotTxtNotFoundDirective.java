@@ -33,4 +33,16 @@ public class RobotTxtNotFoundDirective implements IRobotTxtDirective, Serializab
 		return true;
 	}
 
+	@Override
+	public void addDelay(int delay)
+	{
+		// Do nothing
+	}
+
+	@Override
+	public int getDelay()
+	{
+		return -1;
+	}
+
 }

@@ -75,8 +75,15 @@ public class RobotTxtAwareHashMap implements IRobotTxtStore
 	@Override
 	public int getDelay(URLWrapper url)
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		this.rwLock.readLock().lock();
+		try
+		{
+			return this.rules.get(url.getDomain()).getDelay();
+		}
+		finally
+		{
+			this.rwLock.readLock().unlock();
+		}
 	}
 
 

@@ -13,14 +13,12 @@ import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 
 public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializable, IdentifiedDataSerializable
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6746911164640866605L;
-	
 	
 	private Set<String> disallowed = null;
 	private Set<String> allowed = null;
+	
+	private int delay = -1;
 	
 	private boolean containsDisallowWildcard = false;
 	private boolean containsAllowWildcard = false;
@@ -137,6 +135,17 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 		return this.allowed.contains(path);
 	}
 
+	@Override
+	public void addDelay(int delay)
+	{
+		this.delay = delay;
+	}
+
+	@Override
+	public int getDelay()
+	{
+		return this.delay;
+	}
 	
 	@Override
 	public void writeData(ObjectDataOutput out) throws IOException
@@ -165,7 +174,6 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
 	
 	
 }
