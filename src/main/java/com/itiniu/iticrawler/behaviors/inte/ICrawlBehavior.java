@@ -10,18 +10,12 @@ import com.itiniu.iticrawler.httptools.impl.URLWrapper;
  * interact with the crawl process. It is assured that the input page of the
  * first is also the input page of the next methods. </br> </br> BE AWARE: The
  * class implementing this interface must have a default Constructor in order to
- * be initialized. 
- * </br> 
- * </br>1: {@link ICrawlBehavior#handleStatuScode(Page)}
- * gets called first. 
- * </br>2: {@link ICrawlBehavior#handleContentSize(Page)}
- * gets called second. 
- * </br>3: {@link ICrawlBehavior#processPage(Page)} gets
- * called third. 
- * </br>4: {@link ICrawlBehavior#handleOutgoingURLs(Page)} gets called
- * forth.
- * </br>5: {@link ICrawlBehavior#shouldScheduleURL(URLWrapper)} gets called
- * fifth as many times as the page has outgoing URLs.
+ * be initialized. </br> </br>1: {@link ICrawlBehavior#handleStatuScode(Page)}
+ * gets called first. </br>2: {@link ICrawlBehavior#handleContentSize(Page)}
+ * gets called second. </br>3: {@link ICrawlBehavior#processPage(Page)} gets
+ * called third. </br>4: {@link ICrawlBehavior#handleOutgoingURLs(Page)} gets
+ * called forth. </br>5: {@link ICrawlBehavior#shouldScheduleURL(URLWrapper)}
+ * gets called fifth as many times as the page has outgoing URLs.
  * 
  * @author Eric Falk <erfalk at gmail dot com>
  * 
@@ -40,7 +34,13 @@ public interface ICrawlBehavior
 	/**
 	 * Implementing this method allows to be aware of the content size. When
 	 * this method gets called during the crawling process, the status code and
-	 * the content size is set.
+	 * the content size is set. </br></br> If the content length cannot be
+	 * fetched -1 is returned. If the length reaches {@link Long#MAX_VALUE} -1
+	 * is returned. The page might not be extractable using the
+	 * {@link PageExtractionType#BY_STRING} config. But surely using streams
+	 * with the {@link PageExtractionType#BY_STREAM} config.
+	 * </br></br>
+	 * Use {@link Page#getContentLength()}. 
 	 * 
 	 * @param page
 	 */
@@ -69,6 +69,8 @@ public interface ICrawlBehavior
 	 * you manipulate the collection of outgoing URLs at that stage: (for
 	 * example removing some) They will not be considered in the scheduling
 	 * process!
+	 * </br></br>
+	 * Use {@link Page#getOutgoingURLs()}.
 	 * 
 	 * @param page
 	 * @param url
