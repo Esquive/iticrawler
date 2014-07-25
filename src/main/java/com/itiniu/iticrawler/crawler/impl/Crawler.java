@@ -108,7 +108,7 @@ public class Crawler implements Runnable
 						if(siteDelay != -1)
 						{
 							timeStamp = this.processedUrls.lastHostProcessing(url)
-									+ siteDelay;	
+									+ (siteDelay * 1000);	
 						}
 						else
 						{

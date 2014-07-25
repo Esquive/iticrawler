@@ -11,6 +11,12 @@ import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.protocol.HttpContext;
 
+/**
+ * Gzip decoding Interceptor for the http response.
+ *
+ * @author Eric Falk <erfalk at gmail dot com>
+ *
+ */
 public class GzipEncodedResponseInterceptor implements HttpResponseInterceptor
 {
 

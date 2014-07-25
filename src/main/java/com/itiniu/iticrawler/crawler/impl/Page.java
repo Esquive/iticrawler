@@ -49,6 +49,10 @@ public class Page
 		this.url = curURL;
 	}
 
+	/**
+	 * Method to get the HTML String of the page in case {@link PageExtractionType#BY_STRING} is configured.
+	 * @return {@link String}
+	 */
 	public String getHtml()
 	{
 		return html;
@@ -153,7 +157,7 @@ public class Page
 		this.continueProcessing = continueProcessing;
 	}
 
-	//TODO: new feature provide estimated length of a page to decide whether to crwl or not
+	//TODO: new feature: provide estimated length of a page to decide whether to crwl or not
 	public Long getEstimatedLength()
 	{
 		return estimatedLength;

@@ -4,12 +4,16 @@ import java.io.Serializable;
 
 import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 
+/**
+ * Class implementing the {@link IRobotTxtDirective}
+ * Whenever no robots.txt gets found for a site this directive is used. It allows every url. 
+ * 
+ * @author Eric Falk <erfalk at gmail dot com>
+ *
+ */
 public class RobotTxtNotFoundDirective implements IRobotTxtDirective, Serializable
 {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -4881505832193948021L;
 
 	@Override

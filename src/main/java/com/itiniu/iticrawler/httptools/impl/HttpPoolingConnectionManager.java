@@ -35,16 +35,30 @@ import org.apache.logging.log4j.Logger;
 import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.httptools.inte.IHttpConnectionManager;
 
+/**
+ * Implementation of the {@link IHttpConnectionManager}. This implementation handles the connections
+ * with an connection pool under the hood. 
+ * HTTP Connection Pool for the crawler threads. This class contains a factory
+ * method the {@link HttpClient} used by the crawler threads. These clients are
+ * managed by a http connection pool.
+ * 
+ * @author Eric Falk <erfalk at gmail dot com>
+ * 
+ */
 public class HttpPoolingConnectionManager implements IHttpConnectionManager, Runnable
 {
 
 	private static final Logger LOG = LogManager.getLogger(HttpPoolingConnectionManager.class);
-	
+
 	private HttpClientConnectionManager mConnectionManager = null;
 
 	private Thread httpConnectionMonitoringThread = null;
 	private Lock httpClientGenerationLock = null;
 
+	/**
+	 * Implementation of the {@link Runnable@run()} method. The monitoring of
+	 * the connection pool is performed by a dedicated thread
+	 */
 	@Override
 	public void run()
 	{
@@ -66,7 +80,6 @@ public class HttpPoolingConnectionManager implements IHttpConnectionManager, Run
 
 	public HttpPoolingConnectionManager() throws KeyStoreException, KeyManagementException, NoSuchAlgorithmException
 	{
-
 		// Creating protocol schemes
 		Registry<ConnectionSocketFactory> registry = RegistryBuilder
 				.<ConnectionSocketFactory> create()
@@ -96,6 +109,7 @@ public class HttpPoolingConnectionManager implements IHttpConnectionManager, Run
 		this.httpClientGenerationLock = new ReentrantLock();
 	}
 
+	
 	@Override
 	public HttpClient getHttpClient()
 	{

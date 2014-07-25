@@ -4,16 +4,22 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
 
+/**
+ * Class wrapping the URL type. It contains additional information as the parentURL, the redirecting URL. 
+ * 
+ * @author Eric Falk <erfalk at gmail dot com>
+ *
+ */
 public class URLWrapper
 {
-	private URL url = null;
-	private int hashCode;
-	private String urlString = null;
-	private String fullLink;
-	private String title;
-	private String text;
-	private String rel;
-	private String redirectedFrom;
+	protected URL url = null;
+	protected int hashCode;
+	protected String urlString = null;
+	protected String fullLink;
+	protected String title;
+	protected String text;
+	protected String rel;
+	protected String redirectedFrom;
 	protected int urlDepth;
 	protected URLWrapper parentURL;
 	protected boolean isImage;

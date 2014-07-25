@@ -12,7 +12,7 @@ import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 
 
 /**
- * Class implementing the IRobotTxtDirective
+ * Default implementation of the {@link IRobotTxtDirective} interface
  * 
  * @author Eric Falk <erfalk at gmail dot com>
  *
@@ -35,9 +35,6 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 		this.allowed = new HashSet<>();
 	}
 	
-	/**
-	 * Method 
-	 */
 	@Override
 	public void addAllowEntry(String entry)
 	{
@@ -62,6 +59,9 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 		}
 	}
 	
+	/**
+	 * Call this method to determine if an URL can be crawled.
+	 */
 	@Override
 	public boolean allows(String path)
 	{
@@ -127,6 +127,11 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 		return toReturn;
 	}
 	
+	/**
+	 * Internal Method called by {@link IRobotTxtDirective#allows(String)}
+	 * @param path
+	 * @return
+	 */
 	private boolean isDisallowed(String path)
 	{	
 		boolean toReturn = false;
@@ -139,23 +144,35 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 		return toReturn;
 	}
 	
+	/**
+	 * Internal Method called by {@link IRobotTxtDirective#allows(String)}
+	 * @param path
+	 * @return
+	 */
 	private boolean isAllowed(String path)
 	{
 		return this.allowed.contains(path);
 	}
 
+	/**
+	 * Method to add the delay if specified by robots.txt.
+	 */
 	@Override
 	public void addDelay(int delay)
 	{
 		this.delay = delay;
 	}
 
+	/**
+	 * Method to fetch the delay for the crawl process.
+	 */
 	@Override
 	public int getDelay()
 	{
 		return this.delay;
 	}
 	
+	//TODO: Add identifiable serializable methods.
 	@Override
 	public void writeData(ObjectDataOutput out) throws IOException
 	{

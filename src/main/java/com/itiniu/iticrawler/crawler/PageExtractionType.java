@@ -1,7 +1,11 @@
 package com.itiniu.iticrawler.crawler;
 
+
 /**
- * Created by falk.e on 28/02/14.
+ * Choose rather the page should be extracted by String or Stream.
+ * 
+ * @author Eric Falk <erfalk at gmail dot com>
+ *
  */
 public enum PageExtractionType {
     BY_STRING,
