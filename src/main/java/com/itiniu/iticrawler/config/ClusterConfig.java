@@ -6,11 +6,9 @@ import com.hazelcast.config.NetworkConfig;
 import com.hazelcast.core.Hazelcast;
 
 /**
- * Class that configures the cluster. Only basic configuration is performed.
- * It is rather provided to have a possibility of adapting some things. And to have an 
- * entry point for advanced tweaking. 
+ * This class is used to configure the Hazelcast clustered Collections.
  * 
- * @author esquive
+ * @author Eric Falk <erfalk at gmail dot com>
  *
  */
 public class ClusterConfig {
@@ -42,6 +40,11 @@ public class ClusterConfig {
 		Hazelcast.newHazelcastInstance(this.cfg);
 	}
 	
+	/**
+	 * Returns the Config Object to create the actual Collections.
+	 * 
+	 * @return
+	 */
 	public Config getConfig()
 	{
 		if(this.cfg == null)

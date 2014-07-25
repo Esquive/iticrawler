@@ -5,11 +5,11 @@ import java.io.Serializable;
 import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 
 /**
- * Class implementing the {@link IRobotTxtDirective}
- * Whenever no robots.txt gets found for a site this directive is used. It allows every url. 
+ * Class implementing the {@link IRobotTxtDirective} Whenever no robots.txt gets
+ * found for a site this directive is used. It allows every url.
  * 
  * @author Eric Falk <erfalk at gmail dot com>
- *
+ * 
  */
 public class RobotTxtNotFoundDirective implements IRobotTxtDirective, Serializable
 {
@@ -19,21 +19,21 @@ public class RobotTxtNotFoundDirective implements IRobotTxtDirective, Serializab
 	@Override
 	public void addAllowEntry(String entry)
 	{
-		//Do nothing
+		// Do nothing
 
 	}
 
 	@Override
 	public void addDisallowEntry(String entry)
 	{
-		//Do nothing
+		// Do nothing
 
 	}
 
 	@Override
 	public boolean allows(String path)
 	{
-		//Always return true
+		// Always return true
 		return true;
 	}
 

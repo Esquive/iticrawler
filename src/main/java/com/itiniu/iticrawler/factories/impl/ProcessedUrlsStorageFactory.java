@@ -7,6 +7,11 @@ import com.itiniu.iticrawler.frontier.impl.ProcessedUrlsFileStore;
 import com.itiniu.iticrawler.frontier.impl.ProcessedUrlsHashMap;
 import com.itiniu.iticrawler.frontier.inte.IProcessedURLStore;
 
+/**
+ * Default implementation of the {@link IProcessedURLStorageFactory} interface.
+ * 
+ * @author Eric Falk <erfalk at gmail dot com>
+ */
 public class ProcessedUrlsStorageFactory implements IProcessedURLStorageFactory
 {
 

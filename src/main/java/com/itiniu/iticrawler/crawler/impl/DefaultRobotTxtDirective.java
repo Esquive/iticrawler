@@ -1,4 +1,5 @@
 package com.itiniu.iticrawler.crawler.impl;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -10,45 +11,44 @@ import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 
-
 /**
  * Default implementation of the {@link IRobotTxtDirective} interface
  * 
  * @author Eric Falk <erfalk at gmail dot com>
- *
+ * 
  */
 public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializable, IdentifiedDataSerializable
 {
 	private static final long serialVersionUID = -6746911164640866605L;
-	
+
 	private Set<String> disallowed = null;
 	private Set<String> allowed = null;
-	
+
 	private int delay = -1;
-	
+
 	private boolean containsDisallowWildcard = false;
 	private boolean containsAllowWildcard = false;
-	
+
 	public DefaultRobotTxtDirective()
 	{
 		this.disallowed = new HashSet<>();
 		this.allowed = new HashSet<>();
 	}
-	
+
 	@Override
 	public void addAllowEntry(String entry)
 	{
 		this.allowed.add(entry);
 	}
-	
+
 	@Override
 	public void addDisallowEntry(String entry)
 	{
-		if(!this.containsDisallowWildcard && entry.equals("/"))
+		if (!this.containsDisallowWildcard && entry.equals("/"))
 		{
 			this.containsDisallowWildcard = true;
 		}
-		else if(!this.containsAllowWildcard && entry.equals("") && this.disallowed.size() == 0)
+		else if (!this.containsAllowWildcard && entry.equals("") && this.disallowed.size() == 0)
 		{
 			this.containsAllowWildcard = true;
 		}
@@ -58,7 +58,7 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 			this.disallowed.add(entry);
 		}
 	}
-	
+
 	/**
 	 * Call this method to determine if an URL can be crawled.
 	 */
@@ -66,7 +66,7 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 	public boolean allows(String path)
 	{
 		boolean toReturn = true;
-		
+
 		if (!this.containsAllowWildcard)
 		{
 			String pathBuilder = "/";
@@ -126,26 +126,28 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 
 		return toReturn;
 	}
-	
+
 	/**
 	 * Internal Method called by {@link IRobotTxtDirective#allows(String)}
+	 * 
 	 * @param path
 	 * @return
 	 */
 	private boolean isDisallowed(String path)
-	{	
+	{
 		boolean toReturn = false;
-		
-		if(this.containsDisallowWildcard || this.disallowed.contains(path))
+
+		if (this.containsDisallowWildcard || this.disallowed.contains(path))
 		{
-			toReturn = true;	
+			toReturn = true;
 		}
 
 		return toReturn;
 	}
-	
+
 	/**
 	 * Internal Method called by {@link IRobotTxtDirective#allows(String)}
+	 * 
 	 * @param path
 	 * @return
 	 */
@@ -171,20 +173,20 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 	{
 		return this.delay;
 	}
-	
-	//TODO: Add identifiable serializable methods.
+
+	// TODO: Add identifiable serializable methods.
 	@Override
 	public void writeData(ObjectDataOutput out) throws IOException
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void readData(ObjectDataInput in) throws IOException
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -200,6 +202,5 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
-	
+
 }

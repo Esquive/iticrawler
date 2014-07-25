@@ -2,7 +2,7 @@ package com.itiniu.iticrawler.crawler;
 
 
 /**
- * Choose rather the page should be extracted by String or Stream.
+ * Choose if the page content should rather be extracted by String or Stream.
  * 
  * @author Eric Falk <erfalk at gmail dot com>
  *

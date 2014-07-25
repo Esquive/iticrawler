@@ -10,16 +10,16 @@ import org.mapdb.DBMaker;
 public enum FileStorageConfig
 {
 	INSTANCE;
-	
+
 	private final Logger LOG = LogManager.getLogger(FileStorageConfig.class);
 	private DB fileStorage;
-	
+
 	FileStorageConfig()
 	{
 		File folder = new File(ConfigSingleton.INSTANCE.getStorageLocation());
-		if(folder.exists() && folder.isDirectory())
+		if (folder.exists() && folder.isDirectory())
 		{
-			if(!folder.canWrite())
+			if (!folder.canWrite())
 			{
 				LOG.error("The Storage folder: \"" + folder.getPath() + "\" is not accessible.");
 			}
@@ -28,14 +28,14 @@ public enum FileStorageConfig
 		{
 			folder.mkdirs();
 		}
-		
-		if(folder.exists() && folder.isDirectory() && folder.canWrite())
+
+		if (folder.exists() && folder.isDirectory() && folder.canWrite())
 		{
 			this.fileStorage = DBMaker.newFileDB(new File(folder, "frontier.db")).make();
 		}
-		
+
 	}
-	
+
 	public DB getStorageProvider()
 	{
 		return this.fileStorage;

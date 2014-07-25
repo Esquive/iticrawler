@@ -27,21 +27,20 @@ import com.itiniu.iticrawler.httptools.inte.IHttpConnectionManager;
 import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
 /**
- * CrawlController is the class to steer the crawling.
- * it instantiates the crawler threads and monitors them.
- * The monitoring is performed by a dedicated thread.
+ * CrawlController is the class to steer the crawling. it instantiates the
+ * crawler threads and monitors them. The monitoring is performed by a dedicated
+ * thread.
  * 
  * To use the CrawlController:
- *
+ * 
  * <pre>
- * &#64;XmlRootElement
  * CrawlController controller = new CrawlController();
  * controller.addSeed(<some url String>);
  * controller.startCrawling();
  * </pre>
  * 
  * @author Eric Falk <erfalk at gmail dot com>
- *
+ * 
  */
 public class CrawlController implements Runnable
 {
@@ -64,7 +63,8 @@ public class CrawlController implements Runnable
 	private boolean hasSeeds = false;
 
 	/**
-	 * Default Constructor the the CrawlController. All required types are instantiated.
+	 * Default Constructor the the CrawlController. All required types are
+	 * instantiated.
 	 */
 	public CrawlController()
 	{
@@ -78,12 +78,13 @@ public class CrawlController implements Runnable
 		}
 		catch (NoCrawlBehaviorProvidedException e)
 		{
-			LOG.error("No CrawlBehavior was specified: Use ConfigSingleton.setCustomCallBehavior()",e);
+			LOG.error("No CrawlBehavior was specified: Use ConfigSingleton.setCustomCallBehavior()", e);
 		}
 	}
 
 	/**
-	 * Method starting the crawling thread pool. Call this method once seeds where provided using 
+	 * Method starting the crawling thread pool. Call this method once seeds
+	 * where provided using
 	 */
 	public void startCrawling()
 	{
@@ -136,7 +137,8 @@ public class CrawlController implements Runnable
 	}
 
 	/**
-	 * Internal Method to initialize the data holders: the frontier and the storage for the robots.txt
+	 * Internal Method to initialize the data holders: the frontier and the
+	 * storage for the robots.txt
 	 */
 	protected void initDataHolders()
 	{
@@ -158,8 +160,8 @@ public class CrawlController implements Runnable
 	}
 
 	/**
-	 * Use this method to add a seed from which crawling can start.
-	 * To start crawling at least one seed must be defined. 
+	 * Use this method to add a seed from which crawling can start. To start
+	 * crawling at least one seed must be defined.
 	 * 
 	 * @param url
 	 */
@@ -177,7 +179,8 @@ public class CrawlController implements Runnable
 	}
 
 	/**
-	 * Internal Factory method to build the crawler threads and add them to the crawler thread pool.
+	 * Internal Factory method to build the crawler threads and add them to the
+	 * crawler thread pool.
 	 * 
 	 * @return Crawler
 	 * @throws InstantiationException
@@ -202,8 +205,8 @@ public class CrawlController implements Runnable
 	}
 
 	/**
-	 * The code contained in the run method monitors the status of the crawler thread pool
-	 * in a dedicated thread.
+	 * The code contained in the run method monitors the status of the crawler
+	 * thread pool in a dedicated thread.
 	 */
 	@Override
 	public void run()

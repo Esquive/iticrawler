@@ -7,6 +7,12 @@ import com.itiniu.iticrawler.frontier.impl.ScheduledUrlsFileStore;
 import com.itiniu.iticrawler.frontier.impl.ScheduledUrlsQueue;
 import com.itiniu.iticrawler.frontier.inte.IScheduledURLStore;
 
+/**
+ * Default implementation of the {@link IScheduledURLStorageFactory} interface.
+ * 
+ * @author Eric Falk <erfalk at gmail dot com>
+ *
+ */
 public class ScheduledUrlsStorageFactory implements IScheduledURLStorageFactory
 {
 
@@ -40,11 +46,9 @@ public class ScheduledUrlsStorageFactory implements IScheduledURLStorageFactory
 				toReturn = new ScheduledUrlsQueue();
 				
 				break;
-				
 		}
 		
 		return toReturn;
-		
 	}
 
 }

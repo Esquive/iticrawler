@@ -24,6 +24,13 @@ import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
+/**
+ * Implementation of the {@link IRobotTxtBehavior} interface.
+ * This behavior is used should robots.txt be enabled in the configuration.
+ * 
+ * @author Eric Falk <erfalk at gmail dot com>
+ *
+ */
 public class RobotTxtAwareBehavior implements IRobotTxtBehavior 
 {
 	private static final Logger LOG = LogManager.getLogger(RobotTxtAwareBehavior.class);

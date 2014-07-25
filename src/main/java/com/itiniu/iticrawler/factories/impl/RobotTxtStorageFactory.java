@@ -8,6 +8,12 @@ import com.itiniu.iticrawler.rotottxtdata.impl.RobotTxtFileStore;
 import com.itiniu.iticrawler.rotottxtdata.impl.RobotTxtUnawareData;
 import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
+/**
+ * Default implementation of the {@link RobotTxtStorageFactory} interface.
+ * 
+ * @author Eric Falk <erfalk at gmail dot com>
+ *
+ */
 public class RobotTxtStorageFactory implements IRobotTxtStorageFactory
 {
 
