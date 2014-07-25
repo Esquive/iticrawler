@@ -40,11 +40,12 @@ import com.itiniu.iticrawler.httptools.inte.IHttpConnectionManager;
 import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
 /**
- * Type performing the actual crawling. Crawler implements Runnable and thus qualifies to run in a thread pool.
- * This object calls the methods defined by the {@link ICrawlBehavior} Interface at the respective stages. 
+ * Type performing the actual crawling. Crawler implements Runnable and thus
+ * qualifies to run in a thread pool. This object calls the methods defined by
+ * the {@link ICrawlBehavior} Interface at the respective stages.
  * 
  * @author Eric Falk <erfalk at gmail dot com>
- *
+ * 
  */
 public class Crawler implements Runnable
 {
@@ -68,7 +69,6 @@ public class Crawler implements Runnable
 	private boolean busy = false;
 	private PageExtractionType extractionType;
 
-	
 	@Override
 	public void run()
 	{
@@ -93,7 +93,7 @@ public class Crawler implements Runnable
 				this.busy = true;
 
 				if (!this.processedUrls.isCurrentlyProcessedUrl(url) && !this.processedUrls.wasProcessed(url))
-				{	//TODO: Possible race condition
+				{ // TODO: Possible race condition
 					this.processedUrls.addCurrentlyProcessedUrl(url);
 
 					if (!this.robotTxtData.containsRule(url))
@@ -105,15 +105,14 @@ public class Crawler implements Runnable
 					{
 						int siteDelay = this.robotTxtData.getDelay(url);
 						long timeStamp;
-						if(siteDelay != -1)
+						if (siteDelay != -1)
 						{
-							timeStamp = this.processedUrls.lastHostProcessing(url)
-									+ (siteDelay * 1000);	
+							timeStamp = this.processedUrls.lastHostProcessing(url) + (siteDelay * 1000);
 						}
 						else
 						{
 							timeStamp = this.processedUrls.lastHostProcessing(url)
-									+ ConfigSingleton.INSTANCE.getPolitnessDelay();	
+									+ ConfigSingleton.INSTANCE.getPolitnessDelay();
 						}
 
 						if (timeStamp <= System.currentTimeMillis())
@@ -157,9 +156,9 @@ public class Crawler implements Runnable
 	/**
 	 * Internal Method extracting the content from the provided URL.
 	 * 
-	 * Depending on the configuration the page gets extracted by stream or by returning a String:</br>
-	 * -{@link PageExtractionType#BY_STREAM}</br>
-	 * -{@link PageExtractionType#BY_STRING}
+	 * Depending on the configuration the page gets extracted by stream or by
+	 * returning a String:</br> -{@link PageExtractionType#BY_STREAM}</br> -
+	 * {@link PageExtractionType#BY_STRING}
 	 * 
 	 * @param {@link URLWrapper}
 	 * @throws {@link InputStreamPageExtractionException}
@@ -182,10 +181,14 @@ public class Crawler implements Runnable
 			request = new HttpGet(url.toString());
 			request.setProtocolVersion(HttpVersion.HTTP_1_1);
 			response = (CloseableHttpResponse) this.httpClient.execute(request);
-			
-			// Handling the returned statuscode
+
+			// Handling the returned status code
 			pageStatus = response.getStatusLine().getStatusCode();
 			page.setStatusCode(pageStatus);
+			this.handleStatusCode(page);
+
+			// If user decides to stop because of the status code so may it be.
+			if (!page.isContinueProcessing()) return;
 
 			if (pageStatus == HttpStatus.SC_NOT_FOUND)
 			{
@@ -204,37 +207,34 @@ public class Crawler implements Runnable
 					}
 				}
 			}
-
-			this.customCrawlBehavior.handleStatuScode(page);
-
-			if (pageStatus == HttpStatus.SC_OK)
+			else if (pageStatus == HttpStatus.SC_OK)
 			{
-				if (page.isContinueProcessing())
+				// Getting the content
+				HttpEntity entity = response.getEntity();
+
+				if (entity != null)
 				{
+					page.setContentLength(entity.getContentLength());
+					this.handleContentSize(page);
+					if (!page.isContinueProcessing()) return;
 
-					// Getting the content
-					HttpEntity entity = response.getEntity();
-					//TODO: set The length of the content so the user can decide to use it or not. 
-					
-					if (entity != null)
+					// According to what Extraction the user wants we
+					// process the page accordingly
+					if (this.extractionType == PageExtractionType.BY_STREAM)
 					{
-						// According to what Extraction the user wants we
-						// process the page accordingly
-						if (this.extractionType == PageExtractionType.BY_STREAM)
-						{
-							this.crawlPageToInputStream(page, entity);
-						}
-						else if (this.extractionType == PageExtractionType.BY_STRING)
-						{
-							this.crawlPageToString(page, entity);
-						}
+						this.crawlPageToInputStream(page, entity);
+					}
+					else if (this.extractionType == PageExtractionType.BY_STRING)
+					{
+						this.crawlPageToString(page, entity);
+					}
 
-					}
-					else
-					{
-						throw new InputStreamPageExtractionException("Error in the Http request process");
-					}
 				}
+				else
+				{
+					throw new InputStreamPageExtractionException("Error in the Http request process");
+				}
+
 			}
 
 		}
@@ -261,15 +261,14 @@ public class Crawler implements Runnable
 	}
 
 	/**
-	 * Internal Method extracting the content as an InputStream in case the configuration specifies:</br>
-	 * -{@link PageExtractionType#BY_STREAM}
+	 * Internal Method extracting the content as an InputStream in case the
+	 * configuration specifies:</br> -{@link PageExtractionType#BY_STREAM}
 	 * 
 	 * @param {@link Page}
 	 * @param {@link HttpEntity}
 	 * @throws {@link InputStreamPageExtractionException}
 	 */
-	protected void crawlPageToInputStream(Page page, HttpEntity entity)
-			throws InputStreamPageExtractionException
+	protected void crawlPageToInputStream(Page page, HttpEntity entity) throws InputStreamPageExtractionException
 	{
 		InputStream pageStream = null;
 		InputStream htmlStream = null;
@@ -320,8 +319,8 @@ public class Crawler implements Runnable
 						}
 						catch (IOException e)
 						{
-							LOG.error(
-									"IOException in while closing the stream in parsing thread: crawlToInputStream", e);
+							LOG.error("IOException in while closing the stream in parsing thread: crawlToInputStream",
+									e);
 						}
 					}
 				}
@@ -336,13 +335,17 @@ public class Crawler implements Runnable
 			t.join();
 			htmlStream = tHtmlStream;
 
-			if (page.isContinueProcessing())
-			{
-				// Set the urls extracted from the page, and schedule them by
-				// user code.
-				page.setOutgoingURLs(tHandler.getLinks());
-				this.scheduleURLs(page);
-			}
+			if (!page.isContinueProcessing()) return;
+
+			// Set the urls extracted from the page, and schedule them by
+			// user code.
+			page.setOutgoingURLs(tHandler.getLinks());
+			this.handleOutgoingUrls(page);
+
+			if (!page.isContinueProcessing()) return;
+
+			this.scheduleURLs(page);
+
 		}
 		catch (IOException e)
 		{
@@ -369,8 +372,8 @@ public class Crawler implements Runnable
 	}
 
 	/**
-	 * Internal Method extracting the content as a String in case the configuration specifies:</br>
-	 * -{@link PageExtractionType#BY_STRING}
+	 * Internal Method extracting the content as a String in case the
+	 * configuration specifies:</br> -{@link PageExtractionType#BY_STRING}
 	 * 
 	 * @param {@link Page}
 	 * @param {@link HttpEntity}
@@ -400,16 +403,20 @@ public class Crawler implements Runnable
 			parser.parse(entity.getContent(), teeHandler, metadata, new ParseContext());
 
 			page.setHtml(html.toString());
-			page.setOutgoingURLs(links.getLinks());
 
 			this.processPage(page);
 
-			if (page.isContinueProcessing())
-			{
-				// Set the urls extracted from the page, and schedule them by
-				// user code.
-				this.scheduleURLs(page);
-			}
+			if (!page.isContinueProcessing()) return;
+
+			// The outgoing URLs would be available already. But to have a
+			// consistent behavior
+			// they are kept hidden until now.
+			page.setOutgoingURLs(links.getLinks());
+			this.handleOutgoingUrls(page);
+
+			if (!page.isContinueProcessing()) return;
+
+			this.scheduleURLs(page);
 		}
 		catch (IOException e)
 		{
@@ -426,9 +433,32 @@ public class Crawler implements Runnable
 	}
 
 	/**
-	 * Internal wrapper method to wrap the call of {@link ICrawlBehavior#processPage(Page page)}.
+	 * Internal wrapper method to wrap the call of
+	 * {@link ICrawlBehavior#handleStatuScode(Page)}.
 	 * 
-	 * @param {@link Page}
+	 * @param page
+	 */
+	protected void handleStatusCode(Page page)
+	{
+		this.customCrawlBehavior.handleStatuScode(page);
+	}
+
+	/**
+	 * Internal wrapper method to wrap the call of
+	 * {@link ICrawlBehavior#handleContentSize(Page)}.
+	 * 
+	 * @param page
+	 */
+	protected void handleContentSize(Page page)
+	{
+		this.customCrawlBehavior.handleContentSize(page);
+	}
+
+	/**
+	 * Internal wrapper method to wrap the call of
+	 * {@link ICrawlBehavior#processPage(Page)}.
+	 * 
+	 * @param page
 	 */
 	protected void processPage(Page page)
 	{
@@ -436,9 +466,21 @@ public class Crawler implements Runnable
 	}
 
 	/**
-	 * Internal wrapper method to wrap the call of {@link ICrawlBehavior#processPage(Page page)}.
+	 * Internal wrapper method to wrap the call of
+	 * {@link ICrawlBehavior#handleOutgoingURLs(Page)}.
 	 * 
-	 * @param {@link Page}
+	 * @param page
+	 */
+	protected void handleOutgoingUrls(Page page)
+	{
+		this.customCrawlBehavior.handleOutgoingURLs(page);
+	}
+
+	/**
+	 * Method to schedule the URLs from the page. This method calls
+	 * {@link ICrawlBehavior#processPage(Page page)} as last instance.
+	 * 
+	 * @param page
 	 */
 	protected void scheduleURLs(Page page)
 	{
@@ -453,7 +495,7 @@ public class Crawler implements Runnable
 					cUrl.setUrlDepth(page.getUrl().getUrlDepth() + 1);
 					cUrl.setParentURL(page.getUrl());
 
-					if (this.customCrawlBehavior.shouldScheduleURL(page, cUrl))
+					if (this.customCrawlBehavior.shouldScheduleURL(cUrl))
 					{
 						this.scheduledUrls.scheduleURL(cUrl);
 					}
@@ -462,9 +504,8 @@ public class Crawler implements Runnable
 		}
 	}
 
-	
-	//TODO: Remove all that setters and add a builder instead!!!
-	
+	// TODO: Remove all that setters and add a builder instead!!!
+
 	// -----------Getters and Setters--------------------//
 
 	public void setCustomCrawlBehavior(ICrawlBehavior customCrawlBehavior)

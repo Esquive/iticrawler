@@ -36,7 +36,7 @@ public class Page
 	protected InputStream inStream;
 	protected boolean continueProcessing = true;
 	protected int statusCode = -1;
-	protected Long estimatedLength = 0l;
+	protected Long contentLength = 0l;
 
 	
  	public URLWrapper getUrl()
@@ -157,15 +157,19 @@ public class Page
 		this.continueProcessing = continueProcessing;
 	}
 
-	//TODO: new feature: provide estimated length of a page to decide whether to crwl or not
-	public Long getEstimatedLength()
+	/**
+	 * Returns the content length of the page
+	 * 
+	 * @return
+	 */
+	public Long getContentLength()
 	{
-		return estimatedLength;
+		return contentLength;
 	}
 
-	public void setEstimatedLength(Long estimatedLength)
+	public void setContentLength(Long contentLength)
 	{
-		this.estimatedLength = estimatedLength;
+		this.contentLength = contentLength;
 	}
 
 	/**
