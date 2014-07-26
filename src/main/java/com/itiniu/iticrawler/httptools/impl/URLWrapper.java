@@ -1,5 +1,6 @@
 package com.itiniu.iticrawler.httptools.impl;
 
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
@@ -10,8 +11,11 @@ import java.util.Set;
  * @author Eric Falk <erfalk at gmail dot com>
  *
  */
-public class URLWrapper
+public class URLWrapper implements Serializable
 {
+	
+	private static final long serialVersionUID = 1665293006612443211L;
+	
 	protected URL url = null;
 	protected int hashCode;
 	protected String urlString = null;

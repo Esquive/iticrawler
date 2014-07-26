@@ -50,7 +50,7 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 
 		try
 		{
-			request = new HttpGet(url.toString() + "/robots.txt");
+			request = new HttpGet(url.getProtocol() + "://" + url.getDomain() + "/robots.txt");
 			request.setProtocolVersion(HttpVersion.HTTP_1_1);
 			
 		    response = (CloseableHttpResponse)httpClient.execute(request);
@@ -84,7 +84,7 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 		{
 			try
 			{
-				response.close();
+				if(response != null) response.close();
 			}
 			catch (IOException e)
 			{

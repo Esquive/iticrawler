@@ -22,6 +22,7 @@ public class ProcessedUrlsFileStore implements IProcessedURLStore
 
 		this.processedUrls = db.getHashSet("processedUrls");
 		this.currentlyProcessedUrls = db.getHashSet("currentlyProcessed");
+		this.currentlyProcessedUrls.clear();
 		this.processedHosts = db.getHashMap("processedHosts");
 	}
 
@@ -35,7 +36,7 @@ public class ProcessedUrlsFileStore implements IProcessedURLStore
 	@Override
 	public void addProcessedHost(URLWrapper inURL, Long lastProcessed)
 	{
-		this.processedHosts.put(inURL.hashCode(), lastProcessed);
+		this.processedHosts.put(inURL.getDomain().hashCode(), lastProcessed);
 		db.commit();
 	}
 
@@ -48,7 +49,7 @@ public class ProcessedUrlsFileStore implements IProcessedURLStore
 	@Override
 	public Long lastHostProcessing(URLWrapper inURL)
 	{
-		return this.processedHosts.get(inURL.hashCode());
+		return this.processedHosts.get(inURL.getDomain().hashCode());
 	}
 
 	@Override

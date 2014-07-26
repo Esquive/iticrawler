@@ -93,7 +93,8 @@ public class Crawler implements Runnable
 				this.busy = true;
 
 				if (!this.processedUrls.isCurrentlyProcessedUrl(url) && !this.processedUrls.wasProcessed(url))
-				{ // TODO: Possible race condition
+				{ 
+					// TODO: Possible race condition
 					this.processedUrls.addCurrentlyProcessedUrl(url);
 
 					if (!this.robotTxtData.containsRule(url))
@@ -104,15 +105,18 @@ public class Crawler implements Runnable
 					if (this.robotTxtData.allows(url))
 					{
 						int siteDelay = this.robotTxtData.getDelay(url);
-						long timeStamp;
-						if (siteDelay != -1)
+						Long lastProcessing = this.processedUrls.lastHostProcessing(url);
+						Long timeStamp = 0l;
+						if (lastProcessing != null)
 						{
-							timeStamp = this.processedUrls.lastHostProcessing(url) + (siteDelay * 1000);
-						}
-						else
-						{
-							timeStamp = this.processedUrls.lastHostProcessing(url)
-									+ ConfigSingleton.INSTANCE.getPolitnessDelay();
+							if (siteDelay != -1)
+							{
+								timeStamp = lastProcessing + (siteDelay * 1000);
+							}
+							else
+							{
+								timeStamp = lastProcessing + ConfigSingleton.INSTANCE.getPolitnessDelay();
+							}
 						}
 
 						if (timeStamp <= System.currentTimeMillis())
@@ -173,6 +177,8 @@ public class Crawler implements Runnable
 
 		try
 		{
+			if (this.httpClient == null) this.httpClient = this.httpConnectionManager.getHttpClient();
+
 			// Initializing a page object
 			page = new Page();
 			page.setUrl(url);

@@ -37,7 +37,7 @@ public class RobotTxtAwareHashMap implements IRobotTxtStore
         this.rwLock.readLock().lock();
         try
         {
-            return this.rules.containsKey(url);
+            return this.rules.containsKey(url.getDomain());
         }
         finally {
             this.rwLock.readLock().unlock();
