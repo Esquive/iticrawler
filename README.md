@@ -1,7 +1,7 @@
 itiCrawler
 ==========
 
-The Open Source Framework for Webcrawling.
+The Open Source Framework for Web Crawling.
 
 See how to use the code:
 https://github.com/Esquive/iticrawler/wiki/itiCrawler-Wiki
