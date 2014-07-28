@@ -66,8 +66,21 @@ public class Crawler implements Runnable
 	private IHttpConnectionManager httpConnectionManager = null;
 
 	// Crawler relevant variables
-	private boolean busy = false;
 	private PageExtractionType extractionType;
+
+	public Crawler(IScheduledURLStore scheduledUrls, IProcessedURLStore processedUrls, IRobotTxtStore robotTxtData,
+			ICrawlBehavior customCrawlBehavior, IRobotTxtBehavior robotTxtBehavior,
+			IHttpConnectionManager httpConnectionManager, PageExtractionType extractionType)
+	{
+		super();
+		this.scheduledUrls = scheduledUrls;
+		this.processedUrls = processedUrls;
+		this.robotTxtData = robotTxtData;
+		this.customCrawlBehavior = customCrawlBehavior;
+		this.robotTxtBehavior = robotTxtBehavior;
+		this.httpConnectionManager = httpConnectionManager;
+		this.extractionType = extractionType;
+	}
 
 	@Override
 	public void run()
@@ -90,10 +103,8 @@ public class Crawler implements Runnable
 
 			if (url != null)
 			{
-				this.busy = true;
-
 				if (!this.processedUrls.isCurrentlyProcessedUrl(url) && !this.processedUrls.wasProcessed(url))
-				{ 
+				{
 					// TODO: Possible race condition
 					this.processedUrls.addCurrentlyProcessedUrl(url);
 
@@ -143,8 +154,6 @@ public class Crawler implements Runnable
 						}
 					}
 				}
-
-				this.busy = false;
 			}
 			else
 			{
@@ -508,61 +517,6 @@ public class Crawler implements Runnable
 				}
 			}
 		}
-	}
-
-	// TODO: Remove all that setters and add a builder instead!!!
-
-	// -----------Getters and Setters--------------------//
-
-	public void setCustomCrawlBehavior(ICrawlBehavior customCrawlBehavior)
-	{
-		this.customCrawlBehavior = customCrawlBehavior;
-	}
-
-	public void setHttpConnectionManager(IHttpConnectionManager httpConnectionManager)
-	{
-		this.httpConnectionManager = httpConnectionManager;
-	}
-
-	public void setRobotTxtBehavior(IRobotTxtBehavior robotTxtBehavior)
-	{
-		this.robotTxtBehavior = robotTxtBehavior;
-
-	}
-
-	public void setScheduledUrlsData(IScheduledURLStore scheduledUrls)
-	{
-		this.scheduledUrls = scheduledUrls;
-	}
-
-	public void setProcessedUrlsData(IProcessedURLStore processedUrls)
-	{
-		this.processedUrls = processedUrls;
-	}
-
-	public void setRobotTxtData(IRobotTxtStore robotTxtData)
-	{
-		this.robotTxtData = robotTxtData;
-	}
-
-	public void setHttpClient(HttpClient httpClient)
-	{
-		this.httpClient = httpClient;
-	}
-
-	public boolean isBusy()
-	{
-		return this.busy;
-	}
-
-	public void setExtractionType(PageExtractionType extractionType)
-	{
-		this.extractionType = extractionType;
-	}
-
-	public PageExtractionType getExtractionType()
-	{
-		return this.extractionType;
 	}
 
 }

@@ -189,17 +189,10 @@ public class CrawlController implements Runnable
 	protected Crawler buildCrawler() throws InstantiationException, IllegalAccessException
 	{
 		Crawler crawlerThread = null;
-		crawlerThread = new Crawler();
-		crawlerThread.setCustomCrawlBehavior(ConfigSingleton.INSTANCE.getCustomCrawlBehavior().newInstance());
-		crawlerThread.setScheduledUrlsData(this.scheduledUrls);
-		crawlerThread.setProcessedUrlsData(this.processedUrls);
-		crawlerThread.setRobotTxtData(this.robotTxtData);
-		crawlerThread.setHttpConnectionManager(this.httpConnectionManager);
-		crawlerThread.setExtractionType(ConfigSingleton.INSTANCE.getExtractionType());
-
-		if (ConfigSingleton.INSTANCE.isConsiderRobotTxt()) crawlerThread
-				.setRobotTxtBehavior(new RobotTxtAwareBehavior());
-		else crawlerThread.setRobotTxtBehavior(new RobotTxtUnawareBehavior());
+		crawlerThread = new Crawler(this.scheduledUrls, this.processedUrls, this.robotTxtData, 
+									ConfigSingleton.INSTANCE.getCustomCrawlBehavior().newInstance(),
+									ConfigSingleton.INSTANCE.isConsiderRobotTxt() ? new RobotTxtAwareBehavior() : new RobotTxtUnawareBehavior(),
+									this.httpConnectionManager, ConfigSingleton.INSTANCE.getExtractionType());
 
 		return crawlerThread;
 	}
