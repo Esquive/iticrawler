@@ -7,6 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -189,10 +190,11 @@ public class CrawlController implements Runnable
 	protected Crawler buildCrawler() throws InstantiationException, IllegalAccessException
 	{
 		Crawler crawlerThread = null;
-		crawlerThread = new Crawler(this.scheduledUrls, this.processedUrls, this.robotTxtData, 
-									ConfigSingleton.INSTANCE.getCustomCrawlBehavior().newInstance(),
-									ConfigSingleton.INSTANCE.isConsiderRobotTxt() ? new RobotTxtAwareBehavior() : new RobotTxtUnawareBehavior(),
-									this.httpConnectionManager, ConfigSingleton.INSTANCE.getExtractionType());
+		crawlerThread = new Crawler(this.scheduledUrls, this.processedUrls, this.robotTxtData, ConfigSingleton.INSTANCE
+				.getCustomCrawlBehavior().newInstance(),
+				ConfigSingleton.INSTANCE.isConsiderRobotTxt() ? new RobotTxtAwareBehavior()
+						: new RobotTxtUnawareBehavior(), this.httpConnectionManager,
+				ConfigSingleton.INSTANCE.getExtractionType());
 
 		return crawlerThread;
 	}
@@ -204,10 +206,9 @@ public class CrawlController implements Runnable
 	@Override
 	public void run()
 	{
-		boolean shouldRun = true;
 		int activeThreadCount = -1;
 
-		while (shouldRun)
+		while (true)
 		{
 			try
 			{
@@ -219,16 +220,25 @@ public class CrawlController implements Runnable
 				// If somme threads are not active anymore
 				if (activeThreadCount < ConfigSingleton.INSTANCE.getNumberOfCrawlerThreads())
 				{
-					for (int i = activeThreadCount; i <= ConfigSingleton.INSTANCE.getNumberOfCrawlerThreads(); i++)
+					if (!this.scheduledUrls.isEmpty())
 					{
-						try
+						for (int i = activeThreadCount; i <= ConfigSingleton.INSTANCE.getNumberOfCrawlerThreads(); i++)
 						{
-							((ThreadPoolExecutor) this.crawlerThreadPool).execute(this.buildCrawler());
+							try
+							{
+								((ThreadPoolExecutor) this.crawlerThreadPool).execute(this.buildCrawler());
+							}
+							catch (InstantiationException | IllegalAccessException e)
+							{
+								LOG.error("An error occured while creating a crawler thread");
+							}
 						}
-						catch (InstantiationException | IllegalAccessException e)
-						{
-							LOG.error("An error occured while creating a crawler thread");
-						}
+					}
+					else
+					{
+						//We exit
+						this.crawlerThreadPool.awaitTermination(10, TimeUnit.MINUTES);
+						break;
 					}
 				}
 
