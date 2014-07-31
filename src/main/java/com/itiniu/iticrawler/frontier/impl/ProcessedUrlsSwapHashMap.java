@@ -34,7 +34,7 @@ public class ProcessedUrlsSwapHashMap extends ProcessedUrlsHashMap
 	{
 		this.readWriteLock.writeLock().lock();
 		try
-		{
+		{	
 			if(this.memoryMaxStorage >= this.processedUrlsCount.get())
 			{
 				this.writeBehindPool.execute(
@@ -96,7 +96,7 @@ public class ProcessedUrlsSwapHashMap extends ProcessedUrlsHashMap
 		boolean wasProcessed = super.wasProcessed(inURL);
 		return (!wasProcessed) ? this.fileSwap.wasProcessed(inURL) : wasProcessed;
 	}
-
+	
 	@Override
 	public Long lastHostProcessing(URLWrapper inURL)
 	{
