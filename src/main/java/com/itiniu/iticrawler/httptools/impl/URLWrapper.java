@@ -3,7 +3,6 @@ package com.itiniu.iticrawler.httptools.impl;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
 
 /**
  * Class wrapping the URL type. It contains additional information as the parentURL, the redirecting URL. 
@@ -58,10 +57,6 @@ public class URLWrapper implements Serializable
 		return this.url.getHost();
 	}
 
-	public Set<String> getNonPublicURLParts()
-	{
-		return URLCanonicalizer.filterPublicSuffix(this.url.getHost());
-	}
 
 	public int getUrlDepth()
 	{

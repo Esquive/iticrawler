@@ -24,13 +24,9 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import com.google.common.net.InternetDomainName;
 
 /**
  * 
@@ -222,14 +218,5 @@ public class URLCanonicalizer {
 
 	private static String normalizePath(final String path) {
 		return path.replace("%7E", "~").replace(" ", "%20");
-	}
-
-	public static Set<String> filterPublicSuffix(String url)
-	{
-		    InternetDomainName fullDomainName = InternetDomainName.from(url);
-		    InternetDomainName publicDomainName = fullDomainName.publicSuffix();
-		    Set<String> nonePublicParts = new HashSet<String>(fullDomainName.parts());
-		    nonePublicParts.removeAll(publicDomainName.parts());
-		    return nonePublicParts;
 	}
 }
