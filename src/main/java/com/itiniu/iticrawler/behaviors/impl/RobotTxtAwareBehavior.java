@@ -72,7 +72,7 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 			else
 			{
 				robotTxtData.insertRule(url, new RobotTxtNotFoundDirective());
-				LOG.info("No robots.txt found for page: " + url.toString());
+				LOG.info("No robots.txt found for page: " + url.getDomain());
 			}
 		}
 		catch (IOException e)

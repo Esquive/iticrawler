@@ -53,6 +53,11 @@ public class URLCanonicalizer {
 		try {
 
 			URL canonicalURL;
+			
+			//Clean the URL from unauthorized characters. Other cases might occur.
+			int whiteSpace =  href.indexOf(" ");
+			if (whiteSpace != -1 ) href = href.substring(0,whiteSpace);
+			
 			if (context == null) {
 				canonicalURL = new URL(href);
 			} else {

@@ -200,14 +200,13 @@ public class Crawler implements Runnable
 			// Handling the returned status code
 			pageStatus = response.getStatusLine().getStatusCode();
 			page.setStatusCode(pageStatus);
-			this.handleStatusCode(page);
-
-			// If user decides to stop because of the status code so may it be.
-			if (!page.isContinueProcessing()) return;
+			
 
 			if (pageStatus == HttpStatus.SC_NOT_FOUND)
 			{
-				LOG.info("URL not found: " + url.toString());
+				this.handleStatusCode(page);
+				// If user decides to stop because of the status code so may it be.
+				if (!page.isContinueProcessing()) return;
 			}
 			else if ((pageStatus == HttpStatus.SC_MOVED_TEMPORARILY) || (pageStatus == HttpStatus.SC_MOVED_PERMANENTLY))
 			{
@@ -215,15 +214,28 @@ public class Crawler implements Runnable
 				if (header != null)
 				{
 					url.setRedirectedFrom(url.toString());
-					url.setUrl(URLCanonicalizer.getCanonicalURL(header.getValue()));
+					url.setUrl( header.getValue().startsWith("/") ? 
+							URLCanonicalizer.getCanonicalURL(
+									header.getValue(),url.getProtocol() + "://" + url.getDomain()).toExternalForm():
+										URLCanonicalizer.getCanonicalURL(header.getValue()));
+					
 					if (ConfigSingleton.INSTANCE.isFollowRedirect())
 					{
 						this.scheduledUrls.scheduleURL(url);
 					}
+					
+					this.handleStatusCode(page);
+					// If user decides to stop because of the status code so may it be.
+					if (!page.isContinueProcessing()) return;
 				}
 			}
 			else if (pageStatus == HttpStatus.SC_OK)
 			{
+				
+				this.handleStatusCode(page);
+				// If user decides to stop because of the status code so may it be.
+				if (!page.isContinueProcessing()) return;
+				
 				// Getting the content
 				HttpEntity entity = response.getEntity();
 
