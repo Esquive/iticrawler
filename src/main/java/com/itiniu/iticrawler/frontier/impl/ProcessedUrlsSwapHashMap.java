@@ -10,7 +10,8 @@ import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 public class ProcessedUrlsSwapHashMap extends ProcessedUrlsHashMap
 {
 	private Executor writeBehindPool = null;
-	//TODO: Use parameter
+	
+	//TODO: Add a parameter from config.
 	private int memoryMaxStorage = 100;
 	private ProcessedUrlsFileStore fileSwap = null;
 	

@@ -1,21 +1,34 @@
 package com.itiniu.iticrawler.util.lfu;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.poi.ss.formula.functions.T;
+
 public class FrequencyNode implements Comparable<FrequencyNode>
 {
 	private int frequency;
 	private FrequencyNode next;
 	private FrequencyNode previous;
 	
-	private boolean isHead;
-	private boolean isTail;
+	private Set<ContentNode<T>> children;
 	
-	private int childCount;
-
-	private FrequencyNode()
+	public FrequencyNode(int frequency)
 	{
-		this.frequency = 0;
+		this.children = new HashSet<>();
+		this.frequency = frequency;
 	}
 	
+	public void addChild(ContentNode<T> node)
+	{
+		this.children.add(node);
+	}
+	
+	public void removeChild(ContentNode<T> node)
+	{
+		this.children.remove(node);
+	}
 	
 	public int getFrequency()
 	{
@@ -47,61 +60,31 @@ public class FrequencyNode implements Comparable<FrequencyNode>
 		this.previous = previous;
 	}
 
-	public boolean isHead()
-	{
-		return isHead;
-	}
-
-	public void setHead()
-	{
-		this.isTail = false;
-		this.isHead = true;
-	}
-
-	public boolean isTail()
-	{
-		return isTail;
-	}
-
-	public void setTail()
-	{
-		this.isHead = false;
-		this.isTail = true;
-	}
-
 	public int getChildCount()
 	{
-		return childCount;
+		return this.children.size();
 	}
 
-	public void setChildCount(int childCount)
+	public Collection<ContentNode<T>> getChildren()
 	{
-		this.childCount = childCount;
+		return this.children;
 	}
 
 	@Override
 	public int compareTo(FrequencyNode o)
 	{
-		if(this.frequency < o.frequency)
-		{
-			return -1;
-		}
-		else if(this.frequency == o.frequency)
+		if(this.frequency == o.frequency)
 		{
 			return 0;
+		}
+		else if(this.frequency < o.frequency)
+		{
+			return -1;
 		}
 		else
 		{
 			return 1;
 		}
 	}
-	
-	@Override public int hashCode()
-	{
-		return this.frequency;
-	}
-
-	
-	
 	
 }
