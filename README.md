@@ -14,3 +14,7 @@ Features:
 -Easy to use content by stream download.
 
 -Multiple implementations of frontier storages, in memory, on disk, memory disk swap and distributed (experimental)
+
+
+References:
+[1]: Implemented LFU cache eviction: http://dhruvbird.com/lfu.pdf
