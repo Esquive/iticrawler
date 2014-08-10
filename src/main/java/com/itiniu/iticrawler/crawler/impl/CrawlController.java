@@ -72,6 +72,25 @@ public class CrawlController implements Runnable
 		try
 		{
 			this.initComponents();
+			final ExecutorService pool = this.crawlerThreadPool;
+			Runtime.getRuntime().addShutdownHook(new Thread(){
+				
+				@Override
+				public void run()
+				{
+					
+					try
+					{
+						pool.shutdown();
+						pool.awaitTermination(20, TimeUnit.SECONDS);
+					}
+					catch (InterruptedException e)
+					{
+						LOG.error("Error while shuting down the threadpool");
+					}
+				}
+				
+			});
 		}
 		catch (KeyManagementException | KeyStoreException | NoSuchAlgorithmException e)
 		{
