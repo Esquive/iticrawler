@@ -66,6 +66,7 @@ public enum ConfigSingleton
 	private LiveDataStoragePolicy robotTxtDataStoragePolicy  = LiveDataStoragePolicy.MEMORY;
 	
 	private String storageLocation = "storage";
+	private int maxInMemoryElements = 100;
 
 	
 	public LiveDataStoragePolicy getScheduledUrlsStoragePolicy()
@@ -135,8 +136,21 @@ public enum ConfigSingleton
 		this.storageLocation = storageLocation;
 	}
 	
+	public int getMaxInMemoryElements()
+	{
+		return maxInMemoryElements;
+	}
+
+	public void setMaxInMemoryElements(int maxInMemoryElements)
+	{
+		this.maxInMemoryElements = maxInMemoryElements;
+	}
+	
 //---------------------------------------------------------------------------------------------------------------------
 	
+	
+
+
 	//Crawling relevant
 	private int numberOfCrawlerThreads = 10;
 	private boolean considerRobotTxt = true;

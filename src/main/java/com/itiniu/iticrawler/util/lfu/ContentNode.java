@@ -9,7 +9,7 @@ package com.itiniu.iticrawler.util.lfu;
 public class ContentNode<T>
 {
 	private T nodeContent;
-	private FrequencyNode frequencyNode;
+	private FrequencyNode<T> frequencyNode;
 	
 	public ContentNode(T nodeContent)
 	{
@@ -21,12 +21,12 @@ public class ContentNode<T>
 		return this.nodeContent;
 	}
 
-	public FrequencyNode getFrequencyNode()
+	public FrequencyNode<T> getFrequencyNode()
 	{
 		return frequencyNode;
 	}
 
-	public void setFrequencyNode(FrequencyNode frequencyNode)
+	public void setFrequencyNode(FrequencyNode<T> frequencyNode)
 	{
 		this.frequencyNode = frequencyNode;
 	}

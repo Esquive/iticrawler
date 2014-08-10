@@ -4,13 +4,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.poi.ss.formula.functions.T;
-
-public class FrequencyNode implements Comparable<FrequencyNode>
+public class FrequencyNode<T> implements Comparable<FrequencyNode<T>>
 {
 	private int frequency;
-	private FrequencyNode next;
-	private FrequencyNode previous;
+	private FrequencyNode<T> next;
+	private FrequencyNode<T> previous;
 	
 	private Set<ContentNode<T>> children;
 	
@@ -40,22 +38,22 @@ public class FrequencyNode implements Comparable<FrequencyNode>
 		this.frequency = frequency;
 	}
 
-	public FrequencyNode getNext()
+	public FrequencyNode<T> getNext()
 	{
 		return next;
 	}
 
-	public void setNext(FrequencyNode next)
+	public void setNext(FrequencyNode<T> next)
 	{
 		this.next = next;
 	}
 
-	public FrequencyNode getPrevious()
+	public FrequencyNode<T> getPrevious()
 	{
 		return previous;
 	}
 
-	public void setPrevious(FrequencyNode previous)
+	public void setPrevious(FrequencyNode<T> previous)
 	{
 		this.previous = previous;
 	}
@@ -71,7 +69,7 @@ public class FrequencyNode implements Comparable<FrequencyNode>
 	}
 
 	@Override
-	public int compareTo(FrequencyNode o)
+	public int compareTo(FrequencyNode<T> o)
 	{
 		if(this.frequency == o.frequency)
 		{

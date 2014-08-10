@@ -3,24 +3,24 @@ package com.itiniu.iticrawler.util.lfu;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.poi.ss.formula.functions.T;
 
 /**
  * Class to manage the LFU information for cache eviction
  * @author Eric Falk <erfalk at gmail dot com>
  *
  */
-public class LFUHeap
+public class LFUHeap <T>
 {
 	private AtomicInteger size = new AtomicInteger(0);
-	private FrequencyNode head = new FrequencyNode(0);
+	private FrequencyNode<T> head = new FrequencyNode<T>(0);
 
+	
 	public void addNode(ContentNode<T> node)
 	{
-		FrequencyNode first = this.head.getNext();
+		FrequencyNode<T> first = this.head.getNext();
 		if (first == null)
 		{
-			this.head.setNext(new FrequencyNode(1));
+			this.head.setNext(new FrequencyNode<T>(1));
 			this.head.getNext().addChild(node);
 			this.head.getNext().setPrevious(this.head);
 			node.setFrequencyNode(this.head.getNext());
@@ -35,7 +35,7 @@ public class LFUHeap
 			}
 			else
 			{
-				FrequencyNode newNode = new FrequencyNode(1);
+				FrequencyNode<T> newNode = new FrequencyNode<T>(1);
 				newNode.addChild(node);
 
 				this.head.setNext(newNode);
@@ -51,7 +51,7 @@ public class LFUHeap
 
 	public void incrementFrequency(ContentNode<T> node)
 	{
-		FrequencyNode current, previous, next, newNode;
+		FrequencyNode<T> current, previous, next, newNode;
 		current = node.getFrequencyNode();
 		previous = current.getPrevious();
 		next = current.getNext();
@@ -61,7 +61,7 @@ public class LFUHeap
 
 		if (next == null)
 		{
-			newNode = new FrequencyNode(nextFreq);
+			newNode = new FrequencyNode<T>(nextFreq);
 			newNode.addChild(node);
 			node.setFrequencyNode(newNode);
 			if (current.getChildCount() == 0)
@@ -88,7 +88,7 @@ public class LFUHeap
 		}
 		else if (next.getFrequency() > nextFreq)
 		{
-			newNode = new FrequencyNode(nextFreq);
+			newNode = new FrequencyNode<T>(nextFreq);
 			newNode.addChild(node);
 			newNode.setNext(next);
 			next.setPrevious(newNode);
@@ -109,8 +109,8 @@ public class LFUHeap
 
 	public Collection<ContentNode<T>> getNodesToEvict()
 	{
-		FrequencyNode toEvict = this.head.getNext();
-		FrequencyNode next = toEvict.getNext();
+		FrequencyNode<T> toEvict = this.head.getNext();
+		FrequencyNode<T> next = toEvict.getNext();
 		this.head.setNext(next);
 		next.setPrevious(this.head);
 		return toEvict.getChildren();
