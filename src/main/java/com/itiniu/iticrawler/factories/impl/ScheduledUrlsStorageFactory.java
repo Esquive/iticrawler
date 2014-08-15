@@ -5,6 +5,7 @@ import com.itiniu.iticrawler.factories.inte.IScheduledURLStorageFactory;
 import com.itiniu.iticrawler.frontier.impl.DistributedScheduledUrlsQueue;
 import com.itiniu.iticrawler.frontier.impl.ScheduledUrlsFileStore;
 import com.itiniu.iticrawler.frontier.impl.ScheduledUrlsQueue;
+import com.itiniu.iticrawler.frontier.impl.ScheduledUrlsQueueFileSwap;
 import com.itiniu.iticrawler.frontier.inte.IScheduledURLStore;
 
 /**
@@ -40,6 +41,10 @@ public class ScheduledUrlsStorageFactory implements IScheduledURLStorageFactory
 				toReturn = new ScheduledUrlsFileStore();
 				
 				break;
+				
+			case MEMORY_FILE_SWAP:
+				
+				toReturn = new ScheduledUrlsQueueFileSwap(ConfigSingleton.INSTANCE.getMaxInMemoryElements());
 				
 			default:
 				

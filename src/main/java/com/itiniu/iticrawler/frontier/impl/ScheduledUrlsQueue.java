@@ -8,46 +8,46 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.itiniu.iticrawler.frontier.inte.IScheduledURLStore;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 
-
 public class ScheduledUrlsQueue implements IScheduledURLStore
 {
 	private Queue<URLWrapper> scheduledLinks = null;
 	private Lock readLock = null;
 	private Lock writeLock = null;
-	
+
 	public ScheduledUrlsQueue()
 	{
 		this.scheduledLinks = new LinkedList<>();
 		this.readLock = new ReentrantLock();
 		this.writeLock = new ReentrantLock();
 	}
-	
-	
+
 	@Override
 	public boolean isEmpty()
 	{
 		this.readLock.lock();
 
-        try{
-            return this.scheduledLinks.isEmpty();
-        }
-        finally
-        {
-            this.readLock.unlock();
-        }
+		try
+		{
+			return this.scheduledLinks.isEmpty();
+		}
+		finally
+		{
+			this.readLock.unlock();
+		}
 	}
 
 	@Override
 	public void scheduleURL(URLWrapper inURL)
 	{
 		this.writeLock.lock();
-		try{
-            this.scheduledLinks.add(inURL);
-        }
-        finally
-        {
-            this.writeLock.unlock();
-        }
+		try
+		{
+			this.scheduledLinks.add(inURL);
+		}
+		finally
+		{
+			this.writeLock.unlock();
+		}
 
 	}
 
@@ -56,34 +56,15 @@ public class ScheduledUrlsQueue implements IScheduledURLStore
 	{
 		this.readLock.lock();
 
-        try {
-            return this.scheduledLinks.poll();
-        }
-        finally {
-            this.readLock.unlock();
-        }
+		try
+		{
+			return this.scheduledLinks.poll();
+		}
+		finally
+		{
+			this.readLock.unlock();
+		}
 
 	}
 
-
-	@Override
-	public void scheduleUniqueUrl(URLWrapper inUrl)
-	{
-		this.readLock.lock();
-        this.writeLock.lock();
-        try
-        {
-		    if(!this.scheduledLinks.contains(inUrl))
-		    {
-			    this.readLock.unlock();
-			
-			    this.scheduledLinks.add(inUrl);
-		    }
-        }
-        finally {
-            this.writeLock.unlock();
-            this.readLock.unlock();
-        }
-    }
-	
 }

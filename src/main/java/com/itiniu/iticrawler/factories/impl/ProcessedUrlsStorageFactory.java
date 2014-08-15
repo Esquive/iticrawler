@@ -5,6 +5,7 @@ import com.itiniu.iticrawler.factories.inte.IProcessedURLStorageFactory;
 import com.itiniu.iticrawler.frontier.impl.DistributedProcessedUrlsMap;
 import com.itiniu.iticrawler.frontier.impl.ProcessedUrlsFileStore;
 import com.itiniu.iticrawler.frontier.impl.ProcessedUrlsHashMap;
+import com.itiniu.iticrawler.frontier.impl.ProcessedUrlsSwapHashMap;
 import com.itiniu.iticrawler.frontier.inte.IProcessedURLStore;
 
 /**
@@ -38,6 +39,10 @@ public class ProcessedUrlsStorageFactory implements IProcessedURLStorageFactory
 				
 				toReturn = new ProcessedUrlsFileStore();
 				
+				break;
+				
+			case MEMORY_FILE_SWAP:
+				toReturn = new ProcessedUrlsSwapHashMap(ConfigSingleton.INSTANCE.getMaxInMemoryElements(), ConfigSingleton.INSTANCE.getEviction());
 				break;
 				
 			default:

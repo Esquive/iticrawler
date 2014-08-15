@@ -19,14 +19,7 @@ public interface IScheduledURLStore
 	public void scheduleURL(URLWrapper url);
 
 	/**
-	 * Method to schedule an URL only if it is not already in the frontier.
-	 * 
-	 * @param url
-	 */
-	public void scheduleUniqueUrl(URLWrapper url);
-
-	/**
-	 * Returns the next URL to crawl. 
+	 * Returns the next URL to crawl.
 	 * 
 	 * @return
 	 */
@@ -34,6 +27,7 @@ public interface IScheduledURLStore
 
 	/**
 	 * Check if the frontier is empty.
+	 * 
 	 * @return
 	 */
 	public boolean isEmpty();

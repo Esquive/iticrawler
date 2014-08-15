@@ -1,5 +1,6 @@
 package com.itiniu.iticrawler.rotottxtdata.impl;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -8,19 +9,28 @@ import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.crawler.inte.IRobotTxtDirective;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
+import com.itiniu.iticrawler.util.eviction.EvictionPolicy;
 import com.itiniu.iticrawler.util.eviction.lfu.LFUCache;
+import com.itiniu.iticrawler.util.eviction.lru.LRUCache;
 
 public class RobotTxtSwapHashMap implements IRobotTxtStore
 {
-	private LFUCache<String, IRobotTxtDirective> rules = null;
+	private Map<String, IRobotTxtDirective> rules = null;
 	private IRobotTxtStore diskSwap = null;
 	private ReentrantReadWriteLock lock = null;
 	private ExecutorService writeBehindService = null;
 
-	//TODO: add parameter for the Eviction strategy
-	public RobotTxtSwapHashMap(int maxSize)
+	
+	public RobotTxtSwapHashMap(int maxSize, EvictionPolicy eviction)
 	{
-		this.rules = new LFUCache<>(maxSize);
+		if(eviction == EvictionPolicy.LFU)
+		{
+			this.rules = new LFUCache<>(maxSize);
+		}
+		else
+		{
+			this.rules = new LRUCache<>(maxSize);
+		}
 		this.diskSwap = new RobotTxtFileStore();
 		this.lock = new ReentrantReadWriteLock(true);
 		this.writeBehindService = Executors.newFixedThreadPool(ConfigSingleton.INSTANCE.getNumberOfCrawlerThreads());

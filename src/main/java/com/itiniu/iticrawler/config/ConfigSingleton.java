@@ -6,37 +6,40 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import com.itiniu.iticrawler.behaviors.inte.ICrawlBehavior;
 import com.itiniu.iticrawler.crawler.PageExtractionType;
 import com.itiniu.iticrawler.util.LiveDataStoragePolicy;
+import com.itiniu.iticrawler.util.eviction.EvictionPolicy;
 
 public enum ConfigSingleton
 {
 	INSTANCE;
 
-	//Http Connection relevant
+	// Http Connection relevant
 	private int maxConnections = 100;
 	private int maxConnectionsPerHost = 100;
 	private int socketTimeout = 20000;
 	private int connectionTimeout = 30000;
-	
+
 	private ClusterConfig clusterConfig;
-		
-	public void setMaxConnections(int param) {
+
+	public void setMaxConnections(int param)
+	{
 		maxConnections = param;
 	}
-	
+
 	public int getMaxConnections()
 	{
 		return maxConnections;
 	}
 
-	public void setMaxConnectionsPerHost(int param) {
+	public void setMaxConnectionsPerHost(int param)
+	{
 		maxConnectionsPerHost = param;
 	}
-	
+
 	public int getMaxConnectionsPerHost()
 	{
 		return maxConnectionsPerHost;
 	}
-	
+
 	public int getSocketTimeout()
 	{
 		return socketTimeout;
@@ -57,32 +60,30 @@ public enum ConfigSingleton
 		this.connectionTimeout = connectionTimeout;
 	}
 
+	// ---------------------------------------------------------------------------------------------------------------
 
-//---------------------------------------------------------------------------------------------------------------
+	// Real-time Data-Storage relevant
+	private LiveDataStoragePolicy scheduledUrlsStoragePolicy = LiveDataStoragePolicy.MEMORY_FILE_SWAP;
+	private LiveDataStoragePolicy processedUrlsStoragePolicy = LiveDataStoragePolicy.MEMORY_FILE_SWAP;
+	private LiveDataStoragePolicy robotTxtDataStoragePolicy = LiveDataStoragePolicy.MEMORY_FILE_SWAP;
 
-	//Real-time Data-Storage relevant
-	private LiveDataStoragePolicy scheduledUrlsStoragePolicy = LiveDataStoragePolicy.MEMORY;
-	private LiveDataStoragePolicy processedUrlsStoragePolicy = LiveDataStoragePolicy.MEMORY;
-	private LiveDataStoragePolicy robotTxtDataStoragePolicy  = LiveDataStoragePolicy.MEMORY;
-	
+	private EvictionPolicy eviction = EvictionPolicy.LFU;
 	private String storageLocation = "storage";
+	private int maxInMemoryElements = 100;
 
-	
 	public LiveDataStoragePolicy getScheduledUrlsStoragePolicy()
 	{
 		return scheduledUrlsStoragePolicy;
 	}
 
-	public void setScheduledUrlsStoragePolicy(
-			LiveDataStoragePolicy scheduledUrlsStoragePolicy)
+	public void setScheduledUrlsStoragePolicy(LiveDataStoragePolicy scheduledUrlsStoragePolicy)
 	{
 		this.scheduledUrlsStoragePolicy = scheduledUrlsStoragePolicy;
-		
-		if(this.scheduledUrlsStoragePolicy == LiveDataStoragePolicy.MEMORY
-				   && this.clusterConfig == null)
-				{
-					this.clusterConfig = new ClusterConfig();
-				}
+
+		if (this.scheduledUrlsStoragePolicy == LiveDataStoragePolicy.MEMORY && this.clusterConfig == null)
+		{
+			this.clusterConfig = new ClusterConfig();
+		}
 	}
 
 	public LiveDataStoragePolicy getProcessedUrlsStoragePolicy()
@@ -90,13 +91,11 @@ public enum ConfigSingleton
 		return processedUrlsStoragePolicy;
 	}
 
-	public void setProcessedUrlsStoragePolicy(
-			LiveDataStoragePolicy processedUrlsStoragePolicy)
+	public void setProcessedUrlsStoragePolicy(LiveDataStoragePolicy processedUrlsStoragePolicy)
 	{
 		this.processedUrlsStoragePolicy = processedUrlsStoragePolicy;
-		
-		if(this.processedUrlsStoragePolicy == LiveDataStoragePolicy.MEMORY
-		   && this.clusterConfig == null)
+
+		if (this.processedUrlsStoragePolicy == LiveDataStoragePolicy.MEMORY && this.clusterConfig == null)
 		{
 			this.clusterConfig = new ClusterConfig();
 		}
@@ -107,53 +106,68 @@ public enum ConfigSingleton
 		return robotTxtDataStoragePolicy;
 	}
 
-	public void setRobotTxtDataStoragePolicy(
-			LiveDataStoragePolicy robotTxtDataStoragePolicy)
+	public void setRobotTxtDataStoragePolicy(LiveDataStoragePolicy robotTxtDataStoragePolicy)
 	{
 		this.robotTxtDataStoragePolicy = robotTxtDataStoragePolicy;
-		
-		if(this.robotTxtDataStoragePolicy == LiveDataStoragePolicy.MEMORY
-				   && this.clusterConfig == null)
-				{
-					this.clusterConfig = new ClusterConfig();
-				}
-		
+
+		if (this.robotTxtDataStoragePolicy == LiveDataStoragePolicy.MEMORY && this.clusterConfig == null)
+		{
+			this.clusterConfig = new ClusterConfig();
+		}
+
 	}
-	
+
 	public ClusterConfig getClusterConfig()
 	{
 		return this.clusterConfig;
 	}
-	
+
 	public String getStorageLocation()
 	{
 		return this.storageLocation;
 	}
-	
+
 	public void setStorageLocation(String storageLocation)
 	{
 		this.storageLocation = storageLocation;
 	}
-	
-//---------------------------------------------------------------------------------------------------------------------
-	
-	//Crawling relevant
+
+	public int getMaxInMemoryElements()
+	{
+		return maxInMemoryElements;
+	}
+
+	public void setMaxInMemoryElements(int maxInMemoryElements)
+	{
+		this.maxInMemoryElements = maxInMemoryElements;
+	}
+
+	public EvictionPolicy getEviction()
+	{
+		return eviction;
+	}
+
+	public void setEviction(EvictionPolicy eviction)
+	{
+		this.eviction = eviction;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------------------
+
+	// Crawling relevant
 	private int numberOfCrawlerThreads = 10;
 	private boolean considerRobotTxt = true;
 	private int politnessDelay = 1000;
 	private int maxCrawlDepth = -1;
 	private String userAgent = "itiCrawler";
 	private boolean stopOnInactivity = false;
-    private PageExtractionType extractionType = PageExtractionType.BY_STREAM;
-    private boolean followRedirect = true;
-    private int maxHostsToCrawl = 0;
-	
+	private PageExtractionType extractionType = PageExtractionType.BY_STREAM;
+	private boolean followRedirect = true;
+	private int maxHostsToCrawl = 0;
+
 	private Class<? extends ICrawlBehavior> customCrawlBehavior = null;
 	private ReadWriteLock behaviorLock = new ReentrantReadWriteLock();
-	
 
-	
-	
 	public int getNumberOfCrawlerThreads()
 	{
 		return numberOfCrawlerThreads;
@@ -205,40 +219,42 @@ public enum ConfigSingleton
 	}
 
 	public Class<? extends ICrawlBehavior> getCustomCrawlBehavior()
-	{		
+	{
 		behaviorLock.readLock().lock();
 		Class<? extends ICrawlBehavior> toReturn = customCrawlBehavior;
 		behaviorLock.readLock().unlock();
-		
+
 		return toReturn;
 	}
 
-	public void setCustomCrawlBehavior(
-			Class<? extends ICrawlBehavior> customCrawlBehavior)
+	public void setCustomCrawlBehavior(Class<? extends ICrawlBehavior> customCrawlBehavior)
 	{
 		behaviorLock.writeLock().lock();
 		this.customCrawlBehavior = customCrawlBehavior;
 		behaviorLock.writeLock().unlock();
 	}
 
-	public boolean isStopOnInactivity() {
+	public boolean isStopOnInactivity()
+	{
 		return stopOnInactivity;
 	}
 
-	public void setStopOnInactivity(boolean stopOnInactivity) {
+	public void setStopOnInactivity(boolean stopOnInactivity)
+	{
 		this.stopOnInactivity = stopOnInactivity;
 	}
 
-    public PageExtractionType getExtractionType() {
-        return extractionType;
-    }
+	public PageExtractionType getExtractionType()
+	{
+		return extractionType;
+	}
 
-    public void setExtractionType(PageExtractionType extractionType) {
-        this.extractionType = extractionType;
-    }
+	public void setExtractionType(PageExtractionType extractionType)
+	{
+		this.extractionType = extractionType;
+	}
 
-	
-    public boolean isFollowRedirect()
+	public boolean isFollowRedirect()
 	{
 		return followRedirect;
 	}
@@ -258,5 +274,4 @@ public enum ConfigSingleton
 		this.maxHostsToCrawl = maxHostsToCrawl;
 	}
 
-    
 }

@@ -12,27 +12,17 @@ public class ScheduledUrlsFileStore implements IScheduledURLStore
 {
 	DB db = null;
 	Queue<URLWrapper> scheduled = null;
-	
+
 	public ScheduledUrlsFileStore()
 	{
 		this.db = FileStorageConfig.INSTANCE.getStorageProvider();
 		this.scheduled = db.getQueue("scheduled");
 	}
-	
+
 	@Override
 	public void scheduleURL(URLWrapper inURL)
 	{
 		this.scheduled.add(inURL);
-	}
-
-	@Override
-	public void scheduleUniqueUrl(URLWrapper inUrl)
-	{
-		if(!this.scheduled.contains(inUrl))
-		{
-			this.scheduled.add(inUrl);
-			this.db.commit();
-		}	
 	}
 
 	@Override
@@ -48,5 +38,5 @@ public class ScheduledUrlsFileStore implements IScheduledURLStore
 	{
 		return this.scheduled.isEmpty();
 	}
-	
+
 }
