@@ -1,4 +1,4 @@
-package com.itiniu.iticrawler.util.lfu;
+package com.itiniu.iticrawler.util.eviction.lfu;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -9,18 +9,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Eric Falk <erfalk at gmail dot com>
  *
  */
-public class LFUHeap <T>
+public class LFUHeap <K,V>
 {
 	private AtomicInteger size = new AtomicInteger(0);
-	private FrequencyNode<T> head = new FrequencyNode<T>(0);
+	private FrequencyNode<K,V> head = new FrequencyNode<K,V>(0);
 
 	
-	public void addNode(ContentNode<T> node)
+	public void addNode(LFUEntry<K,V> node)
 	{
-		FrequencyNode<T> first = this.head.getNext();
+		FrequencyNode<K,V> first = this.head.getNext();
 		if (first == null)
 		{
-			this.head.setNext(new FrequencyNode<T>(1));
+			this.head.setNext(new FrequencyNode<K,V>(1));
 			this.head.getNext().addChild(node);
 			this.head.getNext().setPrevious(this.head);
 			node.setFrequencyNode(this.head.getNext());
@@ -35,7 +35,7 @@ public class LFUHeap <T>
 			}
 			else
 			{
-				FrequencyNode<T> newNode = new FrequencyNode<T>(1);
+				FrequencyNode<K,V> newNode = new FrequencyNode<K,V>(1);
 				newNode.addChild(node);
 
 				this.head.setNext(newNode);
@@ -49,9 +49,9 @@ public class LFUHeap <T>
 
 	}
 
-	public void incrementFrequency(ContentNode<T> node)
+	public void incrementFrequency(LFUEntry<K,V> node)
 	{
-		FrequencyNode<T> current, previous, next, newNode;
+		FrequencyNode<K,V> current, previous, next, newNode;
 		current = node.getFrequencyNode();
 		previous = current.getPrevious();
 		next = current.getNext();
@@ -61,13 +61,13 @@ public class LFUHeap <T>
 
 		if (next == null)
 		{
-			newNode = new FrequencyNode<T>(nextFreq);
+			newNode = new FrequencyNode<K,V>(nextFreq);
 			newNode.addChild(node);
 			node.setFrequencyNode(newNode);
 			if (current.getChildCount() == 0)
 			{
 				newNode.setPrevious(previous);
-				newNode.setNext(newNode);
+				previous.setNext(newNode);
 			}
 			else
 			{
@@ -88,7 +88,7 @@ public class LFUHeap <T>
 		}
 		else if (next.getFrequency() > nextFreq)
 		{
-			newNode = new FrequencyNode<T>(nextFreq);
+			newNode = new FrequencyNode<K,V>(nextFreq);
 			newNode.addChild(node);
 			newNode.setNext(next);
 			next.setPrevious(newNode);
@@ -107,10 +107,24 @@ public class LFUHeap <T>
 		}
 	}
 
-	public Collection<ContentNode<T>> getNodesToEvict()
+	public void removeNode(LFUEntry<K,V> node)
 	{
-		FrequencyNode<T> toEvict = this.head.getNext();
-		FrequencyNode<T> next = toEvict.getNext();
+		FrequencyNode<K, V> freq = node.getFrequencyNode();
+		freq.removeChild(node);
+		if(freq.getChildCount() == 0)
+		{
+			FrequencyNode<K, V> next = freq.getNext();
+			FrequencyNode<K, V> prev = freq.getPrevious();
+			
+			prev.setNext(next);
+			next.setPrevious(prev);
+		}
+	}
+	
+	public Collection<LFUEntry<K,V>> getNodesToEvict()
+	{
+		FrequencyNode<K,V> toEvict = this.head.getNext();
+		FrequencyNode<K,V> next = toEvict.getNext();
 		this.head.setNext(next);
 		next.setPrevious(this.head);
 		return toEvict.getChildren();

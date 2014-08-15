@@ -1,7 +1,5 @@
 package com.itiniu.iticrawler.frontier.impl;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -14,20 +12,16 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.frontier.inte.IProcessedURLStore;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
-import com.itiniu.iticrawler.util.lfu.ContentNode;
-import com.itiniu.iticrawler.util.lfu.LFUHeap;
+import com.itiniu.iticrawler.util.eviction.lfu.LFUCache;
 
 public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 {
 
 	private int memoryMaxStorage;
 
-	private Set<Integer> processedUrls = null;
+	private Map<Integer, Boolean> processedUrls = null;
 	private Set<Integer> currentlyProcessedUrls = null;
 	private Map<Integer, Long> processedHosts = null;
-
-	private LFUHeap<Integer> processedUrlsHeap = null;
-	private LFUHeap<Integer> processedHostsHeap = null;
 
 	private AtomicInteger processedUrlsCount = null;
 	private AtomicInteger processedHostsCount = null;
@@ -40,16 +34,14 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 	private ReadWriteLock crawledHostWriteLock = null;
 	private ReadWriteLock currentReadWriteLock = null;
 
+	//TODO: add a parameter for switching eviction algorithms
 	public ProcessedUrlsSwapHashMap(int maxStorageSize)
 	{
 		this.memoryMaxStorage = maxStorageSize;
 
-		this.processedUrls = new HashSet<>();
+		this.processedUrls = new LFUCache<>(this.memoryMaxStorage);
 		this.currentlyProcessedUrls = new HashSet<>();
-		this.processedHosts = new HashMap<>();
-
-		this.processedUrlsHeap = new LFUHeap<>();
-		this.processedHostsHeap = new LFUHeap<>();
+		this.processedHosts = new LFUCache<>(this.memoryMaxStorage);
 
 		this.processedUrlsCount = new AtomicInteger(0);
 		this.processedHostsCount = new AtomicInteger(0);
@@ -69,16 +61,8 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		this.rwLock.writeLock().lock();
 		try
 		{
-			if (this.memoryMaxStorage >= this.processedUrlsCount.get())
-			{
-				Collection<ContentNode<Integer>> toEvict = this.processedUrlsHeap.getNodesToEvict();
-				for (ContentNode<Integer> cont : toEvict)
-				{
-					this.processedUrls.remove(cont.getContent());
-					this.processedUrlsCount.decrementAndGet();
-				}
-
-			}
+			this.processedUrls.put(inURL.hashCode(), Boolean.TRUE);
+			this.processedUrlsCount.incrementAndGet();
 
 			// All elements are written to disk in a write behind fashion.
 			this.writeBehindPool.execute(new Runnable() {
@@ -89,10 +73,6 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 					fileSwap.addProcessedURL(inURL);
 				}
 			});
-
-			this.processedUrls.add(inURL.hashCode());
-			this.processedUrlsHeap.addNode(new ContentNode<Integer>(inURL.hashCode()));
-			this.processedUrlsCount.incrementAndGet();
 		}
 		finally
 		{
@@ -106,15 +86,8 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		this.crawledHostWriteLock.writeLock().lock();
 		try
 		{
-			if (this.memoryMaxStorage >= this.processedHostsCount.get())
-			{
-				Collection<ContentNode<Integer>> toEvict = this.processedHostsHeap.getNodesToEvict();
-				for (ContentNode<Integer> cont : toEvict)
-				{
-					this.processedHosts.remove(cont.getContent());
-					this.processedHostsCount.decrementAndGet();
-				}
-			}
+			this.processedHosts.put(inURL.hashCode(), lastProcessed);
+			this.processedHostsCount.incrementAndGet();
 
 			this.writeBehindPool.execute(new Runnable() {
 
@@ -124,11 +97,6 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 					fileSwap.addProcessedHost(inURL, lastProcessed);
 				}
 			});
-
-			this.processedHosts.put(inURL.getDomain().hashCode(), lastProcessed);
-			this.processedHostsHeap.addNode(new ContentNode<Integer>(inURL.getDomain().hashCode()));
-			this.processedHostsCount.incrementAndGet();
-
 		}
 		finally
 		{
@@ -142,9 +110,15 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		this.rwLock.readLock().lock();
 		try
 		{
-			//TODO: reload it in memory
-			boolean wasProcessed = this.processedUrls.contains(inURL.hashCode());
-			return (!wasProcessed) ? this.fileSwap.wasProcessed(inURL) : wasProcessed;
+			boolean wasProcessed = this.processedUrls.containsKey(inURL.hashCode());
+			wasProcessed = this.fileSwap.wasProcessed(inURL);
+			
+			if(wasProcessed)
+			{
+				this.reloadUrlToMemory(inURL);
+			}
+			
+			return wasProcessed;
 		}
 		finally
 		{
@@ -158,9 +132,14 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		this.crawledHostWriteLock.readLock().lock();
 		try
 		{
-			//TODO: reload to memory
 			Long time = this.processedHosts.get(inURL.getDomain().hashCode());
-			return (time != null) ? time : this.fileSwap.lastHostProcessing(inURL);
+			time = this.fileSwap.lastHostProcessing(inURL);
+			if (time != null)
+			{
+				this.reloadHostToMemory(inURL, time);
+			}
+			
+			return time;
 		}
 		finally
 		{
@@ -204,8 +183,9 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 			else
 			{
 				this.currentlyProcessedUrls.add(inUrl.hashCode());
-				this.currentlyProcessedCounter.incrementAndGet();
 			}
+			
+			this.currentlyProcessedCounter.incrementAndGet();
 
 		}
 		finally
@@ -241,8 +221,47 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 	@Override
 	public boolean canCrawlHost(URLWrapper inUrl, int maxHostCount)
 	{
-		//TODO:
-		return true;
+		if(this.processedHostsCount.get() < maxHostCount)
+			return true;
+		
+		if(this.processedHostsCount.get() == maxHostCount)
+		{
+			if(this.processedHosts.containsKey(inUrl.getDomain().hashCode()) || this.fileSwap.canCrawlHost(inUrl, maxHostCount))
+				return true;
+		}
+		
+		return false;
 	}
 
+	private void reloadHostToMemory(URLWrapper url, long lastProcessing)
+	{
+		this.crawledHostWriteLock.readLock().unlock();
+		this.crawledHostWriteLock.writeLock().lock();
+		try
+		{
+			this.processedHosts.put(url.getDomain().hashCode(),lastProcessing);
+		}
+		finally
+		{
+			this.crawledHostWriteLock.writeLock().unlock();
+			this.crawledHostWriteLock.readLock().lock();
+		}
+	}
+	
+	private void reloadUrlToMemory(URLWrapper url)
+	{
+		this.rwLock.readLock().unlock();
+		this.rwLock.writeLock().lock();
+		try
+		{
+			this.processedUrls.put(url.hashCode(),Boolean.TRUE);
+		}
+		finally
+		{
+			this.rwLock.writeLock().unlock();
+			this.rwLock.readLock().lock();
+		}
+	}
+	
+	
 }

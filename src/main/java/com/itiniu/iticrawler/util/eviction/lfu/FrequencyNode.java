@@ -1,16 +1,16 @@
-package com.itiniu.iticrawler.util.lfu;
+package com.itiniu.iticrawler.util.eviction.lfu;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class FrequencyNode<T> implements Comparable<FrequencyNode<T>>
+public class FrequencyNode<K,V> implements Comparable<FrequencyNode<K,V>>
 {
 	private int frequency;
-	private FrequencyNode<T> next;
-	private FrequencyNode<T> previous;
+	private FrequencyNode<K,V> next;
+	private FrequencyNode<K,V> previous;
 	
-	private Set<ContentNode<T>> children;
+	private Set<LFUEntry<K,V>> children;
 	
 	public FrequencyNode(int frequency)
 	{
@@ -18,12 +18,12 @@ public class FrequencyNode<T> implements Comparable<FrequencyNode<T>>
 		this.frequency = frequency;
 	}
 	
-	public void addChild(ContentNode<T> node)
+	public void addChild(LFUEntry<K,V> node)
 	{
 		this.children.add(node);
 	}
 	
-	public void removeChild(ContentNode<T> node)
+	public void removeChild(LFUEntry<K,V> node)
 	{
 		this.children.remove(node);
 	}
@@ -38,22 +38,22 @@ public class FrequencyNode<T> implements Comparable<FrequencyNode<T>>
 		this.frequency = frequency;
 	}
 
-	public FrequencyNode<T> getNext()
+	public FrequencyNode<K,V> getNext()
 	{
 		return next;
 	}
 
-	public void setNext(FrequencyNode<T> next)
+	public void setNext(FrequencyNode<K,V> next)
 	{
 		this.next = next;
 	}
 
-	public FrequencyNode<T> getPrevious()
+	public FrequencyNode<K,V> getPrevious()
 	{
 		return previous;
 	}
 
-	public void setPrevious(FrequencyNode<T> previous)
+	public void setPrevious(FrequencyNode<K,V> previous)
 	{
 		this.previous = previous;
 	}
@@ -63,13 +63,13 @@ public class FrequencyNode<T> implements Comparable<FrequencyNode<T>>
 		return this.children.size();
 	}
 
-	public Collection<ContentNode<T>> getChildren()
+	public Collection<LFUEntry<K,V>> getChildren()
 	{
 		return this.children;
 	}
 
 	@Override
-	public int compareTo(FrequencyNode<T> o)
+	public int compareTo(FrequencyNode<K,V> o)
 	{
 		if(this.frequency == o.frequency)
 		{

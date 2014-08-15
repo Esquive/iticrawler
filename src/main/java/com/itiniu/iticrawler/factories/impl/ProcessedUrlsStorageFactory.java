@@ -43,7 +43,6 @@ public class ProcessedUrlsStorageFactory implements IProcessedURLStorageFactory
 				
 			case MEMORY_FILE_SWAP:
 				toReturn = new ProcessedUrlsSwapHashMap(ConfigSingleton.INSTANCE.getMaxInMemoryElements());
-				
 				break;
 				
 			default:

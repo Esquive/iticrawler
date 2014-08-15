@@ -5,6 +5,7 @@ import com.itiniu.iticrawler.factories.inte.IRobotTxtStorageFactory;
 import com.itiniu.iticrawler.rotottxtdata.impl.DistributedRobotTxtMap;
 import com.itiniu.iticrawler.rotottxtdata.impl.RobotTxtAwareHashMap;
 import com.itiniu.iticrawler.rotottxtdata.impl.RobotTxtFileStore;
+import com.itiniu.iticrawler.rotottxtdata.impl.RobotTxtSwapHashMap;
 import com.itiniu.iticrawler.rotottxtdata.impl.RobotTxtUnawareData;
 import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
 
@@ -42,6 +43,10 @@ public class RobotTxtStorageFactory implements IRobotTxtStorageFactory
 					
 				case FILE:
 					toReturn = new RobotTxtFileStore();
+					break;
+					
+				case MEMORY_FILE_SWAP:
+					toReturn = new RobotTxtSwapHashMap(ConfigSingleton.INSTANCE.getMaxInMemoryElements());
 					break;
 			default:
 				toReturn = new RobotTxtAwareHashMap();
