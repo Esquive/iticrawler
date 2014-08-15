@@ -36,11 +36,11 @@ import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.httptools.inte.IHttpConnectionManager;
 
 /**
- * Implementation of the {@link IHttpConnectionManager}. This implementation handles the connections
- * with an connection pool under the hood. 
- * HTTP Connection Pool for the crawler threads. This class contains a factory
- * method the {@link HttpClient} used by the crawler threads. These clients are
- * managed by a http connection pool.
+ * Implementation of the {@link IHttpConnectionManager}. This implementation
+ * handles the connections with an connection pool under the hood. HTTP
+ * Connection Pool for the crawler threads. This class contains a factory method
+ * the {@link HttpClient} used by the crawler threads. These clients are managed
+ * by a http connection pool.
  * 
  * @author Eric Falk <erfalk at gmail dot com>
  * 
@@ -109,41 +109,45 @@ public class HttpPoolingConnectionManager implements IHttpConnectionManager, Run
 		this.httpClientGenerationLock = new ReentrantLock();
 	}
 
-	
 	@Override
 	public HttpClient getHttpClient()
 	{
 		this.httpClientGenerationLock.lock();
+		try
+		{
+			HttpClient toReturn = HttpClients
+					.custom()
+					.setConnectionManager(this.mConnectionManager)
+					.setDefaultRequestConfig(
+							RequestConfig.custom().setConnectTimeout(ConfigSingleton.INSTANCE.getConnectionTimeout())
+									.setCookieSpec(CookieSpecs.BROWSER_COMPATIBILITY).setExpectContinueEnabled(false)
+									.build()).addInterceptorFirst(new GzipEncodedRequestInterceptor())
+					.addInterceptorFirst(new GzipEncodedResponseInterceptor())
+					.setRedirectStrategy(new RedirectStrategy() {
 
-		HttpClient toReturn = HttpClients
-				.custom()
-				.setConnectionManager(this.mConnectionManager)
-				.setDefaultRequestConfig(
-						RequestConfig.custom().setConnectTimeout(ConfigSingleton.INSTANCE.getConnectionTimeout())
-								.setCookieSpec(CookieSpecs.BROWSER_COMPATIBILITY).setExpectContinueEnabled(false)
-								.build()).addInterceptorFirst(new GzipEncodedRequestInterceptor())
-				.addInterceptorFirst(new GzipEncodedResponseInterceptor()).setRedirectStrategy(new RedirectStrategy() {
+						@Override
+						public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context)
+								throws ProtocolException
+						{
+							// We don't follow redirects
+							return false;
+						}
 
-					@Override
-					public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context)
-							throws ProtocolException
-					{
-						// We don't follow redirects
-						return false;
-					}
+						@Override
+						public HttpUriRequest getRedirect(HttpRequest request, HttpResponse response,
+								HttpContext context) throws ProtocolException
+						{
+							return null;
+						}
+					}).setUserAgent(ConfigSingleton.INSTANCE.getUserAgent()).build();
 
-					@Override
-					public HttpUriRequest getRedirect(HttpRequest request, HttpResponse response, HttpContext context)
-							throws ProtocolException
-					{
-						return null;
-					}
-				}).setUserAgent(ConfigSingleton.INSTANCE.getUserAgent()).build();
+			return toReturn;
 
-		this.httpClientGenerationLock.unlock();
-
-		return toReturn;
-
+		}
+		finally
+		{
+			this.httpClientGenerationLock.unlock();
+		}
 	}
 
 }
