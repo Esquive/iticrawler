@@ -12,7 +12,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.frontier.inte.IProcessedURLStore;
 import com.itiniu.iticrawler.httptools.impl.URLWrapper;
+import com.itiniu.iticrawler.util.eviction.EvictionPolicy;
 import com.itiniu.iticrawler.util.eviction.lfu.LFUCache;
+import com.itiniu.iticrawler.util.eviction.lru.LRUCache;
 
 public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 {
@@ -34,14 +36,21 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 	private ReadWriteLock crawledHostWriteLock = null;
 	private ReadWriteLock currentReadWriteLock = null;
 
-	//TODO: add a parameter for switching eviction algorithms
-	public ProcessedUrlsSwapHashMap(int maxStorageSize)
+	public ProcessedUrlsSwapHashMap(int maxStorageSize, EvictionPolicy eviction)
 	{
 		this.memoryMaxStorage = maxStorageSize;
 
-		this.processedUrls = new LFUCache<>(this.memoryMaxStorage);
 		this.currentlyProcessedUrls = new HashSet<>();
-		this.processedHosts = new LFUCache<>(this.memoryMaxStorage);
+		if (eviction == EvictionPolicy.LFU)
+		{
+			this.processedHosts = new LFUCache<>(this.memoryMaxStorage);
+			this.processedUrls = new LFUCache<>(this.memoryMaxStorage);
+		}
+		else if (eviction == EvictionPolicy.LRU)
+		{
+			this.processedHosts = new LRUCache<>(this.memoryMaxStorage);
+			this.processedUrls = new LRUCache<>(this.memoryMaxStorage);
+		}
 
 		this.processedUrlsCount = new AtomicInteger(0);
 		this.processedHostsCount = new AtomicInteger(0);
@@ -112,12 +121,12 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		{
 			boolean wasProcessed = this.processedUrls.containsKey(inURL.hashCode());
 			wasProcessed = this.fileSwap.wasProcessed(inURL);
-			
-			if(wasProcessed)
+
+			if (wasProcessed)
 			{
 				this.reloadUrlToMemory(inURL);
 			}
-			
+
 			return wasProcessed;
 		}
 		finally
@@ -138,7 +147,7 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 			{
 				this.reloadHostToMemory(inURL, time);
 			}
-			
+
 			return time;
 		}
 		finally
@@ -160,7 +169,7 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		{
 			this.currentReadWriteLock.readLock().unlock();
 		}
-		
+
 	}
 
 	@Override
@@ -184,7 +193,7 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 			{
 				this.currentlyProcessedUrls.add(inUrl.hashCode());
 			}
-			
+
 			this.currentlyProcessedCounter.incrementAndGet();
 
 		}
@@ -221,15 +230,14 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 	@Override
 	public boolean canCrawlHost(URLWrapper inUrl, int maxHostCount)
 	{
-		if(this.processedHostsCount.get() < maxHostCount)
-			return true;
-		
-		if(this.processedHostsCount.get() == maxHostCount)
+		if (this.processedHostsCount.get() < maxHostCount) return true;
+
+		if (this.processedHostsCount.get() == maxHostCount)
 		{
-			if(this.processedHosts.containsKey(inUrl.getDomain().hashCode()) || this.fileSwap.canCrawlHost(inUrl, maxHostCount))
-				return true;
+			if (this.processedHosts.containsKey(inUrl.getDomain().hashCode())
+					|| this.fileSwap.canCrawlHost(inUrl, maxHostCount)) return true;
 		}
-		
+
 		return false;
 	}
 
@@ -239,7 +247,7 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		this.crawledHostWriteLock.writeLock().lock();
 		try
 		{
-			this.processedHosts.put(url.getDomain().hashCode(),lastProcessing);
+			this.processedHosts.put(url.getDomain().hashCode(), lastProcessing);
 		}
 		finally
 		{
@@ -247,14 +255,14 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 			this.crawledHostWriteLock.readLock().lock();
 		}
 	}
-	
+
 	private void reloadUrlToMemory(URLWrapper url)
 	{
 		this.rwLock.readLock().unlock();
 		this.rwLock.writeLock().lock();
 		try
 		{
-			this.processedUrls.put(url.hashCode(),Boolean.TRUE);
+			this.processedUrls.put(url.hashCode(), Boolean.TRUE);
 		}
 		finally
 		{
@@ -262,6 +270,5 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 			this.rwLock.readLock().lock();
 		}
 	}
-	
-	
+
 }
