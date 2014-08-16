@@ -1,16 +1,108 @@
 package com.itiniu.iticrawler.config;
 
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.Iterator;
+
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.itiniu.iticrawler.behaviors.inte.ICrawlBehavior;
 import com.itiniu.iticrawler.crawler.PageExtractionType;
 import com.itiniu.iticrawler.util.LiveDataStoragePolicy;
 import com.itiniu.iticrawler.util.eviction.EvictionPolicy;
 
+@SuppressWarnings("unchecked")
 public enum ConfigSingleton
 {
 	INSTANCE;
+
+	private static final Logger LOG = LogManager.getLogger();
+	
+	public void loadConfigFromFile()
+	{
+		try
+		{
+			Configuration config = new PropertiesConfiguration("crawler.properties");
+			Iterator<String> keyIt = config.getKeys();
+			String key = "";
+			while (keyIt.hasNext())
+			{
+				key = keyIt.next();
+				switch (key)
+				{
+					case "http.maxconnections":
+						this.maxConnections = config.getInt(key);
+						break;
+					case "http.maxconnectionsperhost":
+						this.maxConnectionsPerHost = config.getInt(key);
+						break;
+					case "http.sockettimeout":
+						this.socketTimeout = config.getInt(key);
+						break;
+					case "http.connectiontimeout":
+						this.connectionTimeout = config.getInt(key);
+						break;
+					case "frontier.storage.scheduled":
+						this.scheduledUrlsStoragePolicy = LiveDataStoragePolicy.valueOf(config.getString(key));
+						break;
+					case "frontier.storage.processed":
+						this.processedUrlsStoragePolicy = LiveDataStoragePolicy.valueOf(config.getString(key));
+						break;
+					case "frontier.storage.robotstxt":
+						this.robotTxtDataStoragePolicy = LiveDataStoragePolicy.valueOf(config.getString(key));
+						break;
+					case "frontier.storage.location":
+						this.storageLocation = config.getString(key);
+						break;
+					case "frontier.eviction.policy":
+						this.eviction = EvictionPolicy.valueOf(config.getString(key));
+						break;
+					case "frontier.eviction.maxelements":
+						this.maxInMemoryElements = config.getInt(key);
+						break;
+					case "crawler.threads":
+						this.numberOfCrawlerThreads = config.getInt(key);
+						break;
+					case "crawler.considerrobottxt":
+						this.considerRobotTxt = config.getBoolean(key);
+						break;
+					case "crawler.politnessdealy":
+						this.politnessDelay = config.getInt(key);
+						break;
+					case "crawler.maxcrawldepth":
+						this.maxCrawlDepth = config.getInt(key);
+						break;
+					case "crawler.useragent":
+						this.userAgent = config.getString(key);
+						break;
+					case "crawler.maxhosts":
+						this.maxHostsToCrawl = config.getInt(key);
+						break;
+					case "crawler.followredirect":
+						this.followRedirect = config.getBoolean(key);
+						break;
+					case "crawler.pageextraction":
+						this.extractionType = PageExtractionType.valueOf(config.getString(key));
+						break;
+					case "crawler.crawlbehavior":
+						this.customCrawlBehavior = (Class<? extends ICrawlBehavior>) Class.forName(config.getString(key));
+						break;
+				}
+			}
+
+		}
+		catch (ConfigurationException e)
+		{
+			LOG.warn("Could not load the properties file. Please make sure everything is configured properly.");
+		}
+		catch (ClassNotFoundException e)
+		{
+			LOG.error("The class specified as crawl behavior is not accessible, please review your settings");
+		}
+
+	}
 
 	// Http Connection relevant
 	private int maxConnections = 100;
@@ -166,7 +258,6 @@ public enum ConfigSingleton
 	private int maxHostsToCrawl = 0;
 
 	private Class<? extends ICrawlBehavior> customCrawlBehavior = null;
-	private ReadWriteLock behaviorLock = new ReentrantReadWriteLock();
 
 	public int getNumberOfCrawlerThreads()
 	{
@@ -220,18 +311,14 @@ public enum ConfigSingleton
 
 	public Class<? extends ICrawlBehavior> getCustomCrawlBehavior()
 	{
-		behaviorLock.readLock().lock();
 		Class<? extends ICrawlBehavior> toReturn = customCrawlBehavior;
-		behaviorLock.readLock().unlock();
 
 		return toReturn;
 	}
 
 	public void setCustomCrawlBehavior(Class<? extends ICrawlBehavior> customCrawlBehavior)
 	{
-		behaviorLock.writeLock().lock();
 		this.customCrawlBehavior = customCrawlBehavior;
-		behaviorLock.writeLock().unlock();
 	}
 
 	public boolean isStopOnInactivity()
