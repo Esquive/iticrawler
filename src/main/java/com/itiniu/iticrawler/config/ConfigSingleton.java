@@ -159,7 +159,7 @@ public enum ConfigSingleton
 	private LiveDataStoragePolicy processedUrlsStoragePolicy = LiveDataStoragePolicy.MEMORY_FILE_SWAP;
 	private LiveDataStoragePolicy robotTxtDataStoragePolicy = LiveDataStoragePolicy.MEMORY_FILE_SWAP;
 
-	private EvictionPolicy eviction = EvictionPolicy.LFU;
+	private EvictionPolicy eviction = EvictionPolicy.LRU;
 	private String storageLocation = "storage";
 	private int maxInMemoryElements = 100;
 

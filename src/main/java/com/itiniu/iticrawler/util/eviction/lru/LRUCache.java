@@ -5,18 +5,23 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class LRUCache<K, V> implements Map<K, V>
 {
 	
 	private LinkedHashMap<K, V> storage = null;
 	private int maxSize = 0;
+	
+	private ReentrantReadWriteLock lock = null;
 
 	public LRUCache(int maxSize)
 	{
-		//TODO: compute a factor of initial capacity so no resize is trigerred
-		this.storage = new LinkedHashMap<>(maxSize,0.75f,true);
+		int hashSize = (int) (maxSize / 0.75);
+		
+		this.storage = new LinkedHashMap<>(hashSize,0.75f,true);
 		this.maxSize = maxSize;
+		this.lock = new ReentrantReadWriteLock();
 	}
 	
 	@Override
