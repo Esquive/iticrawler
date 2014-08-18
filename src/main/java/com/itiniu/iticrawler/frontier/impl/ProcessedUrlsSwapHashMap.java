@@ -7,6 +7,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.itiniu.iticrawler.config.ConfigSingleton;
@@ -32,9 +33,10 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 	private ProcessedUrlsFileStore fileSwap = null;
 	private Executor writeBehindPool = null;
 
-	private ReadWriteLock rwLock = null;
-	private ReadWriteLock crawledHostWriteLock = null;
-	private ReadWriteLock currentReadWriteLock = null;
+	private ReentrantLock puLock = null;
+	private ReentrantLock phLock = null;
+	private ReadWriteLock cpLock = null;
+	
 
 	public ProcessedUrlsSwapHashMap(int maxStorageSize, EvictionPolicy eviction)
 	{
@@ -59,15 +61,15 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		this.fileSwap = new ProcessedUrlsFileStore();
 		this.writeBehindPool = Executors.newFixedThreadPool(ConfigSingleton.INSTANCE.getNumberOfCrawlerThreads());
 
-		this.rwLock = new ReentrantReadWriteLock(true);
-		this.crawledHostWriteLock = new ReentrantReadWriteLock(true);
-		this.currentReadWriteLock = new ReentrantReadWriteLock(true);
+		this.phLock = new ReentrantLock(true);
+		this.puLock = new ReentrantLock(true);
+		this.cpLock = new ReentrantReadWriteLock(true);
 	}
 
 	@Override
 	public void addProcessedURL(final URLWrapper inURL)
 	{
-		this.rwLock.writeLock().lock();
+		this.puLock.lock();
 		try
 		{
 			this.processedUrls.put(inURL.hashCode(), Boolean.TRUE);
@@ -85,14 +87,14 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		}
 		finally
 		{
-			this.rwLock.writeLock().unlock();
+			this.puLock.unlock();
 		}
 	}
 
 	@Override
 	public void addProcessedHost(final URLWrapper inURL, final Long lastProcessed)
 	{
-		this.crawledHostWriteLock.writeLock().lock();
+		this.phLock.lock();
 		try
 		{
 			this.processedHosts.put(inURL.hashCode(), lastProcessed);
@@ -109,14 +111,14 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		}
 		finally
 		{
-			this.crawledHostWriteLock.writeLock().unlock();
+			this.phLock.unlock();
 		}
 	}
 
 	@Override
 	public boolean wasProcessed(URLWrapper inURL)
 	{
-		this.rwLock.readLock().lock();
+		this.puLock.lock();
 		try
 		{
 			boolean wasProcessed = this.processedUrls.containsKey(inURL.hashCode());
@@ -131,14 +133,14 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		}
 		finally
 		{
-			this.rwLock.readLock().unlock();
+			this.puLock.unlock();
 		}
 	}
 
 	@Override
 	public Long lastHostProcessing(URLWrapper inURL)
 	{
-		this.crawledHostWriteLock.readLock().lock();
+		this.phLock.lock();
 		try
 		{
 			Long time = this.processedHosts.get(inURL.getDomain().hashCode());
@@ -152,14 +154,14 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		}
 		finally
 		{
-			this.crawledHostWriteLock.readLock().unlock();
+			this.phLock.unlock();
 		}
 	}
 
 	@Override
 	public boolean isCurrentlyProcessedUrl(URLWrapper inUrl)
 	{
-		this.currentReadWriteLock.readLock().lock();
+		this.cpLock.readLock().lock();
 		try
 		{
 			boolean contains = this.currentlyProcessedUrls.contains(inUrl.hashCode());
@@ -167,7 +169,7 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		}
 		finally
 		{
-			this.currentReadWriteLock.readLock().unlock();
+			this.cpLock.readLock().unlock();
 		}
 
 	}
@@ -175,7 +177,7 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 	@Override
 	public void addCurrentlyProcessedUrl(final URLWrapper inUrl)
 	{
-		this.currentReadWriteLock.writeLock().lock();
+		this.cpLock.writeLock().lock();
 		try
 		{
 			if (this.memoryMaxStorage <= this.currentlyProcessedCounter.get())
@@ -199,14 +201,14 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		}
 		finally
 		{
-			this.currentReadWriteLock.writeLock().unlock();
+			this.cpLock.writeLock().unlock();
 		}
 	}
 
 	@Override
 	public void removeCurrentlyProcessedUrl(final URLWrapper inUrl)
 	{
-		this.currentReadWriteLock.writeLock().lock();
+		this.cpLock.writeLock().lock();
 		try
 		{
 			this.writeBehindPool.execute(new Runnable() {
@@ -222,7 +224,7 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 		}
 		finally
 		{
-			this.currentReadWriteLock.writeLock().unlock();
+			this.cpLock.writeLock().unlock();
 		}
 
 	}
@@ -230,6 +232,8 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 	@Override
 	public boolean canCrawlHost(URLWrapper inUrl, int maxHostCount)
 	{
+		if(this.memoryMaxStorage == 0) return true;
+		
 		if (this.processedHostsCount.get() < maxHostCount) return true;
 
 		if (this.processedHostsCount.get() == maxHostCount)
@@ -243,31 +247,27 @@ public class ProcessedUrlsSwapHashMap implements IProcessedURLStore
 
 	private void reloadHostToMemory(URLWrapper url, long lastProcessing)
 	{
-		this.crawledHostWriteLock.readLock().unlock();
-		this.crawledHostWriteLock.writeLock().lock();
+		this.phLock.lock();
 		try
 		{
 			this.processedHosts.put(url.getDomain().hashCode(), lastProcessing);
 		}
 		finally
 		{
-			this.crawledHostWriteLock.writeLock().unlock();
-			this.crawledHostWriteLock.readLock().lock();
+			this.phLock.unlock();
 		}
 	}
 
 	private void reloadUrlToMemory(URLWrapper url)
 	{
-		this.rwLock.readLock().unlock();
-		this.rwLock.writeLock().lock();
+		this.puLock.lock();
 		try
 		{
 			this.processedUrls.put(url.hashCode(), Boolean.TRUE);
 		}
 		finally
 		{
-			this.rwLock.writeLock().unlock();
-			this.rwLock.readLock().lock();
+			this.puLock.unlock();
 		}
 	}
 

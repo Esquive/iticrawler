@@ -32,7 +32,7 @@ public class LFUCache<K, V> implements Map<K, V>
 	{
 		// We create a hashsize bigger than the maxsize to avoid the resize of
 		// the structure.
-		int hashSize = (int) (maxSize / 0.75);
+		int hashSize = (int) (maxSize / 0.75) + 1;
 
 		this.storage = new HashMap<>(hashSize, 0.75f);
 		this.heap = new LFUHeap<>();

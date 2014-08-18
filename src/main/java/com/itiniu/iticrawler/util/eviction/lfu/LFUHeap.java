@@ -2,15 +2,13 @@ package com.itiniu.iticrawler.util.eviction.lfu;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
  * Class to manage the LFU information for cache eviction.
  * </br>
  * </br>
- * Method calls of this class are thread safe.
+ * Method calls of this class ARE NOT THREAD-SAFE.
  * 
  * @author Eric Falk <erfalk at gmail dot com>
  */
@@ -18,7 +16,6 @@ public class LFUHeap <K,V>
 {
 	private AtomicInteger size = new AtomicInteger(0);
 	private FrequencyNode<K,V> head = new FrequencyNode<K,V>(0);
-	private Lock lock = new ReentrantLock(true);
 
 	/**
 	 * Method to add a new LFUEntry to the structure.
@@ -27,9 +24,6 @@ public class LFUHeap <K,V>
 	 */
 	public void addNode(LFUEntry<K,V> node)
 	{
-		this.lock.lock();
-		try
-		{
 		FrequencyNode<K,V> first = this.head.getNext();
 		if (first == null)
 		{
@@ -59,11 +53,6 @@ public class LFUHeap <K,V>
 				node.setFrequencyNode(newNode);
 			}
 		}
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
 
 	}
 
@@ -74,9 +63,6 @@ public class LFUHeap <K,V>
 	 */
 	public void incrementFrequency(LFUEntry<K,V> node)
 	{
-		this.lock.lock();
-		try
-		{
 			FrequencyNode<K, V> current, previous, next, newNode;
 			current = node.getFrequencyNode();
 			previous = current.getPrevious();
@@ -129,11 +115,6 @@ public class LFUHeap <K,V>
 					newNode.setPrevious(current);
 				}
 			}
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
 	}
 
 	/**
@@ -143,9 +124,6 @@ public class LFUHeap <K,V>
 	 */
 	public void removeNode(LFUEntry<K,V> node)
 	{
-		this.lock.lock();
-		try
-		{
 			FrequencyNode<K, V> freq = node.getFrequencyNode();
 			freq.removeChild(node);
 			if(freq.getChildCount() == 0)
@@ -156,11 +134,6 @@ public class LFUHeap <K,V>
 				prev.setNext(next);
 				next.setPrevious(prev);
 			}
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
 	}
 	
 	/**
@@ -169,19 +142,11 @@ public class LFUHeap <K,V>
 	 */
 	public Collection<LFUEntry<K,V>> getNodesToEvict()
 	{
-		this.lock.lock();
-		try
-		{
 			FrequencyNode<K, V> toEvict = this.head.getNext();
 			FrequencyNode<K, V> next = toEvict.getNext();
 			this.head.setNext(next);
 			next.setPrevious(this.head);
 			return toEvict.getChildren();
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
 	}
 
 	/**
@@ -190,15 +155,7 @@ public class LFUHeap <K,V>
 	 */
 	public int getSize()
 	{
-		this.lock.lock();
-		try
-		{
 			return size.get();
-		}
-		finally
-		{
-			this.lock.unlock();
-		}
 	}
 	
 }
