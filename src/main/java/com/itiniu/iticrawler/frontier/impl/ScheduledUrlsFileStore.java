@@ -1,6 +1,8 @@
 package com.itiniu.iticrawler.frontier.impl;
 
 import java.util.Queue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.mapdb.DB;
 
@@ -12,9 +14,11 @@ public class ScheduledUrlsFileStore implements IScheduledURLStore
 {
 	DB db = null;
 	Queue<URLWrapper> scheduled = null;
+	Lock lock = null;
 
 	public ScheduledUrlsFileStore()
 	{
+		this.lock = new ReentrantLock(true);
 		this.db = FileStorageConfig.INSTANCE.getStorageProvider();
 		this.scheduled = db.getQueue("scheduled");
 	}
@@ -22,15 +26,32 @@ public class ScheduledUrlsFileStore implements IScheduledURLStore
 	@Override
 	public void scheduleURL(URLWrapper inURL)
 	{
-		this.scheduled.add(inURL);
+		this.lock.lock();
+		try
+		{
+			this.scheduled.add(inURL);
+			this.db.commit();
+		}
+		finally
+		{
+			this.lock.unlock();
+		}
 	}
 
 	@Override
 	public URLWrapper getNextURL()
 	{
-		URLWrapper toReturn = this.scheduled.poll();
-		db.commit();
-		return toReturn;
+		this.lock.lock();
+		try
+		{
+			URLWrapper toReturn = this.scheduled.poll();
+			this.db.commit();
+			return toReturn;
+		}
+		finally
+		{
+			this.lock.unlock();
+		}
 	}
 
 	@Override
