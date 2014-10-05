@@ -45,6 +45,7 @@ public class ScheduledUrlsStorageFactory implements IScheduledURLStorageFactory
 			case MEMORY_FILE_SWAP:
 				
 				toReturn = new ScheduledUrlsQueueFileSwap(ConfigSingleton.INSTANCE.getMaxInMemoryElements());
+				break;
 				
 			default:
 				

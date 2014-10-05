@@ -2,6 +2,8 @@ package com.itiniu.iticrawler.crawler.impl;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -63,9 +65,19 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 	 * Call this method to determine if an URL can be crawled.
 	 */
 	@Override
-	public boolean allows(String path)
+	public boolean allows(String url)
 	{
 		boolean toReturn = true;
+		String path = null;
+		try
+		{
+			path = this.getPath(url);
+		}
+		catch(MalformedURLException e)
+		{
+			//Is not supposed to happen
+			return false;
+		}
 
 		if (!this.containsAllowWildcard)
 		{
@@ -126,6 +138,12 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 
 		return toReturn;
 	}
+	
+	private String getPath(String url) throws MalformedURLException
+	{
+			return new URL(url).getPath();
+	}
+	
 
 	/**
 	 * Internal Method called by {@link IRobotTxtDirective#allows(String)}

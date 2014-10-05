@@ -18,8 +18,7 @@ public class ScheduledUrlsQueueFileSwap implements IScheduledURLStore
 	private Queue<URLWrapper> scheduled = null;
 	private Queue<URLWrapper> fileScheduled = null;
 
-	private ReentrantLock rLock = null;
-	private ReentrantLock wLock = null;
+	private ReentrantLock lock = null;
 
 	public ScheduledUrlsQueueFileSwap(int maxSize)
 	{
@@ -29,14 +28,13 @@ public class ScheduledUrlsQueueFileSwap implements IScheduledURLStore
 		this.fileScheduled = db.getQueue("scheduled");
 		this.scheduled = new LinkedList<>();
 
-		this.rLock = new ReentrantLock(true);
-		this.wLock = new ReentrantLock(true);
+		this.lock = new ReentrantLock(true);
 	}
 
 	@Override
 	public void scheduleURL(URLWrapper url)
 	{
-		this.wLock.lock();
+		this.lock.lock();
 		try
 		{
 			this.fileScheduled.add(url);
@@ -52,14 +50,14 @@ public class ScheduledUrlsQueueFileSwap implements IScheduledURLStore
 		}
 		finally
 		{
-			this.wLock.unlock();
+			this.lock.unlock();
 		}
 	}
 
 	@Override
 	public URLWrapper getNextURL()
 	{
-		this.rLock.lock();
+		this.lock.lock();
 		try
 		{
 
@@ -87,7 +85,7 @@ public class ScheduledUrlsQueueFileSwap implements IScheduledURLStore
 		}
 		finally
 		{
-			this.rLock.unlock();
+			this.lock.unlock();
 		}
 
 	}
@@ -95,16 +93,14 @@ public class ScheduledUrlsQueueFileSwap implements IScheduledURLStore
 	@Override
 	public boolean isEmpty()
 	{
-		this.rLock.lock();
-		this.wLock.lock();
+		this.lock.lock();
 		try
 		{
 			return this.scheduled.isEmpty() ? this.scheduled.isEmpty() : this.fileScheduled.isEmpty();
 		}
 		finally
 		{
-			this.wLock.unlock();
-			this.rLock.unlock();
+			this.lock.unlock();
 		}
 	}
 

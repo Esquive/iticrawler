@@ -17,13 +17,19 @@ import com.itiniu.iticrawler.util.eviction.EvictionPolicy;
 public enum ConfigSingleton
 {
 	INSTANCE;
-
-	private static final Logger LOG = LogManager.getLogger();
+	
+	ConfigSingleton()
+	{
+		loadConfigFromFile();
+	}
+	
+	private final Logger LOG = LogManager.getLogger(ConfigSingleton.class);
 	
 	public void loadConfigFromFile()
 	{
 		try
 		{
+			LOG.info("ITICRAWLER: Loading properties!");
 			Configuration config = new PropertiesConfiguration("crawler.properties");
 			Iterator<String> keyIt = config.getKeys();
 			String key = "";

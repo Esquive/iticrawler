@@ -115,6 +115,7 @@ public class Crawler implements Runnable
 					}
 					if (this.robotTxtData.allows(url))
 					{
+						
 						int siteDelay = this.robotTxtData.getDelay(url);
 						Long lastProcessing = this.processedUrls.lastHostProcessing(url);
 						Long timeStamp = 0l;
@@ -134,6 +135,7 @@ public class Crawler implements Runnable
 						{
 							try
 							{
+								this.processedUrls.addProcessedHost(url, System.currentTimeMillis());
 								this.crawlPage(url);
 							}
 							catch (InputStreamPageExtractionException e)

@@ -12,39 +12,37 @@ import com.itiniu.iticrawler.httptools.impl.URLWrapper;
 
 public class ProcessedUrlsHashMap implements IProcessedURLStore
 {
-	protected Map<String,Long> visitedUrls = null;
-	protected Set<String> currentlyVisitedUrls = null;
-	protected Map<String, Long> crawledHost = null;
+	protected Map<String,Long> crawledUrls = null;
+	protected Set<String> currentlyCrawledUrls = null;
+	protected Map<String, Long> crawledHosts = null;
 	
-    protected ReadWriteLock readWriteLock = null;
-    protected ReadWriteLock currentReadWriteLock = null;
-    protected ReadWriteLock crawledHostWriteLock = null;
-	
-    private int numberOfHosts = 0;
+    protected ReadWriteLock crawledUrlRWLock = null;
+    protected ReadWriteLock currentCrawledRWLock = null;
+    protected ReadWriteLock crawledHostRWLock = null;
+    
     
 	public ProcessedUrlsHashMap()
 	{
-		this.visitedUrls = new HashMap<>();
-		this.currentlyVisitedUrls = new HashSet<>();
-		this.crawledHost = new HashMap<>();
+		this.crawledUrls = new HashMap<>();
+		this.currentlyCrawledUrls = new HashSet<>();
+		this.crawledHosts = new HashMap<>();
 		
-		this.readWriteLock = new ReentrantReadWriteLock(true);
-		this.currentReadWriteLock = new ReentrantReadWriteLock(true);
-		this.crawledHostWriteLock = new ReentrantReadWriteLock(true);
+		this.crawledUrlRWLock = new ReentrantReadWriteLock(true);
+		this.currentCrawledRWLock = new ReentrantReadWriteLock(true);
+		this.crawledHostRWLock = new ReentrantReadWriteLock(true);
 	}
-	
 	
 	@Override
 	public void addProcessedURL(URLWrapper inURL)
 	{
-		this.readWriteLock.writeLock().lock();
+		this.crawledUrlRWLock.writeLock().lock();
 		try
         {
-		this.visitedUrls.put(inURL.toString(), null);
+		this.crawledUrls.put(inURL.toString(), null);
         }
         finally
         {
-		this.readWriteLock.writeLock().unlock();
+		this.crawledUrlRWLock.writeLock().unlock();
         }
     }
 
@@ -52,41 +50,40 @@ public class ProcessedUrlsHashMap implements IProcessedURLStore
 	@Override
 	public void addProcessedHost(URLWrapper inURL, Long lastProcessed)
 	{
-		this.crawledHostWriteLock.writeLock().lock();
+		this.crawledHostRWLock.writeLock().lock();
 
         try
         {
-        	this.crawledHost.put(inURL.getDomain(), lastProcessed);
-        	this.numberOfHosts++;
+        	this.crawledHosts.put(inURL.getDomain(), lastProcessed);
         }
         finally
         {
-		this.crawledHostWriteLock.writeLock().unlock();
+		this.crawledHostRWLock.writeLock().unlock();
         }
 	}
 
 	@Override
 	public boolean wasProcessed(URLWrapper inURL)
 	{
-		this.readWriteLock.readLock().lock();
+		this.crawledUrlRWLock.readLock().lock();
         try
         {
-		    return this.visitedUrls.containsKey(inURL.toString());
+		    return this.crawledUrls.containsKey(inURL.toString());
         }
         finally
         {
-		    this.readWriteLock.readLock().unlock();
+		    this.crawledUrlRWLock.readLock().unlock();
         }
 	}
 
 	@Override
 	public Long lastHostProcessing(URLWrapper inURL)
 	{
-		this.crawledHostWriteLock.readLock().lock();
+		this.crawledHostRWLock.readLock().lock();
         try
         {
 
-		Long toReturn = this.visitedUrls.get(inURL.getDomain());
+		Long toReturn = this.crawledUrls.get(inURL.getDomain());
 		
 		if(toReturn == null)
 		{
@@ -96,79 +93,86 @@ public class ProcessedUrlsHashMap implements IProcessedURLStore
         }
 		finally
         {
-		this.crawledHostWriteLock.readLock().unlock();
+		this.crawledHostRWLock.readLock().unlock();
         }
 
 	}
-
-
 
 	@Override
 	public boolean isCurrentlyProcessedUrl(URLWrapper inUrl)
 	{
-		this.currentReadWriteLock.readLock().lock();
+		this.currentCrawledRWLock.readLock().lock();
 	    try
         {
-		    return this.currentlyVisitedUrls.contains(inUrl.toString());
+		    return this.currentlyCrawledUrls.contains(inUrl.toString());
         }
 		finally {
-            this.currentReadWriteLock.readLock().unlock();
+            this.currentCrawledRWLock.readLock().unlock();
         }
 	}
-
 
 	@Override
 	public void addCurrentlyProcessedUrl(URLWrapper inUrl)
 	{
-		this.currentReadWriteLock.writeLock().lock();
+		this.currentCrawledRWLock.writeLock().lock();
 		try
         {
-		this.currentlyVisitedUrls.add(inUrl.toString());
+		this.currentlyCrawledUrls.add(inUrl.toString());
         }
         finally {
-            this.currentReadWriteLock.writeLock().unlock();
+            this.currentCrawledRWLock.writeLock().unlock();
         }
 	}
-
 
 	@Override
 	public void removeCurrentlyProcessedUrl(URLWrapper inUrl)
 	{
-		this.currentReadWriteLock.writeLock().lock();
+		this.currentCrawledRWLock.writeLock().lock();
         try{
 		
-		this.currentlyVisitedUrls.remove(inUrl.toString());
+		this.currentlyCrawledUrls.remove(inUrl.toString());
         }
         finally {
-            this.currentReadWriteLock.writeLock().unlock();
+            this.currentCrawledRWLock.writeLock().unlock();
         }
 	}
-
+	
+	public int getHostCount()
+	{
+		this.crawledHostRWLock.readLock().lock();
+		try
+		{
+			return this.crawledHosts.size();
+		}
+		finally
+		{
+			this.crawledHostRWLock.readLock().unlock();
+		}
+	}
 
 	@Override
 	public boolean canCrawlHost(URLWrapper inUrl, int maxHostCount)
 	{
-		this.crawledHostWriteLock.readLock().lock();
+		this.crawledHostRWLock.readLock().lock();
 		try
 		{
-			if(maxHostCount == 0)
+			if (maxHostCount == 0 || this.crawledHosts.containsKey(inUrl.getDomain()))
 			{
 				return true;
 			}
-			
-			if(maxHostCount < this.numberOfHosts)
+			else
 			{
-				return true;
+				if (this.crawledHosts.size() < maxHostCount)
+				{
+					return true;
+				}
+
+				return false;
 			}
-			else if(maxHostCount == this.numberOfHosts)
-			{
-				return this.crawledHost.containsKey(inUrl.getDomain());
-			}
-			return false;
 		}
 		finally
 		{
-			this.crawledHostWriteLock.readLock().unlock();
+			this.crawledHostRWLock.readLock().unlock();
 		}
 	}	
 }

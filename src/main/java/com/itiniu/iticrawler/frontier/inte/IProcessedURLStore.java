@@ -74,5 +74,6 @@ public interface IProcessedURLStore {
 	 * @return true if the max number of hosts is not reached. False otherwise.
 	 */
 	public boolean canCrawlHost(URLWrapper url, int maxHostCount);
+
 	
 }

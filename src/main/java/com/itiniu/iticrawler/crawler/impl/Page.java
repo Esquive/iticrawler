@@ -171,6 +171,32 @@ public class Page
 	{
 		this.contentLength = contentLength;
 	}
+	
+	public void consumeStream()
+	{
+		try
+		{
+			while(this.inStream.read() != -1)
+			{
+				//Consume the stream
+			}
+		}
+		catch (IOException e)
+		{
+			// TODO Log
+			e.printStackTrace();
+		}
+		finally{
+			try
+			{
+				this.inStream.close();
+			}
+			catch (IOException e)
+			{
+				//Close silently
+			}
+		}
+	}
 
 	/**
 	 * In case the configured content extraction mode is {@link PageExtractionType#BY_STREAM},
@@ -192,6 +218,8 @@ public class Page
 		finally
 		{
 			this.inStream.close();
+			outputStream.flush();
+			outputStream.close();
 		}
 	}
 

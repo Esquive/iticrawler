@@ -163,6 +163,11 @@ public class URLWrapper implements Serializable
 	{
 		this.redirectedFrom = redirectedFrom;
 	}
+	
+	public String getPath()
+	{
+		return this.url.getPath();
+	}
 
 	private URLWrapper(Builder builder) throws MalformedURLException
 	{
