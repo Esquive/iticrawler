@@ -13,6 +13,8 @@ Features:
 
 -Easy to use content by stream download.
 
+-Currently redesigned
+
 -Multiple implementations of frontier storages, in memory, on disk, memory disk swap and distributed (experimental)
 
 
