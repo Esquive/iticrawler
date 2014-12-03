@@ -8,8 +8,8 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.itiniu.iticrawler.behaviors.inte.ICrawlBehavior;
-import com.itiniu.iticrawler.crawler.PageExtractionType;
+import com.itiniu.iticrawler.crawler.behaviors.inte.ICrawlBehavior;
+import com.itiniu.iticrawler.util.PageExtractionType;
 import com.itiniu.iticrawler.util.LiveDataStoragePolicy;
 import com.itiniu.iticrawler.util.eviction.EvictionPolicy;
 

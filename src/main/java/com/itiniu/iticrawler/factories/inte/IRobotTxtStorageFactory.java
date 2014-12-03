@@ -1,6 +1,6 @@
 package com.itiniu.iticrawler.factories.inte;
 
-import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
+import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtStore;
 
 /**
  * Factory class, creating the data storage for the robots.txt directives.

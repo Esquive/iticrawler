@@ -129,7 +129,7 @@ public class HttpPoolingConnectionManager implements IHttpConnectionManager, Run
 						public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context)
 								throws ProtocolException
 						{
-							// We don't follow redirects
+							// We don't follow redirects because we do it ourself
 							return false;
 						}
 

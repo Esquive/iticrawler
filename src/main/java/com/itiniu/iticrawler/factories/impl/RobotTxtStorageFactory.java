@@ -2,12 +2,12 @@ package com.itiniu.iticrawler.factories.impl;
 
 import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.factories.inte.IRobotTxtStorageFactory;
-import com.itiniu.iticrawler.rotottxtdata.impl.DistributedRobotTxtMap;
-import com.itiniu.iticrawler.rotottxtdata.impl.RobotTxtAwareHashMap;
-import com.itiniu.iticrawler.rotottxtdata.impl.RobotTxtFileStore;
-import com.itiniu.iticrawler.rotottxtdata.impl.RobotTxtSwapHashMap;
-import com.itiniu.iticrawler.rotottxtdata.impl.RobotTxtUnawareData;
-import com.itiniu.iticrawler.rotottxtdata.inte.IRobotTxtStore;
+import com.itiniu.iticrawler.crawler.rotottxt.impl.DistributedRobotTxtMap;
+import com.itiniu.iticrawler.crawler.rotottxt.impl.RobotTxtAwareHashMap;
+import com.itiniu.iticrawler.crawler.rotottxt.impl.RobotTxtFileStore;
+import com.itiniu.iticrawler.crawler.rotottxt.impl.RobotTxtSwapHashMap;
+import com.itiniu.iticrawler.crawler.rotottxt.impl.RobotTxtUnawareData;
+import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtStore;
 
 /**
  * Default implementation of the {@link RobotTxtStorageFactory} interface.
