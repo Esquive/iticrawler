@@ -2,6 +2,7 @@
 
 <Configuration>
 	<Appenders>
+
 		<RollingRandomAccessFile name="ErrorRollingFileAppender"
 			fileName="logs/iticrawler.log" filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
 			<PatternLayout>
