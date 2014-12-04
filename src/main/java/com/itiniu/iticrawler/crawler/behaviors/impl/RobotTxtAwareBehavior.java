@@ -72,13 +72,14 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 			else
 			{
 				robotTxtData.insertRule(url, new RobotTxtNotFoundDirective());
-				LOG.info("No robots.txt found for page: " + url.getDomain());
+
+				LOG.info("No robots.txt found for Host: " + url.getDomain());
 			}
 		}
 		catch (IOException e)
 		{
 			robotTxtData.insertRule(url, new RobotTxtNotFoundDirective());
-			LOG.error("Error occured while fetching the robots.txt for page: " + url.toString());
+			LOG.error("Error occured while fetching the robots.txt for page: " + url.toString(), e);
 		}
 		finally
 		{
@@ -88,7 +89,8 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 			}
 			catch (IOException e)
 			{
-				//Close Silently
+				//Close Silently still log the incident
+				LOG.warn("An error occured while closing the HTTP request: " + request.getURI(), e);
 			}
 		}
 
@@ -96,7 +98,6 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 
 	private void parse(URLInfo url, String robotTxt, IRobotTxtStore robotTxtData)
 	{
-
 		StringTokenizer cTokenizer = new StringTokenizer(robotTxt, "\n");
 		String cString = null;
 		IRobotTxtDirective directive = new DefaultRobotTxtDirective();
@@ -128,6 +129,10 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 				if (cString.contains("*") || cString.contains(ConfigSingleton.INSTANCE.getUserAgent()))
 				{
 					isRelevant = true;
+				}
+				else
+				{
+					isRelevant = false;
 				}
 			}
 			else if (cString.matches(this.DISALLOW_PATTERN))

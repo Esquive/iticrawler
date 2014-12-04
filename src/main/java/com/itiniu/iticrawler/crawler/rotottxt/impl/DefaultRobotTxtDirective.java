@@ -155,6 +155,7 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 	{
 		boolean toReturn = false;
 
+		//TODO: correct robots.txt behavior
 		if (this.containsDisallowWildcard || this.disallowed.contains(path))
 		{
 			toReturn = true;

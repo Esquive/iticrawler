@@ -84,7 +84,7 @@ public class Frontier implements IFrontier {
     @Override
     public synchronized boolean canCrawlURL(URLInfo url) {
 
-        if (url.getUrlDepth() <= ConfigSingleton.INSTANCE.getMaxCrawlDepth()) return true;
+        if (((url.getUrlDepth() + 1) * -1) <= ConfigSingleton.INSTANCE.getMaxCrawlDepth()) return true;
 
         if (this.crawled.getHostCount() < ConfigSingleton.INSTANCE.getMaxHostsToCrawl()) {
             return true;

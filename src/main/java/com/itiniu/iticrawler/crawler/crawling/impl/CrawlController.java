@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.itiniu.iticrawler.crawler.frontier.inte.IFrontier;
 import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtStore;
+import com.itiniu.iticrawler.factories.impl.RobotTxtStorageFactory;
 import com.itiniu.iticrawler.httptools.impl.*;
 import com.itiniu.iticrawler.util.FrontierFactory;
 import org.apache.logging.log4j.LogManager;
@@ -123,7 +124,7 @@ public class CrawlController implements Runnable
 			}
 			catch (InstantiationException | IllegalAccessException e)
 			{
-				LOG.error("An error occured while creating a crawler thread");
+				LOG.error("An error occured while creating a crawler thread",e);
 			}
 		}
 		else
@@ -158,7 +159,11 @@ public class CrawlController implements Runnable
 	 */
 	protected void initDataHolders()
 	{
+		LOG.info("Initialize Dataholders: Frontier and RobotTxt");
+
 		this.frontier = FrontierFactory.getFrontier();
+		//TODO: make that factory private
+		this.robotTxtData = new RobotTxtStorageFactory().getRobotTxtData();
 	}
 
 	/**
@@ -170,6 +175,8 @@ public class CrawlController implements Runnable
 	 */
 	protected void initConnectionManager() throws KeyManagementException, KeyStoreException, NoSuchAlgorithmException
 	{
+		LOG.info("Initialize HTTP Connection pool!");
+
 		this.httpConnectionManager = new HttpPoolingConnectionManager();
 	}
 
@@ -219,8 +226,8 @@ public class CrawlController implements Runnable
 	@Override
 	public void run()
 	{
-		int activeThreadCount = -1;
-
+		//TODO: Change the handling of no work situation
+		int activeThreadCount;
 		while (true)
 		{
 			try
@@ -239,7 +246,7 @@ public class CrawlController implements Runnable
 						{
 							try
 							{
-								((ThreadPoolExecutor) this.crawlerThreadPool).execute(this.buildCrawler());
+								this.crawlerThreadPool.execute(this.buildCrawler());
 							}
 							catch (InstantiationException | IllegalAccessException e)
 							{
@@ -260,7 +267,6 @@ public class CrawlController implements Runnable
 			{
 				LOG.error("An error occurred during crawling, a thread got interrupted!");
 			}
-
 		}
 	}
 

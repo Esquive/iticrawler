@@ -47,8 +47,7 @@ public class RobotTxtFileStore implements IRobotTxtStore
 	@Override
 	public int getDelay(URLInfo url)
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return this.rules.get(url.getDomain()).getDelay();
 	}
 	
 	

@@ -1,46 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <Configuration>
-	<Appenders>
+    <Appenders>
 
-		<RollingRandomAccessFile name="ErrorRollingFileAppender"
-			fileName="logs/iticrawler.log" filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
-			<PatternLayout>
-				<Pattern>%d{HH:mm:ss,SSS} %p %m%n</Pattern>
-			</PatternLayout>
-			<Policies>
-				<TimeBasedTriggeringPolicy />
-				<SizeBasedTriggeringPolicy size="250 MB" />
-			</Policies>
-		</RollingRandomAccessFile>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss,SSS} %p  %c{1} %t %m %ex%n</Pattern>
+            </PatternLayout>
+        </Console>
+
+        <RollingRandomAccessFile name="ErrorLog"
+                                 fileName="log/iticrawler_error.log" filePattern="log/iticrawler_error_%d{MM-dd-yyyy}_%i.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss,SSS} %p %c{1} %t %m %ex%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="400 KB"/>
+            </Policies>
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="CrawlLog"
+                                 fileName="log/iticrawler.log" filePattern="log/iticrawler_%d{MM-dd-yyyy}_%i.log">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss,SSS} %p  %c{1} %t %m %ex%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="400 KB"/>
+            </Policies>
+        </RollingRandomAccessFile>
+
+    </Appenders>
 
 
-		<!-- <RollingFile name="RollingFile" fileName="logs/app.log"
-			filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz">
-			<PatternLayout>
-				<Pattern>%d{HH:mm:ss,SSS} %p %m%n</Pattern>
-			</PatternLayout>
-			<Policies>
-				<TimeBasedTriggeringPolicy />
-				<SizeBasedTriggeringPolicy size="250 MB" />
-			</Policies>
-		</RollingFile> -->
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="STDOUT"></AppenderRef>
+            <AppenderRef ref="ErrorLog"></AppenderRef>
+            <AppenderRef ref="CrawlLog"></AppenderRef>
 
-
-		<Console name="STDOUT" target="SYSTEM_OUT"></Console>
-
-
-
-	</Appenders>
-
-
-	<Loggers>
-		<Root level="info">
-		<AppenderRef ref="STDOUT"></AppenderRef>
-			<AppenderRef ref="ErrorRollingFileAppender"></AppenderRef>
-			
-		</Root>
-	</Loggers>
+        </Root>
+    </Loggers>
 
 
 </Configuration>

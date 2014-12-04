@@ -44,9 +44,9 @@ import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtStore;
  * Type performing the actual crawling. Crawler implements Runnable and thus
  * qualifies to run in a thread pool. This object calls the methods defined by
  * the {@link ICrawlBehavior} Interface at the respective stages.
- * 
+ *
  * @author Eric Falk <erfalk at gmail dot com>
- * 
+ *
  */
 @SuppressWarnings("JavadocReference")
 public class Crawler implements Runnable
@@ -109,6 +109,8 @@ public class Crawler implements Runnable
 
 			if (url != null)
 			{
+				LOG.debug("Loading URL: " + url.toString() );
+
 				if (!this.frontier.isURLCurrentlyCrawled(url) && !this.frontier.wasURLCrawled(url));
 				{
 					// TODO: Possible race condition
@@ -116,13 +118,14 @@ public class Crawler implements Runnable
 
 					if (!this.robotTxtData.containsRule(url))
 					{
+						LOG.debug("Fetching robots.txt for url: " + url.getDomain() );
+
 						this.robotTxtBehavior.fetchRobotTxt(url, this.httpClient,
 								this.robotTxtData);
 					}
 
 					if (this.robotTxtData.allows(url))
 					{
-						
 						int siteDelay = this.robotTxtData.getDelay(url);
 						Long lastProcessing = this.frontier.getLastHostProcessingTimeStamp(url);
 						Long timeUntil = 0l;
@@ -146,7 +149,7 @@ public class Crawler implements Runnable
 							}
 							catch (InputStreamPageExtractionException e)
 							{
-								LOG.error("Error in the extraction process", e);
+								LOG.error("Error in the Page extraction process", e);
 							}
 
 							// Setting the politeness Timestamp for future
@@ -157,9 +160,14 @@ public class Crawler implements Runnable
 						}
 						else
 						{
+							LOG.debug("Not ready for crawling again yet: " + url.toString());
 							this.frontier.scheduleURL(url);
 							this.frontier.removeCurrentlyCrawledURL(url);
 						}
+					}
+					else
+					{
+						LOG.debug("Robots.txt does not allow the crawling of page: " + url.toString());
 					}
 				}
 			}
@@ -176,19 +184,19 @@ public class Crawler implements Runnable
 
 	/**
 	 * Internal Method extracting the content from the provided URL.
-	 * 
+	 *
 	 * Depending on the configuration the page gets extracted by stream or by
 	 * returning a String:</br> -{@link PageExtractionType#BY_STREAM}</br> -
 	 * {@link PageExtractionType#BY_STRING}
-	 * 
+	 *
 	 * @param {@link URLInfo}
 	 * @throws {@link InputStreamPageExtractionException}
 	 */
 	protected void crawlPage(URLInfo url) throws InputStreamPageExtractionException
 	{
 
-		com.itiniu.iticrawler.crawler.crawling.impl.Page page = null;
-		HttpGet request = null;
+		Page page;
+		HttpGet request;
 		CloseableHttpResponse response = null;
 		int pageStatus = -1;
 
@@ -222,16 +230,16 @@ public class Crawler implements Runnable
 				if (header != null)
 				{
 					url.setRedirectedFrom(url.toString());
-					url.setUrl( header.getValue().startsWith("/") ? 
+					url.setUrl( header.getValue().startsWith("/") ?
 							URLCanonicalizer.getCanonicalURL(
 									header.getValue(),url.getProtocol() + "://" + url.getDomain()).toExternalForm():
 										URLCanonicalizer.getCanonicalURL(header.getValue()));
-					
+
 					if (ConfigSingleton.INSTANCE.isFollowRedirect())
 					{
 						this.frontier.scheduleURL(url);
 					}
-					
+
 					// If user decides to stop because of the status code so may it be.
 					if (!page.isContinueProcessing()) return;
 				}
@@ -240,7 +248,7 @@ public class Crawler implements Runnable
 			{
 				// If user decides to stop because of the status code so may it be.
 				if (!page.isContinueProcessing()) return;
-				
+
 				// Getting the content
 				HttpEntity entity = response.getEntity();
 
@@ -264,20 +272,14 @@ public class Crawler implements Runnable
 				}
 				else
 				{
-					throw new InputStreamPageExtractionException("Error in the Http request process");
+					throw new InputStreamPageExtractionException("An error occurred in the procesing of the page: the response entity was null: " + url.toString());
 				}
 
 			}
 
 		}
-		catch (ClientProtocolException e1)
-		{
-			LOG.error("ClientProtocolException during the crawl process", e1);
-		}
-		catch (IOException e2)
-		{
-			LOG.error("IOException during the crawl process", e2);
-
+		catch (IOException e) {
+			LOG.error("An error occurred during the page content extraction", e);
 		}
 		finally
 		{
@@ -287,7 +289,8 @@ public class Crawler implements Runnable
 			}
 			catch (IOException e)
 			{
-				LOG.error("IOException in the crawlPage method.", e);
+				//We Close silently but do log it just in case
+				LOG.warn("An error occured while closing the HTTP response while crawling: " + url.toString());
 			}
 		}
 	}
@@ -295,7 +298,7 @@ public class Crawler implements Runnable
 	/**
 	 * Internal Method extracting the content as an InputStream in case the
 	 * configuration specifies:</br> -{@link PageExtractionType#BY_STREAM}
-	 * 
+	 *
 	 * @param {@link URLInfo}
 	 * @param {@link HttpEntity}
 	 * @throws {@link InputStreamPageExtractionException}
@@ -406,7 +409,7 @@ public class Crawler implements Runnable
 	/**
 	 * Internal Method extracting the content as a String in case the
 	 * configuration specifies:</br> -{@link PageExtractionType#BY_STRING}
-	 * 
+	 *
 	 * @param {@link URLInfo}
 	 * @param {@link HttpEntity}
 	 * @throws {@link InputStreamPageExtractionException}
@@ -467,7 +470,7 @@ public class Crawler implements Runnable
 	/**
 	 * Internal wrapper method to wrap the call of
 	 * {@link ICrawlBehavior#handleStatuScode(com.itiniu.iticrawler.crawler.crawling.impl.Page)}.
-	 * 
+	 *
 	 * @param page
 	 */
 	protected void handleStatusCode(com.itiniu.iticrawler.crawler.crawling.impl.Page page)
@@ -478,7 +481,7 @@ public class Crawler implements Runnable
 	/**
 	 * Internal wrapper method to wrap the call of
 	 * {@link ICrawlBehavior#handleContentSize(com.itiniu.iticrawler.crawler.crawling.impl.Page)}.
-	 * 
+	 *
 	 * @param page
 	 */
 	protected void handleContentSize(com.itiniu.iticrawler.crawler.crawling.impl.Page page)
@@ -489,7 +492,7 @@ public class Crawler implements Runnable
 	/**
 	 * Internal wrapper method to wrap the call of
 	 * {@link ICrawlBehavior#processPage(com.itiniu.iticrawler.crawler.crawling.impl.Page)}.
-	 * 
+	 *
 	 * @param page
 	 */
 	protected void processPage(com.itiniu.iticrawler.crawler.crawling.impl.Page page)
@@ -500,7 +503,7 @@ public class Crawler implements Runnable
 	/**
 	 * Internal wrapper method to wrap the call of
 	 * {@link ICrawlBehavior#handleOutgoingURLs(com.itiniu.iticrawler.crawler.crawling.impl.Page)}.
-	 * 
+	 *
 	 * @param page
 	 */
 	protected void handleOutgoingUrls(com.itiniu.iticrawler.crawler.crawling.impl.Page page)
@@ -511,7 +514,7 @@ public class Crawler implements Runnable
 	/**
 	 * Method to schedule the URLs from the page. This method calls
 	 * {@link ICrawlBehavior#processPage(com.itiniu.iticrawler.crawler.crawling.impl.Page page)} as last instance.
-	 * 
+	 *
 	 * @param page
 	 */
 	protected void scheduleURLs(Page page)
@@ -521,9 +524,6 @@ public class Crawler implements Runnable
 			if (!this.frontier.wasURLCrawled(url) && !this.frontier.isURLCurrentlyCrawled(url)
 					&& this.frontier.canCrawlURL(url))
 			{
-				//TODO: Refactor that in a method
-				if (((page.getUrl().getUrlDepth() + 1) * -1) <= ConfigSingleton.INSTANCE.getMaxCrawlDepth())
-				{
 					url.setUrlDepth(page.getUrl().getUrlDepth() + 1);
 					url.setParentURLInfo(page.getUrl());
 
@@ -531,7 +531,7 @@ public class Crawler implements Runnable
 					{
 						this.frontier.scheduleURL(url);
 					}
-				}
+
 			}
 		}
 	}

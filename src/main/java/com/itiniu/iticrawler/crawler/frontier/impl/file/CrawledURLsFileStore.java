@@ -49,7 +49,7 @@ public class CrawledURLsFileStore implements ICrawledURLStore
 	@Override
 	public Long lastHostProcessing(URLInfo inURL)
 	{
-		return this.crawledHosts.get(inURL.getDomain().hashCode());
+		return this.crawledHosts.get(inURL.getDomain());
 	}
 
 	@Override
