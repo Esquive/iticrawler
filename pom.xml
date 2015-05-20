@@ -6,9 +6,7 @@
 	<packaging>pom</packaging>
 	<name>iticrawler</name>
 	<url>http://maven.apache.org</url>
-	<modules>
-		<module>../../IdeaProjects/contentgenerator</module>
-	</modules>
+
 
 
 	<dependencies>

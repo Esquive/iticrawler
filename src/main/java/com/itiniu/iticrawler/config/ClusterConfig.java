@@ -3,7 +3,9 @@ package com.itiniu.iticrawler.config;
 import com.hazelcast.config.Config;
 import com.hazelcast.config.MulticastConfig;
 import com.hazelcast.config.NetworkConfig;
+import com.hazelcast.config.SerializationConfig;
 import com.hazelcast.core.Hazelcast;
+import com.itiniu.iticrawler.util.serialization.IdentifiedSerializationFactory;
 
 /**
  * This class is used to configure the Hazelcast clustered Collections.
@@ -34,7 +36,9 @@ public class ClusterConfig {
 		mcConfig.setMulticastPort(54327);
 		
 		nConfig.getJoin().setMulticastConfig(mcConfig);
-		
+
+		//SerializationConfig
+		this.cfg.setSerializationConfig(new SerializationConfig().addDataSerializableFactory(1, new IdentifiedSerializationFactory()));
 		
 		//And finally initialize the cluster
 		Hazelcast.newHazelcastInstance(this.cfg);

@@ -1,5 +1,13 @@
 package com.itiniu.iticrawler.httptools.impl;
 
+import com.hazelcast.nio.ObjectDataInput;
+import com.hazelcast.nio.ObjectDataOutput;
+import com.hazelcast.nio.serialization.DataSerializable;
+import com.hazelcast.nio.serialization.DataSerializableFactory;
+import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
+import com.itiniu.iticrawler.util.serialization.IdentifiedSerializationFactory;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -9,9 +17,8 @@ import java.net.URL;
  *
  * @author Eric Falk <erfalk at gmail dot com>
  */
-public class URLInfo implements Serializable {
+public class URLInfo implements IdentifiedDataSerializable {
 
-    private static final long serialVersionUID = 1665293006612443211L;
 
     protected URL url = null;
     protected String fullLink = null;
@@ -146,6 +153,48 @@ public class URLInfo implements Serializable {
         this.isImage = builder.isImage;
         this.isAnchor = builder.isAnchor;
     }
+
+    @Override
+    public void writeData(ObjectDataOutput objectDataOutput) throws IOException {
+        objectDataOutput.writeUTF(this.url.toString());
+        objectDataOutput.writeUTF(this.fullLink);
+        objectDataOutput.writeUTF(this.title);
+        objectDataOutput.writeUTF(this.text);
+        objectDataOutput.writeUTF(this.rel);
+        objectDataOutput.writeUTF(this.redirectedFrom);
+        objectDataOutput.writeInt(this.urlDepth);
+        objectDataOutput.writeBoolean(this.isImage);
+        objectDataOutput.writeBoolean(this.isAnchor);
+        this.parentURLInfo.writeData(objectDataOutput);
+    }
+
+    @Override
+    public void readData(ObjectDataInput objectDataInput) throws IOException {
+        this.url = new URL(objectDataInput.readUTF());
+        this.fullLink = objectDataInput.readUTF();
+        this.title = objectDataInput.readUTF();
+        this.text = objectDataInput.readUTF();
+        this.rel = objectDataInput.readUTF();
+        this.redirectedFrom = objectDataInput.readUTF();
+        this.urlDepth = objectDataInput.readInt();
+        this.isImage = objectDataInput.readBoolean();
+        this.isAnchor = objectDataInput.readBoolean();
+        this.parentURLInfo = new URLInfo();
+        this.parentURLInfo.readData(objectDataInput);
+        //TODO: break the parent chain
+    }
+
+    @Override
+    public int getFactoryId() {
+        return IdentifiedSerializationFactory.FACTORY_ID;
+    }
+
+    @Override
+    public int getId() {
+        return IdentifiedSerializationFactory.URLINFO_TYPE;
+    }
+
+
 
     public static class Builder {
         private String urlString;
