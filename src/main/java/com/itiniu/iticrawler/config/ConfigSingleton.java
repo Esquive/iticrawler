@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.itiniu.iticrawler.crawler.behaviors.inte.ICrawlBehavior;
 import com.itiniu.iticrawler.util.PageExtractionType;
-import com.itiniu.iticrawler.util.LiveDataStoragePolicy;
 import com.itiniu.iticrawler.util.eviction.EvictionPolicy;
 
 @SuppressWarnings("unchecked")
@@ -49,18 +48,6 @@ public enum ConfigSingleton
 						break;
 					case "http.connectiontimeout":
 						this.connectionTimeout = config.getInt(key);
-						break;
-					case "frontier.storage.scheduled":
-						this.scheduledUrlsStoragePolicy = LiveDataStoragePolicy.valueOf(config.getString(key));
-						break;
-					case "frontier.storage.processed":
-						this.processedUrlsStoragePolicy = LiveDataStoragePolicy.valueOf(config.getString(key));
-						break;
-					case "frontier.storage.robotstxt":
-						this.robotTxtDataStoragePolicy = LiveDataStoragePolicy.valueOf(config.getString(key));
-						break;
-					case "frontier.storage.location":
-						this.storageLocation = config.getString(key);
 						break;
 					case "frontier.eviction.policy":
 						this.eviction = EvictionPolicy.valueOf(config.getString(key));
@@ -161,74 +148,18 @@ public enum ConfigSingleton
 	// ---------------------------------------------------------------------------------------------------------------
 
 	// Real-time Data-Storage relevant
-	private LiveDataStoragePolicy scheduledUrlsStoragePolicy = LiveDataStoragePolicy.MEMORY_FILE_SWAP;
-	private LiveDataStoragePolicy processedUrlsStoragePolicy = LiveDataStoragePolicy.MEMORY_FILE_SWAP;
-	private LiveDataStoragePolicy robotTxtDataStoragePolicy = LiveDataStoragePolicy.MEMORY_FILE_SWAP;
+
 
 	private EvictionPolicy eviction = EvictionPolicy.LRU;
-	private String storageLocation = "storage";
 	private int maxInMemoryElements = 100;
 
-	public LiveDataStoragePolicy getScheduledUrlsStoragePolicy()
-	{
-		return scheduledUrlsStoragePolicy;
-	}
-
-	public void setScheduledUrlsStoragePolicy(LiveDataStoragePolicy scheduledUrlsStoragePolicy)
-	{
-		this.scheduledUrlsStoragePolicy = scheduledUrlsStoragePolicy;
-
-		if (this.scheduledUrlsStoragePolicy == LiveDataStoragePolicy.MEMORY && this.clusterConfig == null)
-		{
-			this.clusterConfig = new ClusterConfig();
-		}
-	}
-
-	public LiveDataStoragePolicy getProcessedUrlsStoragePolicy()
-	{
-		return processedUrlsStoragePolicy;
-	}
-
-	public void setProcessedUrlsStoragePolicy(LiveDataStoragePolicy processedUrlsStoragePolicy)
-	{
-		this.processedUrlsStoragePolicy = processedUrlsStoragePolicy;
-
-		if (this.processedUrlsStoragePolicy == LiveDataStoragePolicy.MEMORY && this.clusterConfig == null)
-		{
-			this.clusterConfig = new ClusterConfig();
-		}
-	}
-
-	public LiveDataStoragePolicy getRobotTxtDataStoragePolicy()
-	{
-		return robotTxtDataStoragePolicy;
-	}
-
-	public void setRobotTxtDataStoragePolicy(LiveDataStoragePolicy robotTxtDataStoragePolicy)
-	{
-		this.robotTxtDataStoragePolicy = robotTxtDataStoragePolicy;
-
-		if (this.robotTxtDataStoragePolicy == LiveDataStoragePolicy.MEMORY && this.clusterConfig == null)
-		{
-			this.clusterConfig = new ClusterConfig();
-		}
-
-	}
 
 	public ClusterConfig getClusterConfig()
 	{
 		return this.clusterConfig;
 	}
 
-	public String getStorageLocation()
-	{
-		return this.storageLocation;
-	}
 
-	public void setStorageLocation(String storageLocation)
-	{
-		this.storageLocation = storageLocation;
-	}
 
 	public int getMaxInMemoryElements()
 	{
