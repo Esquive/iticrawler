@@ -2,6 +2,7 @@ package com.itiniu.iticrawler.config;
 
 import java.util.Iterator;
 
+import com.itiniu.iticrawler.util.EvictionPolicy;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -10,9 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.itiniu.iticrawler.crawler.behaviors.inte.ICrawlBehavior;
 import com.itiniu.iticrawler.util.PageExtractionType;
-import com.itiniu.iticrawler.util.eviction.EvictionPolicy;
 
-@SuppressWarnings("unchecked")
 public enum ConfigSingleton
 {
 	INSTANCE;
