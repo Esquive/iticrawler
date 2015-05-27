@@ -1,6 +1,6 @@
-log
 .DS_Store
-storage
 .idea
+storage
+log
 target
 iticrawler.iml

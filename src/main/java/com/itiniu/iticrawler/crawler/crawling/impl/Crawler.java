@@ -123,12 +123,12 @@ public class Crawler implements Runnable
 
 					if (this.robotTxtData.allows(url))
 					{
-						int siteDelay = this.robotTxtData.getDelay(url);
+						Long siteDelay = this.robotTxtData.getDelay(url);
 						Long lastProcessing = this.frontier.getLastHostProcessingTimeStamp(url);
 						Long timeUntil = 0l;
 						if (lastProcessing != null)
 						{
-							if (siteDelay != -1)
+							if (siteDelay != null)
 							{
 								timeUntil = lastProcessing + (siteDelay * 1000);
 							}

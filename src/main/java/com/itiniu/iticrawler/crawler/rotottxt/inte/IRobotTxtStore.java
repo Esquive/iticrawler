@@ -1,17 +1,18 @@
 package com.itiniu.iticrawler.crawler.rotottxt.inte;
 
+import com.itiniu.iticrawler.crawler.rotottxt.crawlercommons.BaseRobotRules;
 import com.itiniu.iticrawler.httptools.impl.URLInfo;
 
 public interface IRobotTxtStore {
 
-	public void insertRule(URLInfo url, IRobotTxtDirective directive);
+	void insertRule(URLInfo url, BaseRobotRules rules);
 
-	public boolean containsRule(URLInfo url);
+	boolean containsRule(URLInfo url);
 
-	public boolean allows(URLInfo url);
-	
-	public int getDelay(URLInfo url);
+	boolean allows(URLInfo url);
 
-	public IRobotTxtDirective getDirective(URLInfo url);
+	Long getDelay(URLInfo url);
+
+	BaseRobotRules getDirective(URLInfo url);
 	
 }

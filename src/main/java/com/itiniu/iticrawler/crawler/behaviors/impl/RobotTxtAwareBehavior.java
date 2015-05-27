@@ -2,9 +2,10 @@ package com.itiniu.iticrawler.crawler.behaviors.impl;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Scanner;
-import java.util.StringTokenizer;
 
+import com.itiniu.iticrawler.crawler.rotottxt.crawlercommons.BaseRobotRules;
+import com.itiniu.iticrawler.crawler.rotottxt.crawlercommons.BaseRobotsParser;
+import com.itiniu.iticrawler.crawler.rotottxt.crawlercommons.SimpleRobotRulesParser;
 import com.itiniu.iticrawler.httptools.impl.URLInfo;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
@@ -19,9 +20,6 @@ import org.apache.logging.log4j.Logger;
 
 import com.itiniu.iticrawler.crawler.behaviors.inte.IRobotTxtBehavior;
 import com.itiniu.iticrawler.config.ConfigSingleton;
-import com.itiniu.iticrawler.crawler.rotottxt.impl.DefaultRobotTxtDirective;
-import com.itiniu.iticrawler.crawler.rotottxt.impl.RobotTxtNotFoundDirective;
-import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtDirective;
 import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtStore;
 
 /**
@@ -34,12 +32,6 @@ import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtStore;
 public class RobotTxtAwareBehavior implements IRobotTxtBehavior 
 {
 	private static final Logger LOG = LogManager.getLogger(RobotTxtAwareBehavior.class);
-	
-	private String USER_AGENT_PATTERN = "[Uu]ser-[Aa]gent.*";
-	private String DISALLOW_PATTERN = "[dD]isallow.*";
-	private String ALLOW_PATTERN = "[Aa]llow.*";
-	private String CRAWL_DELAY_PATTERN = "[Cc]rawl-[Dd]elay.*";
-	
 
 	@Override
 	public void fetchRobotTxt(URLInfo url, HttpClient httpClient,
@@ -67,18 +59,21 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 				// Load the page Content into a String
 				String pageContent = EntityUtils.toString(entity, charset);
 
-				this.parse(url, pageContent, robotTxtData);
+				//this.parse(url, pageContent, robotTxtData);
+				this.parse(url,pageContent,entity.getContentType().getValue(),robotTxtData);
 			}
 			else
 			{
-				robotTxtData.insertRule(url, new RobotTxtNotFoundDirective());
+				//todo
+				//robotTxtData.insertRule(url, new RobotTxtNotFoundDirective());
 
 				LOG.info("No robots.txt found for Host: " + url.getDomain());
 			}
 		}
 		catch (IOException e)
 		{
-			robotTxtData.insertRule(url, new RobotTxtNotFoundDirective());
+			//todo
+			//robotTxtData.insertRule(url, new RobotTxtNotFoundDirective());
 			LOG.error("Error occured while fetching the robots.txt for page: " + url.toString(), e);
 		}
 		finally
@@ -96,100 +91,12 @@ public class RobotTxtAwareBehavior implements IRobotTxtBehavior
 
 	}
 
-	private void parse(URLInfo url, String robotTxt, IRobotTxtStore robotTxtData)
+	private void parse(URLInfo url, String robotsTxt, String contentType, IRobotTxtStore robotTxtStore)
 	{
-		StringTokenizer cTokenizer = new StringTokenizer(robotTxt, "\n");
-		String cString = null;
-		IRobotTxtDirective directive = new DefaultRobotTxtDirective();
-		int commentIndex = -1;
-
-		boolean isRelevant = false;
-
-		while (cTokenizer.hasMoreElements())
-		{
-			cString = cTokenizer.nextToken();
-
-			cString = cString.trim();
-			cString = cString.toLowerCase();
-
-			if (cString.matches(this.USER_AGENT_PATTERN))
-			{
-				cString = cString.substring(cString.indexOf(":") + 1);
-
-				cString = cString.trim();
-
-				commentIndex = cString.indexOf("#");
-
-				if (commentIndex != -1)
-				{
-					cString = cString.substring(0, cString.indexOf("#"));
-					cString = cString.trim();
-				}
-
-				if (cString.contains("*") || cString.contains(ConfigSingleton.INSTANCE.getUserAgent()))
-				{
-					isRelevant = true;
-				}
-				else
-				{
-					isRelevant = false;
-				}
-			}
-			else if (cString.matches(this.DISALLOW_PATTERN))
-			{
-				if (isRelevant)
-				{
-					cString = cString.substring(cString.indexOf(":") + 1);
-
-					cString = cString.trim();
-
-					commentIndex = cString.indexOf("#");
-
-					if (commentIndex != -1)
-					{
-						cString = cString.substring(0, cString.indexOf("#"));
-						cString = cString.trim();
-					}
-
-					directive.addDisallowEntry(cString);
-				}
-			}
-			else if (cString.matches(this.ALLOW_PATTERN))
-			{
-				if (isRelevant)
-				{
-					cString = cString.substring(cString.indexOf(":") + 1);
-
-					cString = cString.trim();
-
-					commentIndex = cString.indexOf("#");
-
-					if (commentIndex != -1)
-					{
-						cString = cString.substring(0, cString.indexOf("#"));
-						cString = cString.trim();
-					}
-
-					directive.addAllowEntry(cString);
-				}
-			}
-			else if(cString.matches(this.CRAWL_DELAY_PATTERN))
-			{
-				cString = cString.substring(cString.indexOf(":") + 1);
-				cString = cString.trim();
-				Scanner scanner = new Scanner(cString);
-				int delay = scanner.nextInt();
-				scanner.close();
-				
-				directive.addDelay(delay);
-			}
-			else
-			{
-				isRelevant = false;
-			}
-		}
-		
-		robotTxtData.insertRule(url, directive);
-
+		BaseRobotsParser parser = new SimpleRobotRulesParser();
+		BaseRobotRules rules = parser.parseContent(url.toString(), robotsTxt.getBytes(), contentType, ConfigSingleton.INSTANCE.getUserAgent());
+		robotTxtStore.insertRule(url, rules);
 	}
+
+
 }
