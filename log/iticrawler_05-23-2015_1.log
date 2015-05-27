@@ -1,0 +1,8 @@
+14:33:28,619 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+14:33:28,737 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+14:33:39,718 INFO  PersistentFrontier main Starting cassandra in dir /tmp 
+14:33:39,908 INFO  PersistentFrontier main Cassandra config file: /tmp/cassandra.yaml 
+14:34:58,379 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+14:34:58,479 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+14:35:06,285 INFO  PersistentFrontier main Starting cassandra in dir /tmp 
+14:35:06,448 INFO  PersistentFrontier main Cassandra config file: /tmp/cassandra.yaml 

@@ -165,7 +165,12 @@ public class URLInfo implements IdentifiedDataSerializable {
         objectDataOutput.writeInt(this.urlDepth);
         objectDataOutput.writeBoolean(this.isImage);
         objectDataOutput.writeBoolean(this.isAnchor);
-        this.parentURLInfo.writeData(objectDataOutput);
+        objectDataOutput.writeBoolean(this.parentURLInfo == null ? true : false);
+        if (this.parentURLInfo != null) {
+            this.parentURLInfo.writeData(objectDataOutput);
+        } else {
+            objectDataOutput.writeObject(null);
+        }
     }
 
     @Override
@@ -179,8 +184,11 @@ public class URLInfo implements IdentifiedDataSerializable {
         this.urlDepth = objectDataInput.readInt();
         this.isImage = objectDataInput.readBoolean();
         this.isAnchor = objectDataInput.readBoolean();
-        this.parentURLInfo = new URLInfo();
-        this.parentURLInfo.readData(objectDataInput);
+        boolean isNull = objectDataInput.readBoolean();
+        if(!isNull) {
+            this.parentURLInfo = new URLInfo();
+            this.parentURLInfo.readData(objectDataInput);
+        }
         //TODO: break the parent chain
     }
 
@@ -193,7 +201,6 @@ public class URLInfo implements IdentifiedDataSerializable {
     public int getId() {
         return IdentifiedSerializationFactory.URLINFO_TYPE;
     }
-
 
 
     public static class Builder {

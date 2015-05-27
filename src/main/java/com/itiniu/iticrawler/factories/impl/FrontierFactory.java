@@ -1,4 +1,4 @@
-package com.itiniu.iticrawler.util;
+package com.itiniu.iticrawler.factories.impl;
 
 import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.crawler.frontier.impl.Frontier;
@@ -20,8 +20,8 @@ public class FrontierFactory {
         IScheduledURLStore scheduled = null;
 
 
-        crawled = new DistributedCrawledUrlsMap(ConfigSingleton.INSTANCE.getClusterConfig().getConfig());
-        scheduled = new DistributedScheduledUrlsQueue(ConfigSingleton.INSTANCE.getClusterConfig().getConfig());
+        crawled = new DistributedCrawledUrlsMap(ConfigSingleton.INSTANCE.getClusterConfig());
+        scheduled = new DistributedScheduledUrlsQueue(ConfigSingleton.INSTANCE.getClusterConfig().getMemoryClusterConfig());
 
         //TODO: Change it again and use the constructor.
         frontier.setCrawledURLStore(crawled);

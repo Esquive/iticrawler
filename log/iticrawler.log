@@ -1,0 +1,129 @@
+21:39:32,019 INFO  StorageCluster main Starting cassandra in dir storage 
+21:39:32,039 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+21:39:34,570 INFO  StorageCluster main Started cassandra deamon 
+21:39:34,748 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:39:34,793 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:43:29,123 INFO  StorageCluster main Starting cassandra in dir storage 
+21:43:29,137 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+21:44:13,532 INFO  StorageCluster main Starting cassandra in dir storage 
+21:44:13,547 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+21:45:55,766 INFO  StorageCluster main Starting cassandra in dir storage 
+21:45:55,779 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+21:45:58,086 INFO  StorageCluster main Started cassandra deamon 
+21:46:30,286 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:46:30,710 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:47:30,039 INFO  StorageCluster main Starting cassandra in dir storage 
+21:47:30,052 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+21:47:32,261 INFO  StorageCluster main Started cassandra deamon 
+21:47:38,702 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:47:38,741 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:48:41,810 INFO  StorageCluster main Starting cassandra in dir storage 
+21:48:41,823 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+21:48:44,274 INFO  StorageCluster main Started cassandra deamon 
+21:48:46,079 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:48:46,116 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:50:17,751 INFO  StorageCluster main Starting cassandra in dir storage 
+21:50:17,767 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+21:50:20,018 INFO  StorageCluster main Started cassandra deamon 
+21:50:26,450 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:50:26,486 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:52:17,188 INFO  StorageCluster main Starting cassandra in dir storage 
+21:52:17,200 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+21:52:19,636 INFO  StorageCluster main Started cassandra deamon 
+21:52:19,860 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:52:19,913 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:54:29,896 INFO  StorageCluster main Starting cassandra in dir storage 
+21:54:29,909 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+21:54:32,233 INFO  StorageCluster main Started cassandra deamon 
+21:54:32,504 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:54:32,566 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:55:51,449 INFO  StorageCluster main Starting cassandra in dir storage 
+21:55:51,460 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+21:55:53,745 INFO  StorageCluster main Started cassandra deamon 
+21:55:54,026 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:55:54,092 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:55:59,870 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:56:00,043 INFO  CrawlController main Components are initialized! 
+21:56:00,112 DEBUG  Crawler pool-9-thread-3 Loading URL: http://www.nba.com/ 
+21:56:47,334 INFO  StorageCluster main Starting cassandra in dir storage 
+21:56:47,347 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+21:56:50,009 INFO  StorageCluster main Started cassandra deamon 
+21:56:50,282 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:56:50,330 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:57:01,494 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:57:01,677 INFO  CrawlController main Components are initialized! 
+21:57:01,730 DEBUG  Crawler pool-9-thread-1 Loading URL: http://www.nba.com/ 
+21:58:02,710 INFO  StorageCluster main Starting cassandra in dir storage 
+21:58:02,722 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+21:58:05,013 INFO  StorageCluster main Started cassandra deamon 
+21:58:05,268 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:58:05,325 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:58:05,382 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:58:05,599 INFO  CrawlController main Components are initialized! 
+21:58:05,665 DEBUG  Crawler pool-9-thread-1 Loading URL: http://www.nba.com/ 
+21:59:14,352 INFO  StorageCluster main Starting cassandra in dir storage 
+21:59:14,364 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+21:59:16,697 INFO  StorageCluster main Started cassandra deamon 
+21:59:16,943 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:59:17,000 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:59:17,055 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:59:17,243 INFO  CrawlController main Components are initialized! 
+21:59:17,311 DEBUG  Crawler pool-9-thread-1 Loading URL: http://www.nba.com/ 
+21:59:21,916 DEBUG  Crawler pool-9-thread-1 Fetching robots.txt for url: www.nba.com 
+22:00:28,622 DEBUG  Crawler pool-9-thread-3 Loading URL: http://www.spox.com/nba/?gr=www 
+22:01:06,499 DEBUG  Crawler pool-9-thread-3 Fetching robots.txt for url: www.spox.com 
+22:32:50,910 DEBUG  Crawler pool-9-thread-3 Loading URL: http://www.spox.com/de/sport/ussport/nba/index.html 
+22:33:05,683 INFO  StorageCluster main Starting cassandra in dir storage 
+22:33:05,696 INFO  StorageCluster main Cassandra config file: storage/cassandra.yaml 
+22:33:08,053 INFO  StorageCluster main Started cassandra deamon 
+22:33:08,465 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+22:33:08,514 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+22:33:08,662 INFO  CrawlController main Initialize HTTP Connection pool! 
+22:33:08,774 INFO  CrawlController main Components are initialized! 
+22:33:08,841 DEBUG  Crawler pool-9-thread-1 Loading URL: http://www.nba.com/ 
+22:33:32,537 DEBUG  Crawler pool-9-thread-1 Fetching robots.txt for url: www.nba.com 
+22:33:52,603 DEBUG  Crawler pool-9-thread-1 Loading URL: http://www.spox.com/nba/?gr=www 
+22:33:52,604 DEBUG  Crawler pool-9-thread-1 Fetching robots.txt for url: www.spox.com 
+22:34:04,074 DEBUG  Crawler pool-9-thread-1 Loading URL: http://www.spox.com/de/sport/ussport/nba/index.html 
+22:34:18,254 ERROR  Page pool-9-thread-1 url error: http://adserver.adtech.de/adlink|3.0|1101|4945939|0|16|ADTECH;Adid=12250760;BnId=1 java.net.MalformedURLException
+	at java.net.URL.<init>(URL.java:620)
+	at java.net.URL.<init>(URL.java:483)
+	at java.net.URL.<init>(URL.java:432)
+	at com.itiniu.iticrawler.httptools.impl.URLInfo.<init>(URLInfo.java:145)
+	at com.itiniu.iticrawler.httptools.impl.URLInfo.<init>(URLInfo.java:20)
+	at com.itiniu.iticrawler.httptools.impl.URLInfo$Builder.build(URLInfo.java:271)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Page.setOutgoingURLs(Page.java:103)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.crawlPageToString(Crawler.java:446)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.crawlPage(Crawler.java:266)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.execute(Crawler.java:145)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.run(Crawler.java:87)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.NullPointerException
+	at java.net.URL.<init>(URL.java:525)
+	... 13 more
+
+22:34:18,258 ERROR  Page pool-9-thread-1 url error: http://adserver.adtech.de/adserv|3.0|1101|4945939|0|16|ADTECH;Adid=12250760;BnId=1 java.net.MalformedURLException
+	at java.net.URL.<init>(URL.java:620)
+	at java.net.URL.<init>(URL.java:483)
+	at java.net.URL.<init>(URL.java:432)
+	at com.itiniu.iticrawler.httptools.impl.URLInfo.<init>(URLInfo.java:145)
+	at com.itiniu.iticrawler.httptools.impl.URLInfo.<init>(URLInfo.java:20)
+	at com.itiniu.iticrawler.httptools.impl.URLInfo$Builder.build(URLInfo.java:271)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Page.setOutgoingURLs(Page.java:103)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.crawlPageToString(Crawler.java:446)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.crawlPage(Crawler.java:266)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.execute(Crawler.java:145)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.run(Crawler.java:87)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.NullPointerException
+	at java.net.URL.<init>(URL.java:525)
+	... 13 more
+
+22:34:46,773 DEBUG  Crawler pool-9-thread-1 Loading URL: http://spoxcom.ivwbox.de/cgi-bin/ivw/CP/spox_basket_rc_spo_basket_us; 
+22:34:46,775 DEBUG  Crawler pool-9-thread-1 Fetching robots.txt for url: spoxcom.ivwbox.de 
+22:34:56,143 DEBUG  Crawler pool-9-thread-1 Loading URL: http://b.scorecardresearch.com/p?c1=2&c15=spoxcomscore&c2=6035584&c3&c4=http%3A%2F%2Fwww.spox.com%2Fde%2Fsport%2Fussport%2Fnba%2Findex.html&c5&c6&cj=1&cv=2.0 
+22:34:56,147 DEBUG  Crawler pool-9-thread-1 Fetching robots.txt for url: b.scorecardresearch.com 

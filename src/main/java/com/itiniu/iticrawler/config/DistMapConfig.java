@@ -2,20 +2,35 @@ package com.itiniu.iticrawler.config;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.MapConfig;
+import com.hazelcast.config.MapStoreConfig;
+import com.hazelcast.config.MaxSizeConfig;
 
-public class DistMapConfig
-{
+public class DistMapConfig {
 
-	public DistMapConfig setup(Config cfg, String name)
-	{
-		MapConfig mapConfig = new MapConfig();
+    public DistMapConfig setup(Config cfg, String name, Object storeImplementation) {
+        MapConfig mapConfig = new MapConfig();
 
-		mapConfig.setName(name);
-		mapConfig.setBackupCount(1);
+        //TODO: Refactor the config options
+        mapConfig.setName(name);
+        mapConfig.setBackupCount(1);
 
-		cfg.addMapConfig(mapConfig);
 
-		return this;
-	}
+
+        if (storeImplementation != null) {
+
+            MaxSizeConfig maxSizeConfig = new MaxSizeConfig();
+            maxSizeConfig.setSize(3);
+
+            MapStoreConfig store = new MapStoreConfig();
+            store.setImplementation(storeImplementation);
+
+            mapConfig.setMaxSizeConfig(maxSizeConfig);
+            mapConfig.setMapStoreConfig(store);
+        }
+
+        cfg.addMapConfig(mapConfig);
+
+        return this;
+    }
 
 }

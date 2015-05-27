@@ -11,6 +11,7 @@ public class DistQueueConfig
 
 		QueueConfig qConfig = new QueueConfig();
 
+		//TODO: Refactor the configuration entries
 		qConfig.setName(name);
 		qConfig.setBackupCount(1);
 

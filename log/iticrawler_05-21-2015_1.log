@@ -1,0 +1,193 @@
+21:17:37,424 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:17:37,432 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:18:26,179 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:18:33,194 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:19:08,131 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:19:09,230 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:19:58,905 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:20:01,656 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:21:59,379 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:22:03,085 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:22:09,324 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:22:09,434 ERROR  CrawlController main No CrawlBehavior was specified: Use ConfigSingleton.setCustomCallBehavior() com.itiniu.iticrawler.util.exceptions.NoCrawlBehaviorProvidedException: No CrawlBehabior was specified!
+	at com.itiniu.iticrawler.crawler.crawling.impl.CrawlController.initComponents(CrawlController.java:151)
+	at com.itiniu.iticrawler.crawler.crawling.impl.CrawlController.<init>(CrawlController.java:71)
+	at com.itiniu.itispider.App.main(App.java:16)
+
+21:22:47,501 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:22:47,508 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:22:53,808 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:22:53,909 ERROR  CrawlController main No CrawlBehavior was specified: Use ConfigSingleton.setCustomCallBehavior() com.itiniu.iticrawler.util.exceptions.NoCrawlBehaviorProvidedException: No CrawlBehabior was specified!
+	at com.itiniu.iticrawler.crawler.crawling.impl.CrawlController.initComponents(CrawlController.java:151)
+	at com.itiniu.iticrawler.crawler.crawling.impl.CrawlController.<init>(CrawlController.java:71)
+	at com.itiniu.itispider.App.main(App.java:16)
+
+21:23:21,567 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:23:21,580 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:23:27,869 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:23:27,977 ERROR  CrawlController main No CrawlBehavior was specified: Use ConfigSingleton.setCustomCallBehavior() com.itiniu.iticrawler.util.exceptions.NoCrawlBehaviorProvidedException: No CrawlBehabior was specified!
+	at com.itiniu.iticrawler.crawler.crawling.impl.CrawlController.initComponents(CrawlController.java:151)
+	at com.itiniu.iticrawler.crawler.crawling.impl.CrawlController.<init>(CrawlController.java:71)
+	at com.itiniu.itispider.App.main(App.java:16)
+
+21:26:48,141 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:26:48,150 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:26:54,440 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:26:54,545 ERROR  CrawlController main No CrawlBehavior was specified: Use ConfigSingleton.setCustomCallBehavior() com.itiniu.iticrawler.util.exceptions.NoCrawlBehaviorProvidedException: No CrawlBehabior was specified!
+	at com.itiniu.iticrawler.crawler.crawling.impl.CrawlController.initComponents(CrawlController.java:151)
+	at com.itiniu.iticrawler.crawler.crawling.impl.CrawlController.<init>(CrawlController.java:71)
+	at com.itiniu.itispider.App.main(App.java:16)
+
+21:27:05,451 ERROR  CrawlController main An error occured while creating a crawler thread java.lang.IllegalAccessException: Class com.itiniu.iticrawler.crawler.crawling.impl.CrawlController can not access a member of class com.itiniu.itispider.App$1 with modifiers ""
+	at sun.reflect.Reflection.ensureMemberAccess(Reflection.java:102)
+	at java.lang.Class.newInstance(Class.java:436)
+	at com.itiniu.iticrawler.crawler.crawling.impl.CrawlController.buildCrawler(CrawlController.java:214)
+	at com.itiniu.iticrawler.crawler.crawling.impl.CrawlController.startCrawling(CrawlController.java:117)
+	at com.itiniu.itispider.App.main(App.java:41)
+
+21:30:25,732 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:30:25,839 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:30:32,121 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:30:32,223 INFO  CrawlController main Components are initialized! 
+21:30:57,202 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:30:57,273 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:31:03,528 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:31:03,629 INFO  CrawlController main Components are initialized! 
+21:32:02,381 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:32:02,448 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:32:08,661 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:32:08,768 INFO  CrawlController main Components are initialized! 
+21:33:20,222 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:33:20,292 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:33:26,543 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:33:26,657 INFO  CrawlController main Components are initialized! 
+21:41:12,288 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:41:12,355 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:41:18,645 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:41:18,749 INFO  CrawlController main Components are initialized! 
+21:41:18,803 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.nba.com/ 
+21:41:18,874 DEBUG  Crawler pool-2-thread-1 Fetching robots.txt for url: www.nba.com 
+21:42:02,808 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:42:02,886 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:42:09,118 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:42:09,237 INFO  CrawlController main Components are initialized! 
+21:42:13,961 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.nba.com/ 
+21:42:13,990 DEBUG  Crawler pool-2-thread-1 Fetching robots.txt for url: www.nba.com 
+21:42:58,138 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:42:58,204 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:43:04,412 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:43:04,514 INFO  CrawlController main Components are initialized! 
+21:43:06,702 DEBUG  Crawler pool-2-thread-2 Loading URL: http://www.nba.com/ 
+21:43:06,736 DEBUG  Crawler pool-2-thread-2 Fetching robots.txt for url: www.nba.com 
+21:44:35,301 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:44:35,378 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:44:41,613 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:44:41,714 INFO  CrawlController main Components are initialized! 
+21:44:46,981 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.nba.com/ 
+21:44:47,021 DEBUG  Crawler pool-2-thread-1 Fetching robots.txt for url: www.nba.com 
+21:47:41,855 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:47:41,917 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:47:48,167 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:47:48,265 INFO  CrawlController main Components are initialized! 
+21:47:54,745 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.nba.com/ 
+21:47:54,958 DEBUG  Crawler pool-2-thread-1 Fetching robots.txt for url: www.nba.com 
+21:48:59,496 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:48:59,562 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:49:05,792 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:49:05,894 INFO  CrawlController main Components are initialized! 
+21:49:05,945 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.nba.com/ 
+21:49:05,990 DEBUG  Crawler pool-2-thread-1 Fetching robots.txt for url: www.nba.com 
+21:49:40,126 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:49:40,200 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:49:46,424 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:49:46,523 INFO  CrawlController main Components are initialized! 
+21:50:33,354 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:50:33,433 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:50:39,659 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:50:39,761 INFO  CrawlController main Components are initialized! 
+21:50:47,880 DEBUG  Crawler pool-2-thread-2 Loading URL: http://www.nba.com/ 
+21:50:47,915 DEBUG  Crawler pool-2-thread-2 Fetching robots.txt for url: www.nba.com 
+21:50:52,958 DEBUG  Crawler pool-2-thread-2 Loading URL: http://www.spox.com/nba/?gr=www 
+21:50:52,959 DEBUG  Crawler pool-2-thread-2 Fetching robots.txt for url: www.spox.com 
+21:52:32,392 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:52:32,469 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:52:38,690 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:52:38,792 INFO  CrawlController main Components are initialized! 
+21:52:43,451 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.nba.com/ 
+21:53:13,414 DEBUG  Crawler pool-2-thread-1 Fetching robots.txt for url: www.nba.com 
+21:53:13,977 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.spox.com/nba/?gr=www 
+21:53:13,979 DEBUG  Crawler pool-2-thread-1 Fetching robots.txt for url: www.spox.com 
+21:55:29,615 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:55:29,679 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:55:35,873 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:55:35,973 INFO  CrawlController main Components are initialized! 
+21:55:36,022 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.nba.com/ 
+21:55:36,053 DEBUG  Crawler pool-2-thread-1 Fetching robots.txt for url: www.nba.com 
+21:55:37,313 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.spox.com/nba/?gr=www 
+21:55:37,315 DEBUG  Crawler pool-2-thread-1 Fetching robots.txt for url: www.spox.com 
+21:56:02,055 INFO  ConfigSingleton main ITICRAWLER: Loading properties! 
+21:56:02,142 INFO  CrawlController main Initialize Dataholders: Frontier and RobotTxt 
+21:56:08,395 INFO  CrawlController main Initialize HTTP Connection pool! 
+21:56:08,496 INFO  CrawlController main Components are initialized! 
+21:56:08,545 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.nba.com/ 
+21:56:08,575 DEBUG  Crawler pool-2-thread-1 Fetching robots.txt for url: www.nba.com 
+21:56:08,803 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.spox.com/nba/?gr=www 
+21:56:08,804 DEBUG  Crawler pool-2-thread-1 Fetching robots.txt for url: www.spox.com 
+21:56:09,290 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.spox.com/de/sport/ussport/nba/index.html 
+21:56:09,485 ERROR  Page pool-2-thread-1 url error: http://adserver.adtech.de/adlink|3.0|1101|4945939|0|16|ADTECH;Adid=12250760;BnId=1 java.net.MalformedURLException
+	at java.net.URL.<init>(URL.java:620)
+	at java.net.URL.<init>(URL.java:483)
+	at java.net.URL.<init>(URL.java:432)
+	at com.itiniu.iticrawler.httptools.impl.URLInfo.<init>(URLInfo.java:145)
+	at com.itiniu.iticrawler.httptools.impl.URLInfo.<init>(URLInfo.java:20)
+	at com.itiniu.iticrawler.httptools.impl.URLInfo$Builder.build(URLInfo.java:271)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Page.setOutgoingURLs(Page.java:103)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.crawlPageToString(Crawler.java:449)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.crawlPage(Crawler.java:269)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.execute(Crawler.java:148)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.run(Crawler.java:90)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.NullPointerException
+	at java.net.URL.<init>(URL.java:525)
+	... 13 more
+
+21:56:09,487 ERROR  Page pool-2-thread-1 url error: http://adserver.adtech.de/adserv|3.0|1101|4945939|0|16|ADTECH;Adid=12250760;BnId=1 java.net.MalformedURLException
+	at java.net.URL.<init>(URL.java:620)
+	at java.net.URL.<init>(URL.java:483)
+	at java.net.URL.<init>(URL.java:432)
+	at com.itiniu.iticrawler.httptools.impl.URLInfo.<init>(URLInfo.java:145)
+	at com.itiniu.iticrawler.httptools.impl.URLInfo.<init>(URLInfo.java:20)
+	at com.itiniu.iticrawler.httptools.impl.URLInfo$Builder.build(URLInfo.java:271)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Page.setOutgoingURLs(Page.java:103)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.crawlPageToString(Crawler.java:449)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.crawlPage(Crawler.java:269)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.execute(Crawler.java:148)
+	at com.itiniu.iticrawler.crawler.crawling.impl.Crawler.run(Crawler.java:90)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.NullPointerException
+	at java.net.URL.<init>(URL.java:525)
+	... 13 more
+
+21:56:11,017 DEBUG  Crawler pool-2-thread-1 Loading URL: http://spoxcom.ivwbox.de/cgi-bin/ivw/CP/spox_basket_rc_spo_basket_us; 
+21:56:11,018 DEBUG  Crawler pool-2-thread-1 Fetching robots.txt for url: spoxcom.ivwbox.de 
+21:56:11,189 DEBUG  Crawler pool-2-thread-1 Loading URL: http://b.scorecardresearch.com/p?c1=2&c15=spoxcomscore&c2=6035584&c3&c4=http%3A%2F%2Fwww.spox.com%2Fde%2Fsport%2Fussport%2Fnba%2Findex.html&c5&c6&cj=1&cv=2.0 
+21:56:11,189 DEBUG  Crawler pool-2-thread-1 Fetching robots.txt for url: b.scorecardresearch.com 
+21:56:11,236 DEBUG  Crawler pool-2-thread-1 Robots.txt does not allow the crawling of page: http://b.scorecardresearch.com/p?c1=2&c15=spoxcomscore&c2=6035584&c3&c4=http%3A%2F%2Fwww.spox.com%2Fde%2Fsport%2Fussport%2Fnba%2Findex.html&c5&c6&cj=1&cv=2.0 
+21:56:11,236 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.nba.com/hawks/ 
+21:56:15,846 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.nba.com/celtics/ 
+21:56:18,522 DEBUG  Crawler pool-2-thread-2 Loading URL: http://www.nba.com/nets/ 
+21:56:18,522 DEBUG  Crawler pool-2-thread-3 Loading URL: http://www.nba.com/bobcats/ 
+21:56:18,522 DEBUG  Crawler pool-2-thread-4 Loading URL: http://www.nba.com/bulls/ 
+21:56:18,522 DEBUG  Crawler pool-2-thread-5 Loading URL: http://www.nba.com/cavaliers/ 
+21:56:18,523 DEBUG  Crawler pool-2-thread-6 Loading URL: http://www.nba.com/mavericks/ 
+21:56:18,523 DEBUG  Crawler pool-2-thread-7 Loading URL: http://www.nba.com/nuggets/ 
+21:56:18,523 DEBUG  Crawler pool-2-thread-8 Loading URL: http://www.nba.com/pistons/ 
+21:56:18,523 DEBUG  Crawler pool-2-thread-9 Loading URL: http://www.nba.com/warriors/ 
+21:56:18,523 DEBUG  Crawler pool-2-thread-10 Loading URL: http://www.nba.com/rockets/ 
+21:56:19,787 DEBUG  Crawler pool-2-thread-6 Loading URL: http://www.nba.com/pacers/ 
+21:56:19,787 DEBUG  Crawler pool-2-thread-3 Loading URL: http://www.nba.com/clippers/ 
+21:56:19,861 DEBUG  Crawler pool-2-thread-1 Loading URL: http://www.nba.com/lakers/ 

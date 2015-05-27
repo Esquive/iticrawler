@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
+import com.itiniu.iticrawler.config.ClusterConfig;
 import com.itiniu.iticrawler.config.DistMapConfig;
 import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtDirective;
 import com.itiniu.iticrawler.httptools.impl.URLInfo;
@@ -13,11 +14,11 @@ public class DistributedRobotTxtMap implements IRobotTxtStore {
 
 	private Map<String, IRobotTxtDirective> rules;
 	
-	public DistributedRobotTxtMap(Config cfg)
+	public DistributedRobotTxtMap(ClusterConfig cfg)
 	{
-		new DistMapConfig().setup(cfg, "RobotTxt");
+		new DistMapConfig().setup(cfg.getMemoryClusterConfig(), "RobotTxt", null);
 		
-		this.rules = Hazelcast.getHazelcastInstanceByName("itiCrawlerCluster").getMap("RobotTxt");
+		this.rules = Hazelcast.getHazelcastInstanceByName(ClusterConfig.MEMORY_CLUSTER_NAME).getMap("RobotTxt");
 	}
 	
 	@Override

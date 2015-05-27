@@ -54,6 +54,9 @@ public enum ConfigSingleton
 					case "frontier.eviction.maxelements":
 						this.maxInMemoryElements = config.getInt(key);
 						break;
+					case "frontier.storage.location=storage":
+						this.setFileStorage(config.getString(key));
+						break;
 					case "crawler.threads":
 						this.numberOfCrawlerThreads = config.getInt(key);
 						break;
@@ -102,7 +105,7 @@ public enum ConfigSingleton
 	private int socketTimeout = 20000;
 	private int connectionTimeout = 30000;
 
-	private ClusterConfig clusterConfig;
+	private ClusterConfig clusterConfig = new ClusterConfig();
 
 	public void setMaxConnections(int param)
 	{
@@ -151,14 +154,12 @@ public enum ConfigSingleton
 
 	private EvictionPolicy eviction = EvictionPolicy.LRU;
 	private int maxInMemoryElements = 100;
-
+	private String fileStorage = "storage";
 
 	public ClusterConfig getClusterConfig()
 	{
 		return this.clusterConfig;
 	}
-
-
 
 	public int getMaxInMemoryElements()
 	{
@@ -178,6 +179,14 @@ public enum ConfigSingleton
 	public void setEviction(EvictionPolicy eviction)
 	{
 		this.eviction = eviction;
+	}
+
+	public String getFileStorage() {
+		return fileStorage;
+	}
+
+	public void setFileStorage(String fileStorage) {
+		this.fileStorage = fileStorage;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------
