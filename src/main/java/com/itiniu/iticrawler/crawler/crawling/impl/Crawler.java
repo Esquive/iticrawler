@@ -13,7 +13,6 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -34,8 +33,6 @@ import com.itiniu.iticrawler.crawler.behaviors.inte.IRobotTxtBehavior;
 import com.itiniu.iticrawler.config.ConfigSingleton;
 import com.itiniu.iticrawler.util.PageExtractionType;
 import com.itiniu.iticrawler.util.exceptions.InputStreamPageExtractionException;
-import com.itiniu.iticrawler.crawler.frontier.inte.ICrawledURLStore;
-import com.itiniu.iticrawler.crawler.frontier.inte.IScheduledURLStore;
 import com.itiniu.iticrawler.httptools.impl.URLCanonicalizer;
 import com.itiniu.iticrawler.httptools.inte.IHttpConnectionManager;
 import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtStore;
@@ -524,6 +521,7 @@ public class Crawler implements Runnable
 			if (!this.frontier.wasURLCrawled(url) && !this.frontier.isURLCurrentlyCrawled(url)
 					&& this.frontier.canCrawlURL(url))
 			{
+				//TODO: Maybe don't schedule each URL separatly but a single time but propose different scheduling mechanisms maybe allow CustomScheduling behavior
 					url.setUrlDepth(page.getUrl().getUrlDepth() + 1);
 					url.setParentURLInfo(page.getUrl());
 

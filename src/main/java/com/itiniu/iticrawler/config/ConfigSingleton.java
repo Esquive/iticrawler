@@ -2,6 +2,7 @@ package com.itiniu.iticrawler.config;
 
 import java.util.Iterator;
 
+import com.itiniu.iticrawler.util.EvictionPolicy;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -10,10 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.itiniu.iticrawler.crawler.behaviors.inte.ICrawlBehavior;
 import com.itiniu.iticrawler.util.PageExtractionType;
-import com.itiniu.iticrawler.util.LiveDataStoragePolicy;
-import com.itiniu.iticrawler.util.eviction.EvictionPolicy;
 
-@SuppressWarnings("unchecked")
 public enum ConfigSingleton
 {
 	INSTANCE;
@@ -50,23 +48,14 @@ public enum ConfigSingleton
 					case "http.connectiontimeout":
 						this.connectionTimeout = config.getInt(key);
 						break;
-					case "frontier.storage.scheduled":
-						this.scheduledUrlsStoragePolicy = LiveDataStoragePolicy.valueOf(config.getString(key));
-						break;
-					case "frontier.storage.processed":
-						this.processedUrlsStoragePolicy = LiveDataStoragePolicy.valueOf(config.getString(key));
-						break;
-					case "frontier.storage.robotstxt":
-						this.robotTxtDataStoragePolicy = LiveDataStoragePolicy.valueOf(config.getString(key));
-						break;
-					case "frontier.storage.location":
-						this.storageLocation = config.getString(key);
-						break;
 					case "frontier.eviction.policy":
 						this.eviction = EvictionPolicy.valueOf(config.getString(key));
 						break;
 					case "frontier.eviction.maxelements":
 						this.maxInMemoryElements = config.getInt(key);
+						break;
+					case "frontier.storage.location=storage":
+						this.setFileStorage(config.getString(key));
 						break;
 					case "crawler.threads":
 						this.numberOfCrawlerThreads = config.getInt(key);
@@ -116,7 +105,7 @@ public enum ConfigSingleton
 	private int socketTimeout = 20000;
 	private int connectionTimeout = 30000;
 
-	private ClusterConfig clusterConfig;
+	private ClusterConfig clusterConfig = new ClusterConfig();
 
 	public void setMaxConnections(int param)
 	{
@@ -161,73 +150,15 @@ public enum ConfigSingleton
 	// ---------------------------------------------------------------------------------------------------------------
 
 	// Real-time Data-Storage relevant
-	private LiveDataStoragePolicy scheduledUrlsStoragePolicy = LiveDataStoragePolicy.MEMORY_FILE_SWAP;
-	private LiveDataStoragePolicy processedUrlsStoragePolicy = LiveDataStoragePolicy.MEMORY_FILE_SWAP;
-	private LiveDataStoragePolicy robotTxtDataStoragePolicy = LiveDataStoragePolicy.MEMORY_FILE_SWAP;
+
 
 	private EvictionPolicy eviction = EvictionPolicy.LRU;
-	private String storageLocation = "storage";
 	private int maxInMemoryElements = 100;
-
-	public LiveDataStoragePolicy getScheduledUrlsStoragePolicy()
-	{
-		return scheduledUrlsStoragePolicy;
-	}
-
-	public void setScheduledUrlsStoragePolicy(LiveDataStoragePolicy scheduledUrlsStoragePolicy)
-	{
-		this.scheduledUrlsStoragePolicy = scheduledUrlsStoragePolicy;
-
-		if (this.scheduledUrlsStoragePolicy == LiveDataStoragePolicy.MEMORY && this.clusterConfig == null)
-		{
-			this.clusterConfig = new ClusterConfig();
-		}
-	}
-
-	public LiveDataStoragePolicy getProcessedUrlsStoragePolicy()
-	{
-		return processedUrlsStoragePolicy;
-	}
-
-	public void setProcessedUrlsStoragePolicy(LiveDataStoragePolicy processedUrlsStoragePolicy)
-	{
-		this.processedUrlsStoragePolicy = processedUrlsStoragePolicy;
-
-		if (this.processedUrlsStoragePolicy == LiveDataStoragePolicy.MEMORY && this.clusterConfig == null)
-		{
-			this.clusterConfig = new ClusterConfig();
-		}
-	}
-
-	public LiveDataStoragePolicy getRobotTxtDataStoragePolicy()
-	{
-		return robotTxtDataStoragePolicy;
-	}
-
-	public void setRobotTxtDataStoragePolicy(LiveDataStoragePolicy robotTxtDataStoragePolicy)
-	{
-		this.robotTxtDataStoragePolicy = robotTxtDataStoragePolicy;
-
-		if (this.robotTxtDataStoragePolicy == LiveDataStoragePolicy.MEMORY && this.clusterConfig == null)
-		{
-			this.clusterConfig = new ClusterConfig();
-		}
-
-	}
+	private String fileStorage = "storage";
 
 	public ClusterConfig getClusterConfig()
 	{
 		return this.clusterConfig;
-	}
-
-	public String getStorageLocation()
-	{
-		return this.storageLocation;
-	}
-
-	public void setStorageLocation(String storageLocation)
-	{
-		this.storageLocation = storageLocation;
 	}
 
 	public int getMaxInMemoryElements()
@@ -248,6 +179,14 @@ public enum ConfigSingleton
 	public void setEviction(EvictionPolicy eviction)
 	{
 		this.eviction = eviction;
+	}
+
+	public String getFileStorage() {
+		return fileStorage;
+	}
+
+	public void setFileStorage(String fileStorage) {
+		this.fileStorage = fileStorage;
 	}
 
 	// ---------------------------------------------------------------------------------------------------------------------

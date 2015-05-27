@@ -13,7 +13,7 @@ import com.itiniu.iticrawler.crawler.frontier.inte.IFrontier;
 import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtStore;
 import com.itiniu.iticrawler.factories.impl.RobotTxtStorageFactory;
 import com.itiniu.iticrawler.httptools.impl.*;
-import com.itiniu.iticrawler.util.FrontierFactory;
+import com.itiniu.iticrawler.factories.impl.FrontierFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -144,12 +144,12 @@ public class CrawlController implements Runnable
 	protected void initComponents() throws KeyManagementException, KeyStoreException, NoSuchAlgorithmException,
 			NoCrawlBehaviorProvidedException
 	{
-		this.initDataHolders();
-		this.initConnectionManager();
 		if (ConfigSingleton.INSTANCE.getCustomCrawlBehavior() == null)
 		{
 			throw new NoCrawlBehaviorProvidedException("No CrawlBehabior was specified!");
 		}
+		this.initDataHolders();
+		this.initConnectionManager();
 		LOG.info("Components are initialized!");
 	}
 

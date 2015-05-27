@@ -12,6 +12,7 @@ import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.IdentifiedDataSerializable;
 import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtDirective;
+import com.itiniu.iticrawler.util.serialization.IdentifiedSerializationFactory;
 
 /**
  * Default implementation of the {@link IRobotTxtDirective} interface
@@ -19,10 +20,8 @@ import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtDirective;
  * @author Eric Falk <erfalk at gmail dot com>
  * 
  */
-public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializable, IdentifiedDataSerializable
+public class DefaultRobotTxtDirective implements IRobotTxtDirective, IdentifiedDataSerializable
 {
-	private static final long serialVersionUID = -6746911164640866605L;
-
 	private Set<String> disallowed = null;
 	private Set<String> allowed = null;
 
@@ -197,29 +196,50 @@ public class DefaultRobotTxtDirective implements IRobotTxtDirective, Serializabl
 	@Override
 	public void writeData(ObjectDataOutput out) throws IOException
 	{
-		// TODO Auto-generated method stub
-
+		out.writeBoolean(containsAllowWildcard);
+		out.writeBoolean(containsDisallowWildcard);
+		out.writeInt(delay);
+		out.writeInt(disallowed.size());
+		out.writeInt(allowed.size());
+		for(String dis : disallowed)
+		{
+			out.writeUTF(dis);
+		}
+		for(String all : allowed)
+		{
+			out.writeUTF(all);
+		}
 	}
 
 	@Override
 	public void readData(ObjectDataInput in) throws IOException
 	{
-		// TODO Auto-generated method stub
-
+		this.containsAllowWildcard = in.readBoolean();
+		this.containsDisallowWildcard = in.readBoolean();
+		this.delay = in.readInt();
+		int disSize = in.readInt();
+		int allSize = in.readInt();
+		this.disallowed = new HashSet<>();
+		this.allowed = new HashSet<>();
+		for(int i = 0; i<disSize; i++)
+		{
+			this.disallowed.add(in.readUTF());
+		}for(int i = 0; i<allSize; i++)
+		{
+			this.allowed.add(in.readUTF());
+		}
 	}
 
 	@Override
 	public int getFactoryId()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return IdentifiedSerializationFactory.FACTORY_ID;
 	}
 
 	@Override
 	public int getId()
 	{
-		// TODO Auto-generated method stub
-		return 0;
+		return IdentifiedSerializationFactory.ROBOT_DIRECTIVE_TYPE;
 	}
 
 }
