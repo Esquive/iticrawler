@@ -1,13 +1,13 @@
 package com.itiniu.iticrawler.crawler.rotottxt.impl;
 
-import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtDirective;
+import com.itiniu.iticrawler.crawler.rotottxt.crawlercommons.BaseRobotRules;
 import com.itiniu.iticrawler.httptools.impl.URLInfo;
 import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtStore;
 
 public class RobotTxtUnawareData implements IRobotTxtStore
 {
 	@Override
-	public void insertRule(URLInfo cUrl, IRobotTxtDirective directive)
+	public void insertRule(URLInfo cUrl, BaseRobotRules rules)
 	{
 		// Do nothing		
 	}
@@ -25,15 +25,15 @@ public class RobotTxtUnawareData implements IRobotTxtStore
 	}
 
 	@Override
-	public IRobotTxtDirective getDirective(URLInfo url)
+	public BaseRobotRules getDirective(URLInfo url)
 	{
 		return null;
 	}
 
 	@Override
-	public int getDelay(URLInfo url)
+	public Long getDelay(URLInfo url)
 	{
-		return 0;
+		return 0l;
 	}
 	
 }
