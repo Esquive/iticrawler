@@ -1,12 +1,12 @@
 package com.itiniu.iticrawler.config;
 
-import com.hazelcast.config.Config;
-import com.hazelcast.config.MulticastConfig;
-import com.hazelcast.config.NetworkConfig;
-import com.hazelcast.config.SerializationConfig;
+import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
+import com.itiniu.iticrawler.crawler.rotottxt.crawlercommons.SimpleRobotRules;
+import com.itiniu.iticrawler.httptools.impl.URLInfo;
 import com.itiniu.iticrawler.util.StorageCluster;
-import com.itiniu.iticrawler.util.serialization.IdentifiedSerializationFactory;
+import com.itiniu.iticrawler.util.serialization.SimpleRobotRulesSerializer;
+import com.itiniu.iticrawler.util.serialization.URLInfoSerializer;
 
 /**
  * This class is used to configure the Hazelcast clustered Collections.
@@ -48,8 +48,12 @@ public class ClusterConfig {
 		nConfig.getJoin().setMulticastConfig(mcConfig);
 
 		//SerializationConfig
-		this.memoryClusterConfig.setSerializationConfig(new SerializationConfig().addDataSerializableFactory(1, new IdentifiedSerializationFactory()));
-		
+		this.memoryClusterConfig.getSerializationConfig().getSerializerConfigs()
+				.add(new SerializerConfig().setTypeClass(SimpleRobotRules.class).setImplementation(new SimpleRobotRulesSerializer()));
+		this.memoryClusterConfig.getSerializationConfig().getSerializerConfigs()
+				.add(new SerializerConfig().setTypeClass(URLInfo.class).setImplementation(new URLInfoSerializer()));
+
+
 		//And finally initialize the cluster
 		Hazelcast.newHazelcastInstance(this.memoryClusterConfig);
 	}

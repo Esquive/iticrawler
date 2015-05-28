@@ -16,7 +16,7 @@
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
-                <SizeBasedTriggeringPolicy size="400 KB"/>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
             </Policies>
             <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
         </RollingRandomAccessFile>
@@ -28,7 +28,7 @@
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy/>
-                <SizeBasedTriggeringPolicy size="400 KB"/>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
             </Policies>
         </RollingRandomAccessFile>
 

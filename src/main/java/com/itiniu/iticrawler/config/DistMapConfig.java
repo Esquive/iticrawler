@@ -14,12 +14,11 @@ public class DistMapConfig {
         mapConfig.setName(name);
         mapConfig.setBackupCount(1);
 
-
-
         if (storeImplementation != null) {
 
             MaxSizeConfig maxSizeConfig = new MaxSizeConfig();
-            maxSizeConfig.setSize(3);
+            //todo Refactor this to config
+            maxSizeConfig.setSize(200);
 
             MapStoreConfig store = new MapStoreConfig();
             store.setImplementation(storeImplementation);

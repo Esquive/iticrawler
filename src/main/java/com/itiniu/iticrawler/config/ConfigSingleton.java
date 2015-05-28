@@ -2,15 +2,15 @@ package com.itiniu.iticrawler.config;
 
 import java.util.Iterator;
 
-import com.itiniu.iticrawler.util.EvictionPolicy;
+import com.itiniu.iticrawler.util.enums.EvictionPolicy;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.itiniu.iticrawler.crawler.behaviors.inte.ICrawlBehavior;
-import com.itiniu.iticrawler.util.PageExtractionType;
+import com.itiniu.iticrawler.behaviors.crawler.CrawlBehavior;
+import com.itiniu.iticrawler.util.enums.PageExtractionType;
 
 public enum ConfigSingleton
 {
@@ -27,10 +27,10 @@ public enum ConfigSingleton
 	{
 		try
 		{
-			LOG.info("ITICRAWLER: Loading properties!");
+			LOG.info("ITICRAWLER: Loading properties!!!");
 			Configuration config = new PropertiesConfiguration("crawler.properties");
 			Iterator<String> keyIt = config.getKeys();
-			String key = "";
+			String key;
 			while (keyIt.hasNext())
 			{
 				key = keyIt.next();
@@ -82,7 +82,10 @@ public enum ConfigSingleton
 						this.extractionType = PageExtractionType.valueOf(config.getString(key));
 						break;
 					case "crawler.crawlbehavior":
-						this.customCrawlBehavior = (Class<? extends ICrawlBehavior>) Class.forName(config.getString(key));
+						this.customCrawlBehavior = (Class<? extends CrawlBehavior>) Class.forName(config.getString(key));
+						break;
+					default:
+
 						break;
 				}
 			}
@@ -104,6 +107,10 @@ public enum ConfigSingleton
 	private int maxConnectionsPerHost = 100;
 	private int socketTimeout = 20000;
 	private int connectionTimeout = 30000;
+
+
+
+
 
 	private ClusterConfig clusterConfig = new ClusterConfig();
 
@@ -146,6 +153,8 @@ public enum ConfigSingleton
 	{
 		this.connectionTimeout = connectionTimeout;
 	}
+
+
 
 	// ---------------------------------------------------------------------------------------------------------------
 
@@ -202,7 +211,7 @@ public enum ConfigSingleton
 	private boolean followRedirect = true;
 	private int maxHostsToCrawl = 0;
 
-	private Class<? extends ICrawlBehavior> customCrawlBehavior = null;
+	private Class<? extends CrawlBehavior> customCrawlBehavior = null;
 
 	public int getNumberOfCrawlerThreads()
 	{
@@ -254,14 +263,14 @@ public enum ConfigSingleton
 		this.maxCrawlDepth = maxCrawDepth;
 	}
 
-	public Class<? extends ICrawlBehavior> getCustomCrawlBehavior()
+	public Class<? extends CrawlBehavior> getCustomCrawlBehavior()
 	{
-		Class<? extends ICrawlBehavior> toReturn = customCrawlBehavior;
+		Class<? extends CrawlBehavior> toReturn = customCrawlBehavior;
 
 		return toReturn;
 	}
 
-	public void setCustomCrawlBehavior(Class<? extends ICrawlBehavior> customCrawlBehavior)
+	public void setCustomCrawlBehavior(Class<? extends CrawlBehavior> customCrawlBehavior)
 	{
 		this.customCrawlBehavior = customCrawlBehavior;
 	}
