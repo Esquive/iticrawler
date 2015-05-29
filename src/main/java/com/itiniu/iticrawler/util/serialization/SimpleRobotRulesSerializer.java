@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
+import com.hazelcast.nio.serialization.ByteArraySerializer;
 import com.hazelcast.nio.serialization.StreamSerializer;
 import com.itiniu.iticrawler.crawler.rotottxt.crawlercommons.BaseRobotRules;
 import com.itiniu.iticrawler.crawler.rotottxt.crawlercommons.SimpleRobotRules;
@@ -13,33 +14,33 @@ import java.io.IOException;
 /**
  * Created by ericfalk on 28/05/15.
  */
-public class SimpleRobotRulesSerializer implements StreamSerializer<BaseRobotRules> {
+public class SimpleRobotRulesSerializer implements ByteArraySerializer<BaseRobotRules> {
 
     public static final int TYPE_ID = 2;
 
     private ObjectMapper mapper;
 
     public SimpleRobotRulesSerializer() {
-        mapper = new ObjectMapper(new SmileFactory());
+        mapper = new ObjectMapper();
     }
 
-    @Override
-    public void write(ObjectDataOutput objectDataOutput, BaseRobotRules baseRobotRules) throws IOException {
-        if(mapper != null)
-        {
-            objectDataOutput.writeUTF(mapper.writeValueAsString(baseRobotRules));
-        }
-    }
-
-    @Override
-    public BaseRobotRules read(ObjectDataInput objectDataInput) throws IOException {
-        SimpleRobotRules rules = null;
-        if(mapper != null)
-        {
-            rules = mapper.readValue(objectDataInput.readUTF(),SimpleRobotRules.class);
-        }
-        return rules;
-    }
+//    @Override
+//    public void write(ObjectDataOutput objectDataOutput, BaseRobotRules baseRobotRules) throws IOException {
+//        if(mapper != null)
+//        {
+//            objectDataOutput.writeUTF(mapper.writeValueAsString(baseRobotRules));
+//        }
+//    }
+//
+//    @Override
+//    public BaseRobotRules read(ObjectDataInput objectDataInput) throws IOException {
+//        SimpleRobotRules rules = null;
+//        if(mapper != null)
+//        {
+//            rules = mapper.readValue(objectDataInput.readUTF(),SimpleRobotRules.class);
+//        }
+//        return rules;
+//    }
 
     @Override
     public int getTypeId() {
@@ -49,5 +50,15 @@ public class SimpleRobotRulesSerializer implements StreamSerializer<BaseRobotRul
     @Override
     public void destroy() {
         this.mapper = null;
+    }
+
+    @Override
+    public byte[] write(BaseRobotRules baseRobotRules) throws IOException {
+        return mapper.writeValueAsBytes(baseRobotRules);
+    }
+
+    @Override
+    public BaseRobotRules read(byte[] bytes) throws IOException {
+        return mapper.readValue(bytes,SimpleRobotRules.class);
     }
 }

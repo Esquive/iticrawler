@@ -1,5 +1,8 @@
 package com.itiniu.iticrawler.httptools.impl;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -8,8 +11,8 @@ import java.net.URL;
  *
  * @author Eric Falk <erfalk at gmail dot com>
  */
-public class URLInfo {
 
+public class URLInfo {
 
     protected URL url = null;
     protected String fullLink = null;
@@ -40,6 +43,7 @@ public class URLInfo {
         return this.url.hashCode();
     }
 
+    @JsonIgnore
     public String getDomain() {
         return this.url.getHost();
     }
@@ -50,6 +54,10 @@ public class URLInfo {
 
     public void setUrl(String url) throws MalformedURLException {
         this.url = new URL(url);
+    }
+
+    public String getUrl() {
+        return url.toString();
     }
 
     public void setUrlDepth(int urlDepth) {
@@ -64,10 +72,12 @@ public class URLInfo {
         this.parentURLInfo = parentURLInfo;
     }
 
+    @JsonIgnore
     public String getProtocol() {
         return this.url.getProtocol();
     }
 
+    @JsonIgnore
     public int getPort() {
         return this.url.getPort();
     }
@@ -121,15 +131,24 @@ public class URLInfo {
     }
 
     public String getRedirectedFrom() {
-        return redirectedFrom;
+        return this.redirectedFrom;
     }
 
     public void setRedirectedFrom(String redirectedFrom) {
         this.redirectedFrom = redirectedFrom;
     }
 
+    @JsonIgnore
     public String getPath() {
         return this.url.getPath();
+    }
+
+    public void setIsImage(boolean isImage) {
+        this.isImage = isImage;
+    }
+
+    public void setIsAnchor(boolean isAnchor) {
+        this.isAnchor = isAnchor;
     }
 
     private URLInfo(Builder builder) throws MalformedURLException {
@@ -144,9 +163,6 @@ public class URLInfo {
         this.isImage = builder.isImage;
         this.isAnchor = builder.isAnchor;
     }
-
-
-
 
 
     public static class Builder {

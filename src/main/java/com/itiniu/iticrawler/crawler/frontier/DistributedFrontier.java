@@ -31,7 +31,7 @@ public class DistributedFrontier implements Frontier {
 
     @Override
     public URLInfo getNextURL() {
-        return this.scheduled.getNextURL();
+       return this.scheduled.getNextURL();
     }
 
     @Override

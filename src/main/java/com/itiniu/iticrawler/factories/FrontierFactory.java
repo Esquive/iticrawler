@@ -20,9 +20,8 @@ public class FrontierFactory {
 
 
         crawled = new DistributedCrawledURLCache(ConfigSingleton.INSTANCE.getClusterConfig());
-        scheduled = new DistributedScheduledURLCache(ConfigSingleton.INSTANCE.getClusterConfig().getMemoryClusterConfig());
+        scheduled = new DistributedScheduledURLCache(ConfigSingleton.INSTANCE.getClusterConfig());
 
-        //TODO: Change it again and use the constructor.
         frontier.setCrawledURLStore(crawled);
         frontier.setScheduledURLStore(scheduled);
         return frontier;

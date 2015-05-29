@@ -6,9 +6,8 @@ import com.hazelcast.core.Hazelcast;
 import com.itiniu.iticrawler.config.ClusterConfig;
 import com.itiniu.iticrawler.config.DistMapConfig;
 import com.itiniu.iticrawler.crawler.rotottxt.crawlercommons.BaseRobotRules;
-import com.itiniu.iticrawler.crawler.rotottxt.inte.IRobotTxtDirective;
 import com.itiniu.iticrawler.httptools.impl.URLInfo;
-import com.itiniu.iticrawler.crawler.rotottxt.RobotsTxtCache;
+import com.itiniu.iticrawler.util.RobotsTxtStore;
 
 public class DistributedRobotsTxtCache implements RobotsTxtCache {
 
@@ -19,7 +18,7 @@ public class DistributedRobotsTxtCache implements RobotsTxtCache {
 	
 	public DistributedRobotsTxtCache(ClusterConfig cfg)
 	{
-		new DistMapConfig().setup(cfg.getMemoryClusterConfig(), ROBOTSTXT_CACHE, null);
+		new DistMapConfig().setup(cfg.getMemoryClusterConfig(), ROBOTSTXT_CACHE, new RobotsTxtStore(cfg.getStorageClusterConfig()));
 		
 		this.rules = Hazelcast.getHazelcastInstanceByName(ClusterConfig.MEMORY_CLUSTER_NAME).getMap(ROBOTSTXT_CACHE);
 	}

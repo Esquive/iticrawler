@@ -6,6 +6,7 @@ import com.hazelcast.core.Hazelcast;
 import com.itiniu.iticrawler.config.ClusterConfig;
 import com.itiniu.iticrawler.config.DistMapConfig;
 import com.itiniu.iticrawler.httptools.impl.URLInfo;
+import com.itiniu.iticrawler.util.CrawledHostStore;
 import com.itiniu.iticrawler.util.CrawledURLStore;
 
 public class DistributedCrawledURLCache implements CrawledURLCache {
@@ -23,7 +24,7 @@ public class DistributedCrawledURLCache implements CrawledURLCache {
         // Setup the maps
         new DistMapConfig().setup(cfg.getMemoryClusterConfig(), CRAWLED_URL_MAP, new CrawledURLStore(cfg.getStorageClusterConfig()))
                 .setup(cfg.getMemoryClusterConfig(), CURRENTLY_CRAWLED_URL_MAP, null)
-                .setup(cfg.getMemoryClusterConfig(), CRAWLED_HOST_MAP, null);
+                .setup(cfg.getMemoryClusterConfig(), CRAWLED_HOST_MAP, new CrawledHostStore(cfg.getStorageClusterConfig()));
 
         this.processedURLs = Hazelcast.getHazelcastInstanceByName(ClusterConfig.MEMORY_CLUSTER_NAME).getMap(CRAWLED_URL_MAP);
         this.currentlyProcessedURLs = Hazelcast.getHazelcastInstanceByName(ClusterConfig.MEMORY_CLUSTER_NAME).getMap(CURRENTLY_CRAWLED_URL_MAP);

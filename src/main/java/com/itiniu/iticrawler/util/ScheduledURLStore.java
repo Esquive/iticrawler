@@ -4,14 +4,15 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.smile.SmileFactory;
-import com.hazelcast.core.MapLoader;
-import com.hazelcast.core.MapStore;
+import com.hazelcast.core.QueueStore;
 import com.itiniu.iticrawler.httptools.impl.URLInfo;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.netflix.astyanax.connectionpool.exceptions.NotFoundException;
 import com.netflix.astyanax.model.Column;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -20,9 +21,11 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by ericfalk on 24/05/15.
+ * Created by ericfalk on 28/05/15.
  */
-public class CrawledURLStore implements MapStore<Integer, URLInfo> {
+public class ScheduledURLStore implements QueueStore<URLInfo> {
+
+    private static final Logger LOG = LogManager.getLogger(ScheduledURLStore.class);
 
     private static final String VALUE_COLUMN = "VALUE";
 
@@ -30,21 +33,20 @@ public class CrawledURLStore implements MapStore<Integer, URLInfo> {
     Keyspace keyspace;
     ObjectMapper mapper;
 
-    public CrawledURLStore(StorageCluster storageCluster) {
+    public ScheduledURLStore(StorageCluster storageCluster) {
         this.cluster = storageCluster;
         this.keyspace = storageCluster.getKeyspace();
         this.mapper = new ObjectMapper();
     }
 
     @Override
-    public void store(Integer integer, URLInfo urlInfo) {
+    public void store(Long aLong, URLInfo urlInfo) {
         try {
-            String value = mapper.writeValueAsString(urlInfo);
-            keyspace.prepareColumnMutation(cluster.getCrawledUrlColumn(), integer, VALUE_COLUMN)
+            String value = this.mapper.writeValueAsString(urlInfo);
+            keyspace.prepareColumnMutation(cluster.getScheduledUrlColumn(), aLong, VALUE_COLUMN)
                     .putValue(value, null)
                     .execute();
         } catch (ConnectionException e) {
-            //todo proper logging at this stage
             e.printStackTrace();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -52,38 +54,36 @@ public class CrawledURLStore implements MapStore<Integer, URLInfo> {
     }
 
     @Override
-    public void storeAll(Map<Integer, URLInfo> map) {
-        //do nothing
+    public void storeAll(Map<Long, URLInfo> map) {
+
     }
 
     @Override
-    public void delete(Integer integer) {
-        //do nothing
+    public void delete(Long aLong) {
+
     }
 
     @Override
-    public void deleteAll(Collection<Integer> collection) {
-        //do nothing
+    public void deleteAll(Collection<Long> collection) {
+
     }
 
     @Override
-    public URLInfo load(Integer integer) {
-        Column<String> result = null;
+    public URLInfo load(Long aLong) {
+        Column<String> result;
         URLInfo value = null;
         try {
-            result = keyspace.prepareQuery(cluster.getCrawledUrlColumn())
-                    .getKey(integer)
+            result = keyspace.prepareQuery(cluster.getScheduledUrlColumn())
+                    .getKey(aLong)
                     .getColumn(VALUE_COLUMN)
                     .execute().getResult();
 
             value = this.mapper.readValue(result.getStringValue(), URLInfo.class);
 
             //TODO If an entry is not a in cassandra an Exception is thrown!!!
-        }catch(NotFoundException e)
-        {
+        } catch (NotFoundException e) {
             //Do nothing
-        }
-        catch (ConnectionException e) {
+        } catch (ConnectionException e) {
             //todo proper logging
             e.printStackTrace();
         } catch (MalformedURLException e) {
@@ -95,17 +95,16 @@ public class CrawledURLStore implements MapStore<Integer, URLInfo> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return value;
     }
 
     @Override
-    public Map<Integer, URLInfo> loadAll(Collection<Integer> collection) {
+    public Map<Long, URLInfo> loadAll(Collection<Long> collection) {
         return null;
     }
 
     @Override
-    public Set<Integer> loadAllKeys() {
+    public Set<Long> loadAllKeys() {
         return null;
     }
 }

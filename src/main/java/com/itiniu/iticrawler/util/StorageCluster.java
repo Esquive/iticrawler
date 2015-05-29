@@ -12,6 +12,7 @@ import com.netflix.astyanax.connectionpool.impl.ConnectionPoolType;
 import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor;
 import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
 import com.netflix.astyanax.model.ColumnFamily;
+import com.netflix.astyanax.serializers.LongSerializer;
 import com.netflix.astyanax.serializers.StringSerializer;
 import com.netflix.astyanax.serializers.IntegerSerializer;
 import com.netflix.astyanax.thrift.ThriftFamilyFactory;
@@ -36,11 +37,18 @@ public class StorageCluster {
     public static final int DEFAULT_STORAGE_PORT = 7000;
 
     private static final String CRAWLED_COLUMN_NAME = "CRAWLED_COLUMN";
+    private static final String ROBOTSTXT_COLUMN_NAME = "ROBOTSTXT_COLUMN";
+    private static final String SCHEDULED_COLUMN_NAME = "SCHEDULED_COLUMN";
+    private static final String HOST_COLUMN_NAME = "HOST_COLUMN";
+
 
     private static final Logger LOG = LogManager.getLogger(StorageCluster.class);
     private CassandraDaemon cassandra;
     private Keyspace keyspace;
     private ColumnFamily<Integer, String> crawledUrlColumn;
+    private ColumnFamily<Long, String> scheduledUrlColumn;
+    private ColumnFamily<String, String> robotsTxtColumn;
+    private ColumnFamily<String, String> hostColumn;
 
     private File dataDir;
 
@@ -147,7 +155,6 @@ public class StorageCluster {
                 .withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
                 .buildKeyspace(ThriftFamilyFactory.getInstance());
 
-        //TODO; build your own keyspace
 
         context.start();
         return context.getClient();
@@ -166,26 +173,33 @@ public class StorageCluster {
                 );
             //}
         } catch (ConnectionException e) {
+            //todo the column gets throw if the keyspace exists already I have to filter out this error
             e.printStackTrace();
         }
     }
 
     private void setupColumnFamilies()
     {
-        //TODO Finish the column Family implementation
-        //ColumnFamily<String, String> scheduled = ColumnFamily
-        //        .newColumnFamily("scheduled", StringSerializer.get(),
-        //                StringSerializer.get());
-         this.crawledUrlColumn = ColumnFamily
+        this.scheduledUrlColumn = ColumnFamily
+                .newColumnFamily(SCHEDULED_COLUMN_NAME, LongSerializer.get(),
+                        StringSerializer.get());
+
+        this.crawledUrlColumn = ColumnFamily
                 .newColumnFamily(CRAWLED_COLUMN_NAME, IntegerSerializer.get(),
                         StringSerializer.get());
-        //ColumnFamily<String, String> robotTxt = ColumnFamily
-        //        .newColumnFamily("robotTxt", StringSerializer.get(),
-        //                StringSerializer.get());
+
+        this.robotsTxtColumn = ColumnFamily
+                .newColumnFamily(ROBOTSTXT_COLUMN_NAME, StringSerializer.get(),
+                        StringSerializer.get());
+
+        this.hostColumn = ColumnFamily.newColumnFamily(HOST_COLUMN_NAME, StringSerializer.get(), StringSerializer.get());
 
         try {
             keyspace.createColumnFamily(crawledUrlColumn, null);
-        } catch (ConnectionException e) {
+            keyspace.createColumnFamily(scheduledUrlColumn, null);
+            keyspace.createColumnFamily(robotsTxtColumn, null);
+            keyspace.createColumnFamily(hostColumn, null);
+                    } catch (ConnectionException e) {
             e.printStackTrace();
         }
 
@@ -198,5 +212,17 @@ public class StorageCluster {
 
     public ColumnFamily<Integer, String> getCrawledUrlColumn() {
         return crawledUrlColumn;
+    }
+
+    public ColumnFamily<Long, String> getScheduledUrlColumn() {
+        return scheduledUrlColumn;
+    }
+
+    public ColumnFamily<String, String> getRobotsTxtColumn() {
+        return robotsTxtColumn;
+    }
+
+    public ColumnFamily<String, String> getHostColumn() {
+        return hostColumn;
     }
 }

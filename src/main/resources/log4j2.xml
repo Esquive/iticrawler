@@ -7,6 +7,7 @@
             <PatternLayout>
                 <Pattern>%d{HH:mm:ss,SSS} %p  %c{1} %t %m %ex%n</Pattern>
             </PatternLayout>
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
         </Console>
 
         <RollingRandomAccessFile name="ErrorLog"
@@ -30,6 +31,7 @@
                 <TimeBasedTriggeringPolicy/>
                 <SizeBasedTriggeringPolicy size="20 MB"/>
             </Policies>
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
         </RollingRandomAccessFile>
 
     </Appenders>

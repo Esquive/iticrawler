@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
 import com.hazelcast.nio.ObjectDataInput;
 import com.hazelcast.nio.ObjectDataOutput;
+import com.hazelcast.nio.serialization.ByteArraySerializer;
 import com.hazelcast.nio.serialization.StreamSerializer;
 import com.itiniu.iticrawler.httptools.impl.URLInfo;
 
@@ -13,7 +14,7 @@ import java.io.IOException;
 /**
  * Created by ericfalk on 28/05/15.
  */
-public class URLInfoSerializer  implements StreamSerializer<URLInfo>
+public class URLInfoSerializer  implements ByteArraySerializer<URLInfo>
 {
     public static final int TYPE_ID = 1;
 
@@ -24,22 +25,22 @@ public class URLInfoSerializer  implements StreamSerializer<URLInfo>
         this.mapper = new ObjectMapper(new SmileFactory());
     }
 
-    @Override
-    public void write(ObjectDataOutput objectDataOutput, URLInfo urlInfo) throws IOException {
-        if(this.mapper != null) {
-            objectDataOutput.writeUTF(mapper.writeValueAsString(urlInfo));
-        }
-    }
-
-    @Override
-    public URLInfo read(ObjectDataInput objectDataInput) throws IOException {
-        URLInfo url = null;
-        if(this.mapper != null)
-        {
-            url = this.mapper.readValue(objectDataInput.readUTF(),URLInfo.class);
-        }
-        return url;
-    }
+//    @Override
+//    public void write(ObjectDataOutput objectDataOutput, URLInfo urlInfo) throws IOException {
+//        if(this.mapper != null) {
+//            objectDataOutput.writeUTF(mapper.writeValueAsString(urlInfo));
+//        }
+//    }
+//
+//    @Override
+//    public URLInfo read(ObjectDataInput objectDataInput) throws IOException {
+//        URLInfo url = null;
+//        if(this.mapper != null)
+//        {
+//            url = this.mapper.readValue(objectDataInput.readUTF(),URLInfo.class);
+//        }
+//        return url;
+//    }
 
     @Override
     public int getTypeId() {
@@ -49,5 +50,15 @@ public class URLInfoSerializer  implements StreamSerializer<URLInfo>
     @Override
     public void destroy() {
         this.mapper = null;
+    }
+
+    @Override
+    public byte[] write(URLInfo urlInfo) throws IOException {
+        return mapper.writeValueAsBytes(urlInfo);
+    }
+
+    @Override
+    public URLInfo read(byte[] bytes) throws IOException {
+        return mapper.readValue(bytes, URLInfo.class);
     }
 }

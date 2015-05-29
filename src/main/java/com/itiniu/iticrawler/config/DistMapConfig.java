@@ -18,7 +18,7 @@ public class DistMapConfig {
 
             MaxSizeConfig maxSizeConfig = new MaxSizeConfig();
             //todo Refactor this to config
-            maxSizeConfig.setSize(200);
+            maxSizeConfig.setSize(1000);
 
             MapStoreConfig store = new MapStoreConfig();
             store.setImplementation(storeImplementation);

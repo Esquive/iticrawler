@@ -2,6 +2,7 @@ package com.itiniu.iticrawler.config;
 
 import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
+import com.itiniu.iticrawler.crawler.rotottxt.crawlercommons.BaseRobotRules;
 import com.itiniu.iticrawler.crawler.rotottxt.crawlercommons.SimpleRobotRules;
 import com.itiniu.iticrawler.httptools.impl.URLInfo;
 import com.itiniu.iticrawler.util.StorageCluster;
@@ -17,7 +18,7 @@ import com.itiniu.iticrawler.util.serialization.URLInfoSerializer;
 public class ClusterConfig {
 
 	public static final String MEMORY_CLUSTER_NAME = "itiCrawlerMemoryCluster";
-	public static final String STORAGE_CLUSTER_NAME = "itiCrawlerStorageCluster";
+	public static final String STORAGE_CLUSTER_NAME = "TestCluster";
 	private Config memoryClusterConfig;
 	private StorageCluster storageClusterConfig;
 
@@ -49,7 +50,7 @@ public class ClusterConfig {
 
 		//SerializationConfig
 		this.memoryClusterConfig.getSerializationConfig().getSerializerConfigs()
-				.add(new SerializerConfig().setTypeClass(SimpleRobotRules.class).setImplementation(new SimpleRobotRulesSerializer()));
+				.add(new SerializerConfig().setTypeClass(BaseRobotRules.class).setImplementation(new SimpleRobotRulesSerializer()));
 		this.memoryClusterConfig.getSerializationConfig().getSerializerConfigs()
 				.add(new SerializerConfig().setTypeClass(URLInfo.class).setImplementation(new URLInfoSerializer()));
 

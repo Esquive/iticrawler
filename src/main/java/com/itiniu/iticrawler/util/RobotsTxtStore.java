@@ -5,8 +5,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.smile.SmileFactory;
-import com.hazelcast.core.MapLoader;
 import com.hazelcast.core.MapStore;
+import com.itiniu.iticrawler.crawler.rotottxt.crawlercommons.BaseRobotRules;
+import com.itiniu.iticrawler.crawler.rotottxt.crawlercommons.SimpleRobotRules;
 import com.itiniu.iticrawler.httptools.impl.URLInfo;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
@@ -20,9 +21,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by ericfalk on 24/05/15.
+ * Created by ericfalk on 29/05/15.
  */
-public class CrawledURLStore implements MapStore<Integer, URLInfo> {
+public class RobotsTxtStore implements MapStore<String, BaseRobotRules> {
 
     private static final String VALUE_COLUMN = "VALUE";
 
@@ -30,17 +31,17 @@ public class CrawledURLStore implements MapStore<Integer, URLInfo> {
     Keyspace keyspace;
     ObjectMapper mapper;
 
-    public CrawledURLStore(StorageCluster storageCluster) {
+    public RobotsTxtStore(StorageCluster storageCluster) {
         this.cluster = storageCluster;
         this.keyspace = storageCluster.getKeyspace();
         this.mapper = new ObjectMapper();
     }
 
     @Override
-    public void store(Integer integer, URLInfo urlInfo) {
+    public void store(String s, BaseRobotRules baseRobotRules) {
         try {
-            String value = mapper.writeValueAsString(urlInfo);
-            keyspace.prepareColumnMutation(cluster.getCrawledUrlColumn(), integer, VALUE_COLUMN)
+            String value = mapper.writeValueAsString(baseRobotRules);
+            keyspace.prepareColumnMutation(cluster.getRobotsTxtColumn(), s, VALUE_COLUMN)
                     .putValue(value, null)
                     .execute();
         } catch (ConnectionException e) {
@@ -52,38 +53,35 @@ public class CrawledURLStore implements MapStore<Integer, URLInfo> {
     }
 
     @Override
-    public void storeAll(Map<Integer, URLInfo> map) {
-        //do nothing
+    public void storeAll(Map<String, BaseRobotRules> map) {
+
     }
 
     @Override
-    public void delete(Integer integer) {
-        //do nothing
+    public void delete(String s) {
+
     }
 
     @Override
-    public void deleteAll(Collection<Integer> collection) {
-        //do nothing
+    public void deleteAll(Collection<String> collection) {
+
     }
 
     @Override
-    public URLInfo load(Integer integer) {
+    public BaseRobotRules load(String s) {
         Column<String> result = null;
-        URLInfo value = null;
+        BaseRobotRules value = null;
         try {
-            result = keyspace.prepareQuery(cluster.getCrawledUrlColumn())
-                    .getKey(integer)
+            result = keyspace.prepareQuery(cluster.getRobotsTxtColumn())
+                    .getKey(s)
                     .getColumn(VALUE_COLUMN)
                     .execute().getResult();
 
-            value = this.mapper.readValue(result.getStringValue(), URLInfo.class);
+            value = this.mapper.readValue(result.getStringValue(), SimpleRobotRules.class);
 
             //TODO If an entry is not a in cassandra an Exception is thrown!!!
-        }catch(NotFoundException e)
-        {
-            //Do nothing
-        }
-        catch (ConnectionException e) {
+        } catch (NotFoundException e) {//Do nothing
+        } catch (ConnectionException e) {
             //todo proper logging
             e.printStackTrace();
         } catch (MalformedURLException e) {
@@ -95,17 +93,16 @@ public class CrawledURLStore implements MapStore<Integer, URLInfo> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return value;
     }
 
     @Override
-    public Map<Integer, URLInfo> loadAll(Collection<Integer> collection) {
+    public Map<String, BaseRobotRules> loadAll(Collection<String> collection) {
         return null;
     }
 
     @Override
-    public Set<Integer> loadAllKeys() {
+    public Set<String> loadAllKeys() {
         return null;
     }
 }

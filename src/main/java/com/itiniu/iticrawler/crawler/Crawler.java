@@ -100,7 +100,8 @@ public class Crawler implements Runnable
 		while (shouldRun)
 		{
 			//Init the HttpClient
-			if(this.httpClient == null) this.httpClient = this.httpConnectionManager.getHttpClient();
+			if(this.httpClient == null)
+                this.httpClient = this.httpConnectionManager.getHttpClient();
 
 			url = this.frontier.getNextURL();
 

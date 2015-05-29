@@ -77,8 +77,10 @@ public class CrawlController implements Runnable
 				{
 					try
 					{
-						pool.shutdown();
-						pool.awaitTermination(20, TimeUnit.SECONDS);
+                        if(pool!=null) {
+                            pool.shutdown();
+                            pool.awaitTermination(20, TimeUnit.SECONDS);
+                        }
 					}
 					catch (InterruptedException e)
 					{
